@@ -8,16 +8,16 @@ var config = {
         PORT: 14800
     },
     db: {
-        db: 'psymap-dev',
-        host: 'ds043997.mongolab.com',
+        db: '',
+        host: '',
         port: 43997,  // optional, default: 27017
         username: 'default', // optional
-        password: 'default' // optional
+        password: '' // optional
     },
     getConnectionString: function(){
         return 'mongodb://' + config.db.username+':'+config.db.password+'@' + config.db.host+':'+config.db.port + '/' + config.db.db;
     },
-    secret: '076ee61d63aa10a125ea872411e433b9',
+    secret: '',
 };
 
 var express = require('express')
