@@ -8,11 +8,14 @@ var path = require('path')
   , fs = require('fs')
   , url = require('url')
   , zlib = require('zlib')
-  , db = require('./db');
+  , users = require('./users');
+  //, db = require('./db');
 
-var DAL = {
+/*var DAL = {
     db: function () {
         return db;
     }
 }
-exports.DAL = DAL;
+exports.DAL = DAL;*/
+
+exports.users = users.data;

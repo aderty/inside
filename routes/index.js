@@ -1,5 +1,6 @@
 
-var path = require('path');
+var path = require('path'),
+    users = require('./users');
 
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");
@@ -21,3 +22,5 @@ exports.partials = function (req, res) {
     var name = req.params.name;
     res.render('partials/' + name);
 };
+
+exports.users = users.routes;

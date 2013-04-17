@@ -6,7 +6,81 @@
 .masquer {
     display: none;
 }
+/* Centrage du titre du formulaire de login*/
+#login h3 {
+    text-align:center;
+}
 
+#login input,
 #editUser input {
     height:inherit;
+}
+#login .controls,
+#editUser .controls {
+    position: absolute;
+}
+#login .controls.check,
+#editUser .controls.check {
+    position: inherit;
+}
+
+/* Afficher DDL grid */
+.ngCell.col0
+{
+	overflow: inherit;
+	padding-left: 10px;
+}
+
+ul.actionEdit
+{
+	min-width: 0;
+}
+
+.input-help {
+  display: none;
+  position:absolute;
+  z-index: 100;
+  top: -6px;
+  /*left: 160px;*/
+  left: 216px;
+  /*width:200px;*/
+  width: 212px;
+  /*padding:10px;*/
+  padding: 8px;
+  background:#fefefe;
+  font-size:.875em;
+  border-radius:5px;
+  box-shadow:0 1px 3px #aaa;
+  border:1px solid #ddd;
+  opacity: 0.9;
+}
+.input-help::before {
+  content: "\25C0";
+  position: absolute;
+  top:10px;
+  left:-12px;
+  font-size:16px;
+  line-height:16px;
+  color:#ddd;
+  text-shadow:none;
+}
+.input-help h4 {
+  margin:0;
+  padding:0;
+  font-weight: normal;
+  font-size: 1.1em;
+}
+ 
+ /* Always hide the input help when it's pristine */
+input.ng-invalid + .input-help {
+  display: block;
+}
+/* Always hide the input help when it's pristine */
+input.ng-pristine + .input-help {
+  display: none;
+}
+ 
+/* Hide the invalid box while the input has focus */
+.ng-invalid:focus + .input-help {
+  display: none;
 }

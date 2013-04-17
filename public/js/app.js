@@ -1,4 +1,4 @@
-﻿var app = angular.module('inside', ['ngGrid', 'ui.bootstrap', 'ui'])
+﻿var app = angular.module('inside', ['inside.directives', 'inside.services', 'ngGrid', 'ui.bootstrap', 'ui'])
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $routeProvider
         .when('/index', {
@@ -19,4 +19,4 @@
 
         // configure html5 to get links working on jsfiddle
       $locationProvider.html5Mode(true);
-    }]);
+  } ]);

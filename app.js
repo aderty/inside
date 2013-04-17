@@ -134,6 +134,24 @@ function cleanLogin(req, res, next) {
 app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
 
+
+
+
+ 
+// Lecture, via GET
+app.get('/data-users', routes.users.list);
+ 
+app.get('/data-users/:id', routes.users.get);
+ 
+// Mise à jour via POST
+//app.post('/data-users/:id', routes.users.update);
+ 
+// Ajout via POST
+app.post('/data-users', routes.users.save);
+
+// Suppression via POST
+app.delete('/data-users/:id', routes.users.remove);
+
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);
 
