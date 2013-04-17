@@ -1,0 +1,16 @@
+.nodester.appconfig
+bin/
+obj/
+My Project/
+*.json
+!package.json
+*.sln
+*.suo
+*.vbproj
+*.vbproj.user
+*.vb
+*.bat
+*.rdb
+UpgradeLog.XML
+store/match/
+store/player/

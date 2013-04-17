@@ -1,0 +1,57 @@
+﻿<% include header.html %>
+<link href="../js/libs/calendario/calendar.css" rel="stylesheet" />
+<link href="../js/libs/calendario/demo.css" rel="stylesheet" />
+<link href="../js/libs/calendario/custom.css" rel="stylesheet" />
+<link href="../css/admin.css" rel="stylesheet" />
+<div id="index" data-url="/index" data-role="page">
+    
+	<div data-role="header">
+		<h1><%= title%></h1>
+	</div><!-- /header -->
+
+	<div id="contentCalendrier" data-role="content">	
+        <div class="custom-calendar-wrap custom-calendar-full">
+				<div class="custom-header clearfix">
+					<h2>Calendrier</h2>
+					<h3 class="custom-month-year">
+						<span id="custom-month" class="custom-month"></span>
+						<span id="custom-year" class="custom-year"></span>
+						<nav>
+							<span id="custom-prev" class="custom-prev"></span>
+							<span id="custom-next" class="custom-next"></span>
+							<span id="custom-current" class="custom-current" title="Aujourd'hui"></span>
+						</nav>
+					</h3>
+				</div>
+				<div id="calendar" class="fc-calendar-container"></div>
+		</div>
+	</div><!-- /content -->
+
+</div><!-- /page -->
+<div id="add_rdv" data-url="add_rdv" data-role="page" data-add-back-btn="true">
+    
+	<div data-role="header">
+		<h1>Nouveau Rdv</h1>
+	</div><!-- /header -->
+
+	<div data-role="content" data-theme="c">
+		<div id="addRdvContent">
+		</div>
+	</div><!-- /content -->
+
+</div><!-- /page -->
+
+<% include scripts.html %>
+
+<script src="../js/libs/calendario/jquery.calendario.js"></script>
+
+<script src="../js/models/rdv.js"></script>
+<script src="../js/collections/rdvlist.js"></script>
+
+<script src="../admin/views/rdvlist/list.js"></script>
+<script src="../admin/views/rdvlist/add.js"></script>
+
+<script src="../admin/router.js"></script>
+
+<% include footer.html %>
+

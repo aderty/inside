@@ -1,0 +1,89 @@
+CACHE MANIFEST
+
+# v0.0.1
+
+# Offline cache v1
+ 
+NETWORK:
+*
+ 
+CACHE:
+
+# html files
+login
+
+favicon.ico
+
+# css files
+css/index.css
+css/jquery.ui.datepicker.css
+js/libs/jquery.mobile/jquery.mobile-1.1.0.min.css
+
+# js files
+js/libs.js
+js/main.js
+js/app.js
+js/router.js
+js/utils.js
+js/models/match.js
+js/models/player.js
+js/collections/matchs.js
+js/collections/players.js
+js/views/config/config.js
+js/views/match/item.js
+js/views/matchs/add.js
+js/views/matchs/item.js
+js/views/matchs/list.js
+js/views/players/add.js
+js/views/players/edit.js
+js/views/players/item.js
+js/views/players/list.js
+js/views/players/com.js
+
+js/libs/backbone.js
+js/libs/underscore.js
+js/libs/backbone/backbone-min.js
+js/libs/backbone/backbone.iobind.js
+js/libs/backbone/backbone.iobind.min.js
+js/libs/backbone/backbone.iosync.js
+js/libs/backbone/backbone.iosync.min.js
+js/libs/backbone/backbone.localStorage.js
+js/libs/backbone/backbone.localStorage-min.js
+
+js/libs/jquery/cookie.jquery.js
+js/libs/jquery/jquery.min.js
+js/libs/jquery/jquery.ui.datepicker.js
+js/libs/jquery/jquery.ui.datepicker.mobile.js
+
+js/libs/jquery.mobile/jquery.mobile-1.1.0.min.js
+js/libs/jquery.mobile/images/ajax-loader.png
+js/libs/jquery.mobile/images/ajax-loader.gif
+js/libs/jquery.mobile/images/icons-18-black.png
+js/libs/jquery.mobile/images/icons-18-white.png
+js/libs/jquery.mobile/images/icons-36-black.png
+js/libs/jquery.mobile/images/icons-36-white.png
+
+js/libs/require/order.js
+js/libs/require/require.min.js
+js/libs/require/text.js
+
+js/libs/underscore/underscore-min.js
+
+
+# templates
+
+templates/config/config.html
+templates/match/item.html
+templates/matchs/add.html
+templates/matchs/edit.html
+templates/matchs/item.html
+templates/players/add.html
+templates/players/edit.html
+templates/players/item.html
+templates/players/com.html
+
+# images
+images/foot.jpg
+images/User.png
+images/icon-tel.png
+images/icon-chat.png
