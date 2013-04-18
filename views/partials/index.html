@@ -3,8 +3,8 @@
     <div class="span12">
         </div>
         </div>
-  <div class="row-fluid">
-    <div class="span4 offset4" ng-controller="LoginController">
+  <div class="row-fluid"  ng-class="{masquer: connected}">
+    <div class="span12" ng-controller="LoginController">
         <!--Sidebar content-->
         <!--Formulaire login--> 
         <form id="login" name="login" class="form-horizontal well" novalidate>
@@ -46,6 +46,7 @@
               </label>
             </div>
           </div>
+            <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>Problème de connection...</span></div>
           <!--Zone d'action du formulaire-->
             <div class="form-actions">
               <button type="button" ng-click="connect(user);" class="btn btn-primary">Enregistrer</button>

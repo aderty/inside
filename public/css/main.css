@@ -6,6 +6,16 @@
 .masquer {
     display: none;
 }
+.nav>li.masquer,
+.nav>li>a.masquer {
+    display: none;
+}
+#login {
+    width: 500px;
+    left: 50%;
+    position: absolute;
+    margin-left: -270px;
+}
 /* Centrage du titre du formulaire de login*/
 #login h3 {
     text-align:center;

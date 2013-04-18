@@ -8,11 +8,17 @@ var fs = require('fs')
 // commande ne sera utilisée qu'une fois au chargement de ce module, et nous
 // avons besoin des informations contenues dans le fichier pour configurer
 // notre client.
-var config = JSON.parse(fs.readFileSync('./mysql-config.json'));
+var config = {
+    "user": "root",
+    "password": "k0ceCOnw",
+    "database": "inside",
+    "host": "localhost",
+    "port": 3306
+};//JSON.parse(fs.readFileSync('./mysql-config.json'));
 
 // On initialise un nouveau client qui exécutera nos requêtes, en lui passant
 // l'objet config précédemment initialisé.
-var client = new mysql.Client(config);
+var client = mysql.createConnection(config);
 
 // On se connecte à la base de données. Un programme node.js ne possède qu'un
 // seul thread d'exécution, nous n'avons donc pas besoin de nous inquiéter
@@ -82,10 +88,13 @@ function read(table, where, columns, callback) {
 // - callback
 function update(table, where, values, callback) {
     var whereClause = hashToClause(where, ' AND ');
-    var valuesClause = hashToClause(values, ' AND ');
+    var valuesClause = hashToClause(values, ' , ');
     var q = 'UPDATE ' + table + ' SET ' + valuesClause.clause + ' WHERE ' +
         whereClause.clause + ';';
-    client.query(q, whereClause.values.concat(valuesClause.values), callback);
+    var inputs = valuesClause.values.concat(whereClause.values);
+    console.log(q);
+    console.log(inputs);
+    client.query(q, inputs, callback);
 }
 
 // On expose maintenant les méthodes au travers de l'objet exports

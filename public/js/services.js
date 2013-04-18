@@ -2,17 +2,43 @@
 
 /* Services */
 
-
 // Demonstrate how to register services
 // In this case it is a simple value service.
 angular.module('inside.services', ['ngResource']).
   value('version', '0.1').
-  factory('DataUsers', function ($resource) {
-      var DataUsers = $resource('/data-users/:matricule',
-             { matricule: '@id' }, {
+  factory('LoginService', function ($resource, $http) {
+      return {
+          login: function (email, pwd, callback) {
+              $http({
+                  method: 'POST',
+                  url: '/login',
+                  data: {
+                      email: email,
+                      pwd: pwd
+                  }
+              }).
+              success(function (data, status, headers, config) {
+                  // this callback will be called asynchronously
+                  // when the response is available
+                  callback(data);
+              }).
+              error(function (data, status, headers, config) {
+                  // called asynchronously if an error occurs
+                  // or server returns response with an error status.
+                  callback(false);
+              });
+          },
+          logout: function (callback) {
+              
+          }
+      };
+  }).
+  factory('UsersService', function ($resource) {
+      var UsersService = $resource('/data-users/:id',
+             { id: '@id' }, {
              charge: {method:'POST', params:{charge:true}}
          });
-      return DataUsers;/*{
+      return UsersService;/*{
           on: function (eventName, callback) {
               socket.on(eventName, function () {
                   var args = arguments;

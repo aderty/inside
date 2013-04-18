@@ -25,7 +25,7 @@
            <div class="control-group" ng-class="{error: editUser.inputMatricule.$dirty && editUser.inputMatricule.$invalid, success:editUser.inputMatricule.$dirty && !editUser.inputMatricule.$invalid}">
             <label class="control-label" for="inputMatricule">Matricule</label>
             <div class="controls">
-              <input type="text" id="inputMatricule" name="inputMatricule" ng-disabled="mode == 'Edition'" ng-model="currentUser.matricule" required placeholder="Matricule">
+              <input type="text" id="inputMatricule" name="inputMatricule" ng-disabled="mode == 'Edition'" ng-model="currentUser.id" required placeholder="Matricule">
               <div class="input-help">
                   <h4>Vous devez renseigner un numéro de matricule.</h4>
                </div>
@@ -90,7 +90,7 @@
           <div class="control-group" ng-class="{error: editUser.confirm_password.$dirty && editUser.confirm_password.$invalid, success:editUser.confirm_password.$dirty && !editUser.confirm_password.$invalid}">
             <label class="control-label" for="confirm_password">Retapez le password</label>
             <div class="controls">
-              <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Password" ng-required='edition == 1' ui-validate=" '$value==currentUser.pwd' " ui-validate-watch=" 'currentUser.pwd' " />
+              <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Password" ng-required='edition == 1' ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
               <div class="input-help">
                   <h4>Vous devez saisir le même mot de passe.</h4>
                </div>
@@ -101,8 +101,8 @@
                 <label class="control-label" for="inputRole">Rôle</label>
                 <div class="controls">
                       <select id="inputRole" name="inputRole" required ng-model="currentUser.role">
-                          <option selected="selected" value="0">Consultant</option>
-                          <option value="1">Admin</option>
+                          <option selected="selected" value="1">Consultant</option>
+                          <option value="2">Admin</option>
                       </select>
                       <div class="input-help">
                           <h4>Vous devez attribuer un rôle.</h4>

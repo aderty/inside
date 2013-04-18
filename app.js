@@ -147,7 +147,10 @@ app.get('/data-users/:id', routes.users.get);
 //app.post('/data-users/:id', routes.users.update);
  
 // Ajout via POST
+app.post('/data-users/:id', routes.users.save);
 app.post('/data-users', routes.users.save);
+
+app.post('/login', routes.users.login);
 
 // Suppression via POST
 app.delete('/data-users/:id', routes.users.remove);

@@ -5,6 +5,7 @@
   "dependencies": {
     "connect": "2.7.X",
     "express": "3.X.X",
+	"crypto": "0.X.X",
 	"mysql": "2.X.X",
 	"mongoose": "3.4.0",
 	"connect-mongodb": "1.1.X",

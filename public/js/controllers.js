@@ -14,6 +14,7 @@ app.run(["$rootScope", function($rootScope) {
 function appController($scope, $routeParams, $rootScope) {
     var id = location.pathname;
     $rootScope.page = $rootScope.pages[id.substring(1)];
+    $rootScope.connected = false;
 }
 
 // Contrôleur de la barre de navigation
@@ -22,9 +23,9 @@ function NavBar($scope, $rootScope) {
 }
 
 // Contrôleur de login
-function LoginController($scope, $rootScope) {
+function LoginController($scope, $rootScope, LoginService) {
     $scope.user = {};
-
+    $scope.error = false;
     $scope.connect = function (user) {
         var err = false;
         if (!user.email || user.email == "") {
@@ -36,11 +37,21 @@ function LoginController($scope, $rootScope) {
         if ($scope.login.$invalid) {
             return;
         }
+        LoginService.login(user.email, user.pwd, function (response) {
+            if (!response || response == "false") {
+                $scope.user = {};
+                $scope.login.$setPristine();
+                $rootScope.connected = false;
+                $scope.error = true;
+                return;
+            }
+            $rootScope.connected = true;
+        });
     }
 }
 
 // Contrôleur principal de la gestion des utilisateurs
-function UsersMain($scope, $rootScope, $dialog, DataUsers) {
+function UsersMain($scope, $rootScope, $dialog, UsersService) {
     $scope.edition = 0;
     $scope.mode = "";
     $scope.lblMode = "";
@@ -50,8 +61,10 @@ function UsersMain($scope, $rootScope, $dialog, DataUsers) {
         document.getElementById('password').value = "";
         document.getElementById('confirm_password').value = "";
         $scope.currentUser = {
-            date: null,
-            role: 0
+            role: 1,
+            cp: 0,
+            cp_acc: 0,
+            rtt: 0
         };
         $scope.edition = 1;
         $scope.mode = "Création";
@@ -76,7 +89,7 @@ function UsersMain($scope, $rootScope, $dialog, DataUsers) {
         var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûre de le supprimer ?', [{label:'Oui', result: 'yes'},{label:'Non', result: 'no'}]);
         msgbox.open().then(function(result){
             if (result === 'yes') {
-                DataUsers.remove(row.entity, function (err) {
+                UsersService.remove(row.entity, function (err) {
                     var index = $rootScope.users.indexOf(row.entity);
                     $rootScope.users.splice(index, 1);
                 });
@@ -91,7 +104,9 @@ function UsersMain($scope, $rootScope, $dialog, DataUsers) {
 
 
     $scope.save = function (currentUser) {
-        DataUsers.save(currentUser, function (err) {
+        var user = angular.copy(currentUser);
+        delete user.pwdtest;
+        UsersService.save(user, function (err) {
             $scope.edition = 0;
             var index = $rootScope.users.indexOf(currentUser);
             if (index == -1) {
@@ -104,7 +119,7 @@ function UsersMain($scope, $rootScope, $dialog, DataUsers) {
 }
 
 // Contrôleur de la grille des utilisateurs
-function UsersGrid($scope, $rootScope, DataUsers) {
+function UsersGrid($scope, $rootScope, UsersService) {
 
     $scope.pagingOptions = {
         pageSizes: [25, 50, 100],
@@ -113,7 +128,7 @@ function UsersGrid($scope, $rootScope, DataUsers) {
         currentPage: 1
     };
 
-    $rootScope.users = DataUsers.query(function() {
+    $rootScope.users = UsersService.query(function () {
         // GET: /user/123/card
         // server returns: [ {id:456, number:'1234', name:'Smith'} ];
         for (var i = 0, l = $rootScope.users.length; i < l; i++) {
@@ -127,7 +142,7 @@ function UsersGrid($scope, $rootScope, DataUsers) {
         data: 'users',
         columnDefs: [
             { field: '', cellTemplate: $.trim($('#actionRowTmpl').html()) },
-            { field: 'matricule', displayName: 'Matricule' },
+            { field: 'id', displayName: 'Matricule' },
             { field: 'nom', displayName: 'Nom' },
             { field: 'prenom', displayName: 'Prénom' },
             { field: 'age', displayName: 'Age' },

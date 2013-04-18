@@ -14,13 +14,17 @@ function dataCallback(res) {
 }
 
 var routes = {
-
+    login: function (req, res) {
+        data.users.login(req.body.email, req.body.pwd, dataCallback(res));
+    },
 // Lecture, via GET
 list: function (req, res) {
+        res.header('Cache-Control', 'no-cache');
     data.users.listUsers(dataCallback(res));
 },
 
 get: function (req, res) {
+        res.header('Cache-Control', 'no-cache');
     data.users.getUser(req.params.id, dataCallback(res));
 },
 
