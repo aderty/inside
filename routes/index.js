@@ -15,7 +15,10 @@ exports.manifest = function (req, res) {
 
 exports.index = function (req, res) {
     res.setHeader('Cache-Control', 'public, max-age=' + 31557600000);
-    res.render('index');
+    res.render('index', {
+        connected: req.session.username ? true : false,
+        prenom: req.session.prenom
+    });
 };
 
 exports.partials = function (req, res) {

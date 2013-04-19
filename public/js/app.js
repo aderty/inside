@@ -13,10 +13,23 @@
           templateUrl: 'partials/users.html',
           controller: appController
       })
+      .when('/logout', {
+          redirectTo: '/logout'
+       })
       .otherwise({
           redirectTo: '/index'
       });
 
         // configure html5 to get links working on jsfiddle
       $locationProvider.html5Mode(true);
-  } ]);
+    }]).run(function ($rootScope, $location) {
+
+        // register listener to watch route changes
+        $rootScope.$on("$routeChangeStart", function (event, next, current) {
+                // no logged user, we should be going to #login
+            if (next.redirectTo == "/logout") {
+                // not going to #login, we should redirect now
+                location.href ="/logout";
+            }
+        });
+    })

@@ -30,4 +30,18 @@ directive('appVersion', ['version', function (version) {
             });
         }
     };
+})
+// authenticate
+.directive('authenticate', function () {
+    return {
+        link: function (scope, elm, attrs, ctrl, $rootScope) {
+
+            if (!scope.$root.connected) {
+                elm.addClass("masquer");
+            }
+            scope.$root.$watch('connected', function (newValue, oldValue) {
+                elm[newValue ? 'removeClass' : 'addClass']("masquer");
+            }, true);
+        }
+    };
 });

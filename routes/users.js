@@ -15,7 +15,22 @@ function dataCallback(res) {
 
 var routes = {
     login: function (req, res) {
-        data.users.login(req.body.email, req.body.pwd, dataCallback(res));
+        data.users.login(req.body.email, req.body.pwd, function (err, ret) {
+            if (ret) {
+                req.session.username = ret.id;
+                req.session.prenom = ret.prenom;
+            }
+            dataCallback(res)(err, ret);
+        });
+    },
+    logout: function (req, res) {
+        if (req && req.session) {
+            req.session.destroy(function (err) {
+                res.redirect('/index');
+            });
+            return;
+        }
+        res.redirect('/index');
     },
 // Lecture, via GET
 list: function (req, res) {

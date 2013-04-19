@@ -20,7 +20,10 @@ angular.module('inside.services', ['ngResource']).
               success(function (data, status, headers, config) {
                   // this callback will be called asynchronously
                   // when the response is available
-                  callback(data);
+                  if (data && data != "false") {
+                      return callback(data);
+                  }
+                  callback(false);
               }).
               error(function (data, status, headers, config) {
                   // called asynchronously if an error occurs
@@ -29,7 +32,20 @@ angular.module('inside.services', ['ngResource']).
               });
           },
           logout: function (callback) {
-              
+              $http({
+                  method: 'POST',
+                  url: '/logout'
+              }).
+              success(function (data, status, headers, config) {
+                  // this callback will be called asynchronously
+                  // when the response is available
+                  callback(data);
+              }).
+              error(function (data, status, headers, config) {
+                  // called asynchronously if an error occurs
+                  // or server returns response with an error status.
+                  callback(data);
+              });
           }
       };
   }).

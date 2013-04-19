@@ -63,18 +63,18 @@ app.configure(function(){
     app.use(express.static(__dirname + '/public', { maxAge: 0 }));
     //app.use(assetManager(routes.files));
     // Allow parsing cookies from request headers
-    this.use(express.cookieParser("psy, come on guy !!!"));
+    this.use(express.cookieParser("inside consulting, come on guy !!!"));
     // Session management
     // Internal session data storage engine, this is the default engine embedded with connect.
     // Much more can be found as external modules (Redis, Mongo, Mysql, file...). look at "npm search connect session store"
     this.sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 });
     //this.sessionStore = new MongoStore({url: config.getConnectionString()});
 
-    /*app.use(express.session({
-        secret : "psy, come on guy !!!",
+    app.use(express.session({
+        secret : "inside consulting, come on guy !!!",
         maxAge : new Date(Date.now() + 3600000), //1 Hour
         store  : this.sessionStore
-    }));*/
+    }));
 
     app.use(express.bodyParser({uploadDir: __dirname}));
     app.use(express.methodOverride());
@@ -103,25 +103,33 @@ function minFile(req, res, next) {
 
 /** Middleware for limited access */
 function requireLogin(req, res, next) {
-    next();
-    return;
     if (req.session.username) {
         // User is authenticated, let him in
         next();
     } else {
         // Otherwise, we redirect him to login form
-        res.redirect("/login");
+        res.redirect("/index");
+    }
+}
+
+function dataLogin(req, res, next) {
+    if (req.session.username) {
+        // User is authenticated, let him in
+        next();
+    } else {
+        // Otherwise, we redirect him to login form
+        res.send({error: "Il faut être connecté !"});
     }
 }
 
 function cleanLogin(req, res, next) {
     if (req && req.session) {
         req.session.destroy(function(err){
-            next(err);
+            res.redirect('/index');
         });
     }
     else{
-        next();
+        res.redirect('/index');
     }
 }
 
@@ -132,31 +140,33 @@ function cleanLogin(req, res, next) {
 /** Home page (requires authentication) */
 
 app.get('/', routes.index);
+app.get('/index', routes.index);
 app.get('/partials/:name', routes.partials);
 
-
+app.get('/logout', routes.users.logout);
 
 
  
 // Lecture, via GET
-app.get('/data-users', routes.users.list);
+app.get('/data-users', [dataLogin], routes.users.list);
  
-app.get('/data-users/:id', routes.users.get);
+app.get('/data-users/:id', [dataLogin], routes.users.get);
  
 // Mise à jour via POST
 //app.post('/data-users/:id', routes.users.update);
  
 // Ajout via POST
-app.post('/data-users/:id', routes.users.save);
-app.post('/data-users', routes.users.save);
+app.post('/data-users/:id', [dataLogin], routes.users.save);
+app.post('/data-users', [dataLogin], routes.users.save);
 
 app.post('/login', routes.users.login);
 
+
 // Suppression via POST
-app.delete('/data-users/:id', routes.users.remove);
+app.delete('/data-users/:id', [dataLogin], routes.users.remove);
 
 // redirect all others to the index (HTML5 history)
-app.get('*', routes.index);
+app.get('*', [requireLogin], routes.index);
 
 if (!module.parent) {
     app.listen(PORT);

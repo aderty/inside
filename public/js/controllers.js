@@ -8,18 +8,23 @@ app.run(["$rootScope", function($rootScope) {
         index: "Accueil",
         users: "Gestion des utilisateurs"
     }
+    $rootScope.connected = window.connected ? true : false;
+    $rootScope.username = window.prenom;
 }]);
 
 // Contrôleur de la navigation de l'application
 function appController($scope, $routeParams, $rootScope) {
     var id = location.pathname;
     $rootScope.page = $rootScope.pages[id.substring(1)];
-    $rootScope.connected = false;
 }
 
 // Contrôleur de la barre de navigation
-function NavBar($scope, $rootScope) {
-
+function NavBar($scope, $rootScope, LoginService) {
+    $scope.logout = function (user) {
+        LoginService.logout(function (err, ret) {
+            $rootScope.connected = false;
+        });
+    }
 }
 
 // Contrôleur de login
@@ -38,7 +43,7 @@ function LoginController($scope, $rootScope, LoginService) {
             return;
         }
         LoginService.login(user.email, user.pwd, function (response) {
-            if (!response || response == "false") {
+            if (!response) {
                 $scope.user = {};
                 $scope.login.$setPristine();
                 $rootScope.connected = false;
@@ -46,6 +51,7 @@ function LoginController($scope, $rootScope, LoginService) {
                 return;
             }
             $rootScope.connected = true;
+            $rootScope.username = response.prenom;
         });
     }
 }
