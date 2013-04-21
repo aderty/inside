@@ -1,4 +1,5 @@
-﻿<div class="container-fluid">
+﻿<div class="background"></div>
+<div class="container-fluid">
     <div class="row-fluid">
     <div class="span12">
         </div>
@@ -7,7 +8,7 @@
     <div class="span12" ng-controller="LoginController">
         <!--Sidebar content-->
         <!--Formulaire login--> 
-        <form id="login" name="login" class="form-horizontal well" novalidate>
+        <form id="login" name="login" class="form-horizontal well" ui-keypress="{'enter':'connect(user)'}" novalidate>
             <div class="row-fluid">
                 <div class="span12">
                     <h3>Connectez-vous !</h3>
@@ -22,7 +23,7 @@
           <div class="control-group">
             <label class="control-label" for="email">Email</label>
             <div class="controls">
-              <input type="email" id="email" name="email" ng-model="user.email" required placeholder="test@exemple.fr">
+              <input type="email" id="email" name="email" ng-model="user.email" required placeholder="test@exemple.fr" />
               <div class="input-help">
                   <h4>Vous devez renseigner un email.</h4>
                </div>
@@ -32,7 +33,7 @@
           <div class="control-group">
             <label class="control-label" for="password">Password</label>
             <div class="controls password">
-              <input type="password" id="password" name="password" ng-model="user.pwd" required placeholder="Password">
+              <input type="password" id="password" name="password" ng-model="user.pwd" required placeholder="Password" />
               <div class="input-help">
                   <h4>Vous devez renseigner un mot de passe.</h4>
                </div>
@@ -42,7 +43,7 @@
           <div class="control-group">
             <div class="controls check">
               <label class="checkbox">
-                <input type="checkbox" checked="checked"> Rester connecté
+                <input type="checkbox" name="keep" id="keep" ng-model="user.keep" checked="checked" /> Rester connecté
               </label>
             </div>
           </div>

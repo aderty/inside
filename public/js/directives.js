@@ -34,13 +34,17 @@ directive('appVersion', ['version', function (version) {
 // authenticate
 .directive('authenticate', function () {
     return {
-        link: function (scope, elm, attrs, ctrl, $rootScope) {
-
-            if (!scope.$root.connected) {
+        link: function (scope, elm, attrs, ctrl) {
+            var role = 1;
+            if (attrs.authenticate != "") {
+                var role = parseInt(attrs.authenticate);
+            }
+            if (!scope.$root.role < role) {
                 elm.addClass("masquer");
             }
-            scope.$root.$watch('connected', function (newValue, oldValue) {
-                elm[newValue ? 'removeClass' : 'addClass']("masquer");
+
+            scope.$root.$watch('role', function (newValue, oldValue) {
+                elm[newValue >= role ? 'removeClass' : 'addClass']("masquer");
             }, true);
         }
     };

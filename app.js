@@ -5,7 +5,7 @@
  */
 var config = {
     env: {
-        PORT: 14800
+        PORT: 1480
     },
     db: {
         db: '',
@@ -101,6 +101,17 @@ function minFile(req, res, next) {
     next();
 }
 
+
+function cookieKeep(req, res, next){
+    if(req.signedCookies._id && !req.session.username){
+        var cookie = req.signedCookies._id;
+        req.session.username = cookie.username;
+        req.session.role = cookie.role;
+        req.session.prenom = cookie.prenom;
+    }
+    next();
+}
+
 /** Middleware for limited access */
 function requireLogin(req, res, next) {
     if (req.session.username) {
@@ -139,8 +150,8 @@ function cleanLogin(req, res, next) {
 //app.get("/rdvmap.manifest", routes.manifest);
 /** Home page (requires authentication) */
 
-app.get('/', routes.index);
-app.get('/index', routes.index);
+app.get('/', [cookieKeep], routes.index);
+app.get('/index', [cookieKeep], routes.index);
 app.get('/partials/:name', routes.partials);
 
 app.get('/logout', routes.users.logout);

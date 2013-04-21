@@ -2,8 +2,11 @@
 
 <link rel="stylesheet" href="/css/main.css" />
 <script>
-    var connected = <%=connected %>,
-    prenom = "<%=prenom %>";
+    var config = {
+        connected : <%=connected %>,
+        role : <%=role || 0%>,
+        prenom : "<%=prenom || ''%>"
+    }
 </script> 
 
 <div class="container-fluid" ng-controller="NavBar">
@@ -20,20 +23,23 @@
                   
                   <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
-                      <li authenticate ng-class="{true:'active', false:''}[page == pages.users]"><a href="/users"><i class="icon-user"></i> Utilisateurs</a></li>
+                      <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon-user"></i> Utilisateurs</a></li>
                       <li authenticate><a href="#"><i class="icon-tasks"></i> Activité</a></li>
-                      <li authenticate><a href="#"><i class="icon-globe"></i> Congès</a></li>
+                      <li authenticate><a href="#"><i class="icon-globe"></i> Congés</a></li>
                     </ul>
                     <ul class="nav pull-right">
+                        <form class="navbar-search pull-left" ng-class="{masquer: !searcher}" action="">
+                          <input id="search" name="search" type="text" class="search-query span15" ui-event="{keyup: 'search(search)'}" placeholder="Rechercher...">
+                        </form>
                       <li authenticate><a href="#">Bienvenu {{username}}</a></li>
                       <li class="divider-vertical"></li>
                       <li class="dropdown">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Outil <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
-                              <li ng-class="{true:'masquer', false:''}[page == pages.index]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
+                              <li ng-class="{true:'masquer', false:''}[page == pages.index.name]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
                               <li class="divider"></li>
                               <li class="nav-header">Mon compte</li>
-                              <li authenticate><a href="/logout">Déconnection</a></li>
+                              <li authenticate><a href="/logout">Se déconnecter</a></li>
                             </ul>
                       </li>
                     </ul>
@@ -46,6 +52,7 @@
 </div>
 
 <div ng-view></div>
+
 
 <% include scripts.html %>
 

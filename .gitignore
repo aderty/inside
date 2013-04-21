@@ -2,6 +2,7 @@
 bin/
 obj/
 My Project/
+sql/
 *.json
 !package.json
 *.sln
@@ -12,5 +13,3 @@ My Project/
 *.bat
 *.rdb
 UpgradeLog.XML
-store/match/
-store/player/

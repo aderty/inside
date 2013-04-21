@@ -8,13 +8,14 @@ angular.module('inside.services', ['ngResource']).
   value('version', '0.1').
   factory('LoginService', function ($resource, $http) {
       return {
-          login: function (email, pwd, callback) {
+          login: function (email, pwd, options, callback) {
               $http({
                   method: 'POST',
                   url: '/login',
                   data: {
                       email: email,
-                      pwd: pwd
+                      pwd: pwd,
+                      options: options
                   }
               }).
               success(function (data, status, headers, config) {

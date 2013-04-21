@@ -9,12 +9,13 @@ var fs = require('fs')
 // avons besoin des informations contenues dans le fichier pour configurer
 // notre client.
 var config = {
-    "user": "root",
-    "password": "k0ceCOnw",
+    "user": "inside",
+    "password": "insIde_01",
     "database": "inside",
     "host": "localhost",
     "port": 3306
-};//JSON.parse(fs.readFileSync('./mysql-config.json'));
+};
+//JSON.parse(fs.readFileSync('./mysql-config.json'));
 
 // On initialise un nouveau client qui exécutera nos requêtes, en lui passant
 // l'objet config précédemment initialisé.
@@ -23,7 +24,12 @@ var client = mysql.createConnection(config);
 // On se connecte à la base de données. Un programme node.js ne possède qu'un
 // seul thread d'exécution, nous n'avons donc pas besoin de nous inquiéter
 // des problèmes de concurrence.
-client.connect();
+client.connect(function (err) {
+    // connected! (unless `err` is set)
+    if (err) {
+        console.log(err);
+    }
+});
 
 // Nous déclarons quelques fonctions utilitaires
 function hashToClause(hash, separator) {
@@ -92,8 +98,6 @@ function update(table, where, values, callback) {
     var q = 'UPDATE ' + table + ' SET ' + valuesClause.clause + ' WHERE ' +
         whereClause.clause + ';';
     var inputs = valuesClause.values.concat(whereClause.values);
-    console.log(q);
-    console.log(inputs);
     client.query(q, inputs, callback);
 }
 

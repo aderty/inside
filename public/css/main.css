@@ -1,3 +1,19 @@
+.background {
+        background: transparent url('/img/bg.jpg') center center no-repeat;
+        height:80%;
+        width: 100%;
+        position: absolute;
+        /*background-size:cover;*/
+        opacity:0.8;
+        z-index: -1;
+}
+.light {
+    opacity:0.2;
+}
+.well {
+    background-color: rgba(245,245,245,0.7);
+}
+
 .gridStyle {
     border: 1px solid rgb(212,212,212);
     width: 100%; 
@@ -10,6 +26,11 @@
 .nav>li>a.masquer {
     display: none;
 }
+
+.nav #search {
+    line-height: 16px;
+}
+
 #login {
     width: 500px;
     left: 50%;
@@ -35,10 +56,19 @@
 }
 
 /* Afficher DDL grid */
-.ngCell.col0
+.ngCell.col0,
+.ngCell.col1
 {
 	overflow: inherit;
 	padding-left: 10px;
+}
+
+.ngCell.col0 > a,
+.ngCell.col1 > a
+{
+    margin-top: 7px;
+    margin-right: 4px;
+    float: left;
 }
 
 ul.actionEdit

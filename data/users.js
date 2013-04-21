@@ -12,7 +12,7 @@ var donnees = [
 ];
 
 function checkUser(user) {
-    if (user && user.id != "" && user.nom != "" && user.prenom != "" && user.email != "") {
+    if (user && user.nom != "" && user.prenom != "" && user.email != "") {
         return true;
     }
     return false;
@@ -35,7 +35,7 @@ var data = {
         db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '"', function (error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
-                return;
+                return fn("Erreur lors de la tentative de login.");
             }
             if (ret && ret.length == 1) {
                 return fn(null, cleanUsers(ret[0]));
@@ -46,14 +46,14 @@ var data = {
     // Lecture, via GET
     listUsers: function (fn) {
         db.findAll("users", function (err, ret) {
-            if (err) fn("Erreur lors de la récupération des utilisateurs.");
+            if (err) return fn("Erreur lors de la récupération des utilisateurs.");
             fn(null, cleanUsers(ret));
         });
     },
 
     getUser: function (id, fn) {
         db.find("users", id, function (err, ret) {
-            if (err) fn("Erreur lors de la récupération de l'utilisateur " + id);
+            if (err) return fn("Erreur lors de la récupération de l'utilisateur " + id);
             fn(null, cleanUsers(ret));
         });
     },
@@ -63,7 +63,25 @@ var data = {
         if (!checkUser(user)) {
             return fn("Utilisateur invalide");
         }
-        db.find("users", user.id, function (err, ret1) {
+        console.log("save");
+        if (user.pwd) {
+            // Chiffrage du pass en sha1
+            user.pwd = crypto.createHash('sha1').update(user.pwd).digest("hex");
+        }
+        if (user.create) {
+            // Suppression du flag
+            delete user.create;
+            db.insert("users", user, function (err, ret) {
+                if (err) return fn("Erreur lors de l'insertion de l'utilisateur " + user.nom);
+                fn(null, { id: ret.insertId });
+            });
+            return;
+        }
+        db.updateById("users", user.id, user, function (err, ret) {
+            if (err) return fn("Erreur lors de la modification de l'utilisateur " + user.id);
+            fn(null, cleanUsers(ret));
+        });
+        /*db.find("users", user.id, function (err, ret1) {
             if (err) fn("Erreur lors de la récupération de l'utilisateur " + user.id);
             if (ret1 && ret1.length > 0) {
                 db.updateById("users", user.id, user, function (err, ret) {
@@ -72,15 +90,8 @@ var data = {
                 });
                 return;
             }
-            // Chiffrage du pass en sha1
-            var hash = crypto.createHash('sha1').update(user.pwd).digest("hex");
-            user.pwd = hash;
-            db.insert("users", user, function (err, ret) {
-                if (err) fn("Erreur lors de l'insertion de l'utilisateur " + user.id);
-                fn(null, cleanUsers(ret));
-            });
-            
-        });
+            fn("Erreur lors de la récupération de l'utilisateur " + user.id);
+        });*/
     },
 
     removeUser: function (id, fn) {

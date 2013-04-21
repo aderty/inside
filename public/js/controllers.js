@@ -5,17 +5,26 @@
 // Config par défaut
 app.run(["$rootScope", function($rootScope) {
     $rootScope.pages = {
-        index: "Accueil",
-        users: "Gestion des utilisateurs"
+        index: { 
+            name: "Accueil",
+            searcher: false
+        },
+        users: { 
+            name: "Gestion des utilisateurs",
+            searcher: "users"
+        }
     }
-    $rootScope.connected = window.connected ? true : false;
-    $rootScope.username = window.prenom;
+    $rootScope.connected = window.config.connected ? true : false;
+    $rootScope.role = window.config.role;
+    $rootScope.username = window.config.prenom;
+    $rootScope.searcher = false;
 }]);
 
 // Contrôleur de la navigation de l'application
 function appController($scope, $routeParams, $rootScope) {
     var id = location.pathname;
-    $rootScope.page = $rootScope.pages[id.substring(1)];
+    $rootScope.page = $rootScope.pages[id.substring(1)].name;
+    $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
 }
 
 // Contrôleur de la barre de navigation
@@ -23,6 +32,12 @@ function NavBar($scope, $rootScope, LoginService) {
     $scope.logout = function (user) {
         LoginService.logout(function (err, ret) {
             $rootScope.connected = false;
+        });
+    }
+    $scope.search = function () {
+        $rootScope.$broadcast("search", {
+            searcher: $rootScope.searcher,
+            search: search.value
         });
     }
 }
@@ -42,7 +57,7 @@ function LoginController($scope, $rootScope, LoginService) {
         if ($scope.login.$invalid) {
             return;
         }
-        LoginService.login(user.email, user.pwd, function (response) {
+        LoginService.login(user.email, user.pwd, { keep: user.keep }, function (response) {
             if (!response) {
                 $scope.user = {};
                 $scope.login.$setPristine();
@@ -52,6 +67,7 @@ function LoginController($scope, $rootScope, LoginService) {
             }
             $rootScope.connected = true;
             $rootScope.username = response.prenom;
+            $rootScope.role = response.role;
         });
     }
 }
@@ -62,7 +78,8 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
     $scope.mode = "";
     $scope.lblMode = "";
     $scope.currentUserSaved = null;
-    $scope.create = function() {
+    $scope.create = function () {
+        $scope.error = null;
         $scope.editUser.$setPristine();
         document.getElementById('password').value = "";
         document.getElementById('confirm_password').value = "";
@@ -77,12 +94,14 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         $scope.lblMode = "Création d'un nouvel utilisateur";
     }
 
-    $scope.cancel = function() {
+    $scope.cancel = function () {
+        $scope.error = null;
         $scope.edition = 0;
         $.extend($scope.currentUser, $scope.currentUserSaved);
     }
 
-    $scope.edit = function(row) {
+    $scope.edit = function (row) {
+        $scope.error = null;
         $scope.currentUser = row.entity;
         $scope.editUser.$setPristine();
         $scope.currentUserSaved = angular.copy($scope.currentUser);
@@ -92,7 +111,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
     }
 
     $scope.delete = function(row) {
-        var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûre de le supprimer ?', [{label:'Oui', result: 'yes'},{label:'Non', result: 'no'}]);
+        var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûr de supprimer ' + row.entity.prenom + ' ' + row.entity.nom + '?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
         msgbox.open().then(function(result){
             if (result === 'yes') {
                 UsersService.remove(row.entity, function (err) {
@@ -112,7 +131,16 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
     $scope.save = function (currentUser) {
         var user = angular.copy(currentUser);
         delete user.pwdtest;
-        UsersService.save(user, function (err) {
+        if ($scope.edition == 1) {
+            // Création -> Flag création
+            user.create = true;
+        }
+        UsersService.save(user, function (reponse) {
+            if (reponse.error) {
+                $scope.error = reponse.error;
+                return;
+            }
+            $scope.error = null;
             $scope.edition = 0;
             var index = $rootScope.users.indexOf(currentUser);
             if (index == -1) {
@@ -126,6 +154,17 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
 
 // Contrôleur de la grille des utilisateurs
 function UsersGrid($scope, $rootScope, UsersService) {
+
+    $scope.filterOptions = {
+        filterText: "",
+        useExternalFilter: false
+    };
+
+    $scope.$on('search', function (event, data) {
+        if (data.searcher == "users") {
+            $scope.filterOptions.filterText = data.search;
+        }
+    });
 
     $scope.pagingOptions = {
         pageSizes: [25, 50, 100],
@@ -142,27 +181,30 @@ function UsersGrid($scope, $rootScope, UsersService) {
         }
     });
 
+    
+
 
 
     $scope.gridOptions = {
         data: 'users',
         columnDefs: [
-            { field: '', cellTemplate: $.trim($('#actionRowTmpl').html()) },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35 },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35 },
             { field: 'id', displayName: 'Matricule' },
             { field: 'nom', displayName: 'Nom' },
             { field: 'prenom', displayName: 'Prénom' },
-            { field: 'age', displayName: 'Age' },
+            { field: 'role', displayName: 'role' },
             { field: 'cp', displayName: 'CP' },
             { field: 'cp_acc', displayName: 'CP Aquis' },
             { field: 'rtt', displayName: 'RTT' }
         ],
-        enablePaging: true,
-        showFooter: true,
+        enablePaging: false,
+        showFooter: false,
         enableRowSelection: false,
         enableColumnResize: true,
-        showColumnMenu: true,
-        showFilter: true,
-        pagingOptions: $scope.pagingOptions/*,
-        filterOptions: $scope.filterOptions*/
+        showColumnMenu: false,
+        showFilter: false,
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions
     };
 };
