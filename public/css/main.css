@@ -56,19 +56,23 @@
 }
 
 /* Afficher DDL grid */
-.ngCell.col0,
-.ngCell.col1
+.ngCell.colt7,
+.ngCell.colt8
 {
 	overflow: inherit;
 	padding-left: 10px;
 }
 
-.ngCell.col0 > a,
-.ngCell.col1 > a
+.ngCell.colt7 > a,
+.ngCell.colt8 > a
 {
     margin-top: 7px;
     margin-right: 4px;
     float: left;
+}
+
+#usersGrid .ngCell.colt8 {
+    width: 25px;
 }
 
 ul.actionEdit
@@ -112,15 +116,23 @@ ul.actionEdit
 }
  
  /* Always hide the input help when it's pristine */
+select.ng-invalid + .input-help,
 input.ng-invalid + .input-help {
   display: block;
 }
 /* Always hide the input help when it's pristine */
+select.ng-pristine + .input-help,
 input.ng-pristine + .input-help {
   display: none;
 }
  
 /* Hide the invalid box while the input has focus */
 .ng-invalid:focus + .input-help {
-  display: none;
+  /*display: none;*/
+}
+
+/* Civilité*/
+
+#inputCivilite {
+    width: 206px;
 }

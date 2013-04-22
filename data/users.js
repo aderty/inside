@@ -63,7 +63,6 @@ var data = {
         if (!checkUser(user)) {
             return fn("Utilisateur invalide");
         }
-        console.log("save");
         if (user.pwd) {
             // Chiffrage du pass en sha1
             user.pwd = crypto.createHash('sha1').update(user.pwd).digest("hex");
@@ -72,13 +71,27 @@ var data = {
             // Suppression du flag
             delete user.create;
             db.insert("users", user, function (err, ret) {
-                if (err) return fn("Erreur lors de l'insertion de l'utilisateur " + user.nom);
+                if (err) {
+                    if (err.code && err.code == "ER_DUP_ENTRY") {
+                        return fn("Matricule déjà attribué !");
+                    }
+                    return fn("Erreur lors de l'insertion de l'utilisateur " + user.nom);
+                }
                 fn(null, { id: ret.insertId });
             });
             return;
         }
-        db.updateById("users", user.id, user, function (err, ret) {
-            if (err) return fn("Erreur lors de la modification de l'utilisateur " + user.id);
+        var id = user.lastId || user.id;
+        if (user.lastId) {
+            delete user.lastId;
+        }
+        db.updateById("users", id, user, function (err, ret) {
+            if (err) {
+                if (err.code && err.code == "ER_DUP_ENTRY") {
+                    return fn("Matricule déjà attribué !");
+                }
+                return fn("Erreur lors de la modification de l'utilisateur " + user.id);
+            }
             fn(null, cleanUsers(ret));
         });
         /*db.find("users", user.id, function (err, ret1) {

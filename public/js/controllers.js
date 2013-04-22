@@ -135,6 +135,12 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
             // Création -> Flag création
             user.create = true;
         }
+        else {
+            // Modif de matricule
+            if (user.id != $scope.currentUserSaved.id) {
+                user.lastId = $scope.currentUserSaved.id;
+            }
+        }
         UsersService.save(user, function (reponse) {
             if (reponse.error) {
                 $scope.error = reponse.error;
@@ -188,15 +194,15 @@ function UsersGrid($scope, $rootScope, UsersService) {
     $scope.gridOptions = {
         data: 'users',
         columnDefs: [
-            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35 },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35 },
             { field: 'id', displayName: 'Matricule' },
             { field: 'nom', displayName: 'Nom' },
             { field: 'prenom', displayName: 'Prénom' },
-            { field: 'role', displayName: 'role' },
+            { field: 'role', displayName: 'Rôle', cellFilter: "role" },
             { field: 'cp', displayName: 'CP' },
             { field: 'cp_acc', displayName: 'CP Aquis' },
-            { field: 'rtt', displayName: 'RTT' }
+            { field: 'rtt', displayName: 'RTT' },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35 },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35 }
         ],
         enablePaging: false,
         showFooter: false,

@@ -1,4 +1,4 @@
-﻿var app = angular.module('inside', ['inside.directives', 'inside.services', 'ngGrid', 'ui.bootstrap', 'ui'])
+﻿var app = angular.module('inside', ['inside.directives', 'inside.filters', 'inside.services', 'ngGrid', 'ui.bootstrap', 'ui'])
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $routeProvider
         .when('/index', {

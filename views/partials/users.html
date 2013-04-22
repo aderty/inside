@@ -4,7 +4,7 @@
     <div class="span6" ng-controller="UsersGrid">
         <!--Sidebar content-->
          <!--Grilles des utilisateurs--> 
-        <div class="gridStyle" ng-grid="gridOptions"></div>
+        <div id="usersGrid" class="gridStyle" ng-grid="gridOptions"></div>
     </div>
     <div class="span6">
          <!--Body content--> 
@@ -15,8 +15,8 @@
                 <div class="alert alert-block alert-info" ng-class="{masquer: edition != 1}"><h4>{{lblMode}}</h4></div>
                 <div class="alert alert-block alert-warning" ng-class="{masquer: edition != 2}"><h4>{{lblMode}} {{currentUser.nom}} {{currentUser.prenom}}</h4></div>
                 <!--Fin Titre zone modification utilisateurs--> 
-            </div>
-        </div>
+            </div><!-- <div class="span12">-->
+        </div><!-- <div class="row">-->
         <!--Row edit--> 
         <div class="row">
             <div class="span12">
@@ -26,7 +26,7 @@
            <div class="control-group" ng-class="{error: editUser.inputMatricule.$dirty && editUser.inputMatricule.$invalid, success:editUser.inputMatricule.$dirty && !editUser.inputMatricule.$invalid}">
             <label class="control-label" for="inputMatricule">Matricule</label>
             <div class="controls">
-              <input type="number" min="1" step="1" id="inputMatricule" name="inputMatricule" ng-disabled="mode == 'Edition'" ng-model="currentUser.id" required placeholder="Matricule">
+              <input type="number" min="1" step="1" id="inputMatricule" name="inputMatricule" ng-model="currentUser.id" required placeholder="Matricule">
               <div class="input-help">
                   <h4>Vous devez renseigner un numéro de matricule.</h4>
                </div>
@@ -50,6 +50,20 @@
               <div class="input-help">
                   <h4>Vous devez renseigner un prénom.</h4>
                </div>
+            </div>
+          </div>
+            <!--Saisie civilité-->
+          <div class="control-group" ng-class="{error: editUser.inputCivilite.$dirty && editUser.inputCivilite.$invalid, success:editUser.inputCivilite.$dirty && !editUser.inputCivilite.$invalid}">
+            <label class="control-label" for="inputCivilite">Civilité</label>
+            <div class="controls">
+                <select id="inputCivilite" name="inputCivilite" required ng-model="currentUser.civilite">
+                          <option selected="selected" value="">Choisissez une civilité</option>
+                          <option selected="selected" value="H">Homme</option>
+                          <option value="F">Femme</option>
+                </select>
+                <div class="input-help">
+                     <h4>Vous devez attribuer une civilité.</h4>
+                </div>
             </div>
           </div>
           <!--Saisie date de naissance-->
@@ -145,12 +159,12 @@
             </div>
         </form>
         <!--Fin Formulaire modification utilisateurs-->
-                </div>
-        </div>
+                </div><!--<div class="span12">-->
+        </div><!--<div class="row">-->
         <!--Fin Row edit--> 
-    </div>
-  </div>
-</div>
+    </div><!--<div class="span6">-->
+  </div><!--<div class="row-fluid">-->
+</div><!--<div class="container-fluid">-->
 <!--Template de la colonne d'action de la grille-->
 <script type="text/x-handlebars-template" id="actionRowTmpl">
     <div class="btn-group">
