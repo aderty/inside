@@ -14,6 +14,11 @@ app.run(["$rootScope", function($rootScope) {
             searcher: "users"
         }
     }
+    $rootScope.roles = [
+        { id: 1, libelle: 'Consultant' },
+        { id: 2, libelle: 'RH' },
+        { id: 3, libelle: 'Admin' }
+    ]
     $rootScope.connected = window.config.connected ? true : false;
     $rootScope.role = window.config.role;
     $rootScope.username = window.config.prenom;
@@ -74,6 +79,9 @@ function LoginController($scope, $rootScope, LoginService) {
 
 // Contrôleur principal de la gestion des utilisateurs
 function UsersMain($scope, $rootScope, $dialog, UsersService) {
+    if (!$rootScope.nextId) {
+        $rootScope.nextId = max;
+    }
     $scope.edition = 0;
     $scope.mode = "";
     $scope.lblMode = "";
@@ -84,6 +92,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         document.getElementById('password').value = "";
         document.getElementById('confirm_password').value = "";
         $scope.currentUser = {
+            id: $rootScope.nextId,
             role: 1,
             cp: 0,
             cp_acc: 0,
@@ -134,6 +143,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         if ($scope.edition == 1) {
             // Création -> Flag création
             user.create = true;
+            $rootScope.nextId++;
         }
         else {
             // Modif de matricule
@@ -189,20 +199,20 @@ function UsersGrid($scope, $rootScope, UsersService) {
 
     
 
-
+    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
 
     $scope.gridOptions = {
         data: 'users',
         columnDefs: [
-            { field: 'id', displayName: 'Matricule' },
-            { field: 'nom', displayName: 'Nom' },
-            { field: 'prenom', displayName: 'Prénom' },
-            { field: 'role', displayName: 'Rôle', cellFilter: "role" },
-            { field: 'cp', displayName: 'CP' },
-            { field: 'cp_acc', displayName: 'CP Aquis' },
-            { field: 'rtt', displayName: 'RTT' },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35 },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35 }
+            { field: 'id', displayName: 'Matricule', width: 80, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'nom', displayName: 'Nom', headerCellTemplate: myHeaderCellTemplate },
+            { field: 'prenom', displayName: 'Prénom', headerCellTemplate: myHeaderCellTemplate },
+            { field: 'role', displayName: 'Rôle', cellFilter: "role", width: 60, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'cp', displayName: 'CP', width: 50, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'cp_acc', displayName: 'CP Aquis', width: 50, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'rtt', displayName: 'RTT', width: 50, headerCellTemplate: myHeaderCellTemplate },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35, headerCellTemplate: myHeaderCellTemplate },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35, headerCellTemplate: myHeaderCellTemplate }
         ],
         enablePaging: false,
         showFooter: false,
@@ -213,4 +223,10 @@ function UsersGrid($scope, $rootScope, UsersService) {
         pagingOptions: $scope.pagingOptions,
         filterOptions: $scope.filterOptions
     };
+
+    $scope.$on('ngGridEventColumns', function (e) {
+        setTimeout(function () {
+            $('.ngHeaderText').tooltip({ container: 'body' });
+        }, 250);
+    });
 };

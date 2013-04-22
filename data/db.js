@@ -2,7 +2,10 @@
 var mysql = require('mysql');
 
 // Module natif filesystem pour lire le fichier de configuration
-var fs = require('fs')
+var fs = require('fs');
+
+var EventEmitter = require('events').EventEmitter;
+var events = new EventEmitter();
 
 // On utilise fs.readFileSync, qui est un appel bloquant : en effet, cette
 // commande ne sera utilisée qu'une fois au chargement de ce module, et nous
@@ -27,8 +30,9 @@ var client = mysql.createConnection(config);
 client.connect(function (err) {
     // connected! (unless `err` is set)
     if (err) {
-        console.log(err);
+        return console.log(err);
     }
+    events.emit('connected', null);
 });
 
 // Nous déclarons quelques fonctions utilitaires
@@ -131,3 +135,5 @@ exports.findAll = function (table, callback) {
 exports.query = function (query, values, callback) {
     return client.query(query, values, callback);
 }
+
+exports.events = events;

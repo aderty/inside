@@ -79,3 +79,6 @@ var routes = {
     }
 };
 exports.routes = routes;
+exports.getNextId = function (fn) {
+    data.users.getNextId(fn);
+}

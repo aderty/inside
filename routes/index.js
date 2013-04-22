@@ -25,6 +25,14 @@ exports.index = function (req, res) {
 
 exports.partials = function (req, res) {
     var name = req.params.name;
+    if (name == "users.html") {
+        users.getNextId(function (err, id) {
+            res.render('partials/' + name, {
+                max: id
+            });
+        });
+        return;
+    }
     res.render('partials/' + name);
 };
 
