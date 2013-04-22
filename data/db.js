@@ -1,24 +1,12 @@
 ﻿// On utilise le module node-mysql
-var mysql = require('mysql');
+var mysql = require('mysql'),
+config = require('../config.json').db;
 
 // Module natif filesystem pour lire le fichier de configuration
 var fs = require('fs');
 
 var EventEmitter = require('events').EventEmitter;
 var events = new EventEmitter();
-
-// On utilise fs.readFileSync, qui est un appel bloquant : en effet, cette
-// commande ne sera utilisée qu'une fois au chargement de ce module, et nous
-// avons besoin des informations contenues dans le fichier pour configurer
-// notre client.
-var config = {
-    "user": "inside",
-    "password": "insIde_01",
-    "database": "inside",
-    "host": "localhost",
-    "port": 3306
-};
-//JSON.parse(fs.readFileSync('./mysql-config.json'));
 
 // On initialise un nouveau client qui exécutera nos requêtes, en lui passant
 // l'objet config précédemment initialisé.

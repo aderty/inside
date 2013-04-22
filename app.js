@@ -3,22 +3,8 @@
 /**
  * Module dependencies.
  */
-var config = {
-    env: {
-        PORT: 1480
-    },
-    db: {
-        db: '',
-        host: '',
-        port: 43997,  // optional, default: 27017
-        username: 'default', // optional
-        password: '' // optional
-    },
-    getConnectionString: function(){
-        return 'mongodb://' + config.db.username+':'+config.db.password+'@' + config.db.host+':'+config.db.port + '/' + config.db.db;
-    },
-    secret: '',
-};
+
+var config = require('./config.json');
 
 var express = require('express')
   , http = require('http')
@@ -63,7 +49,7 @@ app.configure(function(){
     app.use(express.static(__dirname + '/public', { maxAge: 0 }));
     //app.use(assetManager(routes.files));
     // Allow parsing cookies from request headers
-    this.use(express.cookieParser("inside consulting, come on guy !!!"));
+    this.use(express.cookieParser(config.secret));
     // Session management
     // Internal session data storage engine, this is the default engine embedded with connect.
     // Much more can be found as external modules (Redis, Mongo, Mysql, file...). look at "npm search connect session store"
@@ -71,7 +57,7 @@ app.configure(function(){
     //this.sessionStore = new MongoStore({url: config.getConnectionString()});
 
     app.use(express.session({
-        secret : "inside consulting, come on guy !!!",
+        secret : config.secret,
         maxAge : new Date(Date.now() + 3600000), //1 Hour
         store  : this.sessionStore
     }));
