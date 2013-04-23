@@ -75,4 +75,11 @@ angular.module('inside.services', ['ngResource']).
               })
           }
       };*/
+  }).
+  factory('CongesService', function ($resource) {
+      var CongesService = $resource('/data-conges/:id',
+             { id: '@id' }, {
+                 create: { method: 'POST', params: { creation: true } }
+             });
+      return CongesService;
   });

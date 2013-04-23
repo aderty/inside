@@ -50,7 +50,7 @@ var data = {
     getUser: function (id, fn) {
         db.find("users", id, function (err, ret) {
             if (err) return fn("Erreur lors de la récupération de l'utilisateur " + id);
-            fn(null, cleanUsers(ret));
+            fn(null, cleanUsers(ret)[0]);
         });
     },
 

@@ -1,6 +1,7 @@
 
 var path = require('path'),
-    users = require('./users');
+    users = require('./users'),
+    conges = require('./conges');
 
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");
@@ -37,3 +38,4 @@ exports.partials = function (req, res) {
 };
 
 exports.users = users.routes;
+exports.conges = conges.routes;

@@ -19,6 +19,7 @@
     width: 100%; 
     height: 85%;
 }
+
 .masquer {
     display: none;
 }
@@ -43,14 +44,17 @@
 }
 
 #login input,
+#editConges input,
 #editUser input {
     height:inherit;
 }
 #login .controls,
+#editConges .controls,
 #editUser .controls {
     position: absolute;
 }
 #login .controls.check,
+#editConges .controls.check,
 #editUser .controls.check {
     position: inherit;
 }
@@ -138,7 +142,38 @@ input.ng-pristine + .input-help {
 }
 
 .gauge {
-    width:250px; 
-    height:200px;
-    margin-left: 25px;
+    width:200px; 
+    height:160px;
+    /*margin-left: 5px;*/
+}
+
+#mainConges .congesSide>*
+{
+	margin-left: -5px;
+}
+
+#mainConges .gridStyle {
+    border: 1px solid rgb(212,212,212);
+    width: 100%; 
+    height: 50%;
+}
+
+#mainConges .ngViewport {
+    overflow-x: hidden;
+}
+
+#mainConges .col6 {
+}
+#mainConges .ngCell.col6,
+#mainConges .ngCell.col7
+{
+	overflow: inherit;
+	padding-left: 10px;
+}
+#mainConges .ngCell.col6 > a,
+#mainConges .ngCell.col7 > a
+{
+    margin-top: 7px;
+    margin-right: 4px;
+    float: left;
 }

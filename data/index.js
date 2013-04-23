@@ -8,7 +8,8 @@ var path = require('path')
   , fs = require('fs')
   , url = require('url')
   , zlib = require('zlib')
-  , users = require('./users');
+  , users = require('./users')
+  , conges = require('./conges');
   //, db = require('./db');
 
 /*var DAL = {
@@ -19,3 +20,4 @@ var path = require('path')
 exports.DAL = DAL;*/
 
 exports.users = users.data;
+exports.conges = conges.data;

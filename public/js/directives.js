@@ -3,17 +3,17 @@
 /* Directives */
 
 angular.module('inside.directives', []).
-directive('appVersion', ['version', function (version) {
-      return function (scope, elm, attrs) {
-          elm.text(version);
-      };
-  }])
+directive('appVersion', ['version', function(version) {
+    return function(scope, elm, attrs) {
+        elm.text(version);
+    };
+} ])
 // Validateur du password
-.directive('passwordValidate', function () {
+.directive('passwordValidate', function() {
     return {
         require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            ctrl.$parsers.unshift(function (viewValue) {
+        link: function(scope, elm, attrs, ctrl) {
+            ctrl.$parsers.unshift(function(viewValue) {
 
                 scope.pwdValidLength = (viewValue && viewValue.length >= 8 ? 'valid' : undefined);
                 scope.pwdHasLetter = (viewValue && /[A-z]/.test(viewValue)) ? 'valid' : undefined;
@@ -32,9 +32,9 @@ directive('appVersion', ['version', function (version) {
     };
 })
 // authenticate
-.directive('authenticate', function () {
+.directive('authenticate', function() {
     return {
-        link: function (scope, elm, attrs, ctrl) {
+        link: function(scope, elm, attrs, ctrl) {
             var role = 1;
             if (attrs.authenticate != "") {
                 var role = parseInt(attrs.authenticate);
@@ -43,13 +43,13 @@ directive('appVersion', ['version', function (version) {
                 elm.addClass("masquer");
             }
 
-            scope.$root.$watch('role', function (newValue, oldValue) {
+            scope.$root.$watch('role', function(newValue, oldValue) {
                 elm[newValue >= role ? 'removeClass' : 'addClass']("masquer");
             }, true);
         }
     };
 })
-.directive('gauge', function () {
+.directive('gauge', function() {
     return {
         restrict: 'E',
         scope: {
@@ -58,8 +58,12 @@ directive('appVersion', ['version', function (version) {
         template: '<div class="gauge"></div>',
         replace: true,
         require: 'ngModel',
-        link: function ($scope, elem, attr, ctrl) {
-            var g5 = new JustGage({
+        link: function($scope, elem, attr, ctrl) {
+            var w = elem.width();
+            var pw = elem.parent().width();
+            elem.width(pw);
+            elem.height(pw / w * elem.height());
+            var gauge = new JustGage({
                 id: elem[0].id,
                 value: $scope.model || 0,
                 min: attr.min || 0,
@@ -69,8 +73,8 @@ directive('appVersion', ['version', function (version) {
                 levelColorsGradient: false,
                 levelColors: ["#ff0000", "#f9c802", "#a9d70b"]
             });
-            $scope.$watch("model", function (newValue, oldValue) {
-                g5.refresh(newValue);
+            $scope.$watch("model", function(newValue, oldValue) {
+                gauge.refresh(newValue);
             }, true);
         }
     };

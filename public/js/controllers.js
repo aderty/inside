@@ -22,7 +22,18 @@ app.run(["$rootScope", function($rootScope) {
         { id: 1, libelle: 'Consultant' },
         { id: 2, libelle: 'RH' },
         { id: 3, libelle: 'Admin' }
-    ]
+    ];
+    $rootScope.motifsConges = [
+        { id: 'CP', libelle: 'CP' },
+        { id: 'RTT', libelle: 'RTT' },
+        { id: 'CP_ACC', libelle: 'CP Anticipé' },
+        { id: 'EX', libelle: 'Absence exceptionnelle' }
+    ];
+    $rootScope.etatsConges = [
+        { id: '1', libelle: 'En attente de validation' },
+        { id: '2', libelle: 'Validés' },
+        { id: '3', libelle: 'Refusés' }
+    ];
     $rootScope.connected = window.config.connected ? true : false;
     $rootScope.role = window.config.role;
     $rootScope.username = window.config.prenom;
@@ -235,7 +246,149 @@ function UsersGrid($scope, $rootScope, UsersService) {
     });
 };
 
-function CongesGauges($scope) {
-    $scope.cp = 22;
-    $scope.rtt = 15;
+function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
+    $scope.edition = 0;
+    $scope.mode = "";
+    $scope.lblMode = "";
+    $scope.currentConges = {};
+    $scope.currentCongesSaved = null;
+
+    var user = UsersService.get({ id: 0 }, function (retour) {
+        $scope.cp = user.cp;
+        $scope.cp_acc = user.cp_acc;
+        $scope.rtt = user.rtt;
+    });
+
+    $scope.create = function () {
+        $scope.error = null;
+        $scope.editConges.$setPristine();
+        $scope.currentConges = {};
+        $scope.edition = 1;
+        $scope.mode = "Création";
+        $scope.lblMode = "Nouvelle demande de congés";
+    }
+
+    $scope.cancel = function () {
+        $scope.error = null;
+        $scope.edition = 0;
+        $.extend($scope.currentConges, $scope.currentCongesSaved);
+    }
+
+    $scope.edit = function (row) {
+        $scope.error = null;
+        $scope.currentConges = row.entity;
+        $scope.editConges.$setPristine();
+        $scope.currentCongesSaved = angular.copy($scope.currentConges);
+        $scope.edition = 2;
+        $scope.mode = "Edition";
+        $scope.lblMode = "Modification d'une demande de congés";
+    }
+
+    $scope.delete = function(row) {
+        var msgbox = $dialog.messageBox('Suppression d\'un congés', 'Etes-vous sûr de supprimer la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+        msgbox.open().then(function(result){
+            if (result === 'yes') {
+                CongesService.remove(row.entity, function (err) {
+                    var index = $rootScope.conges.indexOf(row.entity);
+                    $rootScope.conges.splice(index, 1);
+                });
+            }
+        });
+    }
+
+    $scope.isUnchanged = function(currentConges) {
+        $scope.haschanged = angular.equals(currentConges, $scope.currentCongesSaved);
+        return 
+    };
+
+
+    $scope.save = function (currentConges) {
+        var conges = angular.copy(currentConges);
+        if ($scope.edition == 1) {
+            // Création -> Flag création
+            conges.create = true;
+        }
+        CongesService.save(conges, function (reponse) {
+            if (reponse.error) {
+                $scope.error = reponse.error;
+                return;
+            }
+            $scope.error = null;
+            $scope.edition = 0;
+            var index = $rootScope.conges.indexOf(currentConges);
+            if (index == -1) {
+                $rootScope.conges.push(currentConges);
+            }
+        });
+    }
 }
+
+function CongesGauges($scope, $rootScope) {
+    /*$scope.cp = 22;
+    $scope.cpacc = 7.25;  
+    $scope.rtt = 15;*/
+}
+
+    // Contrôleur de la grille des congés
+function CongesGrid($scope, $rootScope, CongesService) {
+
+    $scope.filterOptions = {
+        filterText: "",
+        useExternalFilter: false
+    };
+
+    $scope.$on('search', function (event, data) {
+        if (data.searcher == "users") {
+            $scope.filterOptions.filterText = data.search;
+        }
+    });
+
+    $scope.pagingOptions = {
+        pageSizes: [25, 50, 100],
+        pageSize: 50,
+        totalServerItems: 0,
+        currentPage: 1
+    };
+
+    $rootScope.conges = CongesService.query(function () {
+        // GET: /user/123/card
+        // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+        for (var i = 0, l = $rootScope.conges.length; i < l; i++) {
+            $rootScope.conges[i].creation = new Date($rootScope.conges[i].creation);
+            $rootScope.conges[i].debut = new Date($rootScope.conges[i].debut);
+            $rootScope.conges[i].fin = new Date($rootScope.conges[i].fin);
+        }
+    });
+
+    
+
+    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
+
+    $scope.gridOptionsConges = {
+        data: 'conges',
+        columnDefs: [
+            { field: 'debut', displayName: 'Date de défut', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'fin', displayName: 'Date de fin', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'duree', displayName: 'Duree', width: 60, headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'motif', displayName: 'Modif', width: 100, cellFilter: "motifConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'etat', displayName: 'Etat', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'justification', displayName: 'Justification', width: "*", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35, headerCellTemplate: myHeaderCellTemplate },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35, headerCellTemplate: myHeaderCellTemplate }
+        ],
+        enablePaging: false,
+        showFooter: false,
+        enableRowSelection: false,
+        enableColumnResize: true,
+        showColumnMenu: false,
+        showFilter: false,
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions
+    };
+
+    $scope.$on('ngGridEventColumns', function (e) {
+        setTimeout(function () {
+            $('.ngHeaderText').tooltip({ container: 'body' });
+        }, 250);
+    });
+};

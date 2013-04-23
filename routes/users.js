@@ -61,7 +61,7 @@ var routes = {
 
     get: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.users.getUser(req.params.id, dataCallback(res));
+        data.users.getUser(req.session.username, dataCallback(res));
     },
 
     // Ajout ou Mise à jour via POST

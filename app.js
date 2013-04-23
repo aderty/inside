@@ -13,7 +13,7 @@ var express = require('express')
   , path = require('path')
   , url = require('url')
   , fs = require('fs')
-  , assetManager = require('connect-assetmanager')
+  //, assetManager = require('connect-assetmanager')
   , PORT = process.env.PORT || config.env.PORT;
 
 const parseCookie = require('connect').utils.parseSignedCookies;
@@ -119,6 +119,16 @@ function dataLogin(req, res, next) {
     }
 }
 
+function dataRh(req, res, next) {
+    if (req.session.role && req.session.role > 1) {
+        // User is authenticated, let him in
+        next();
+    } else {
+        // Otherwise, we redirect him to login form
+        res.send({error: "Il faut être Rh !"});
+    }
+}
+
 function cleanLogin(req, res, next) {
     if (req && req.session) {
         req.session.destroy(function(err){
@@ -145,22 +155,34 @@ app.get('/logout', routes.users.logout);
 
  
 // Lecture, via GET
-app.get('/data-users', [dataLogin], routes.users.list);
- 
+app.get('/data-users', [dataLogin, dataRh], routes.users.list);
 app.get('/data-users/:id', [dataLogin], routes.users.get);
  
 // Mise à jour via POST
 //app.post('/data-users/:id', routes.users.update);
  
 // Ajout via POST
-app.post('/data-users/:id', [dataLogin], routes.users.save);
-app.post('/data-users', [dataLogin], routes.users.save);
-
-app.post('/login', routes.users.login);
-
+app.post('/data-users/:id', [dataLogin, dataRh], routes.users.save);
+app.post('/data-users', [dataLogin, dataRh], routes.users.save);
 
 // Suppression via POST
-app.delete('/data-users/:id', [dataLogin], routes.users.remove);
+app.delete('/data-users/:id', [dataLogin, dataRh], routes.users.remove);
+
+// Lecture, via GET
+app.get('/data-conges', [dataLogin], routes.conges.list);
+app.get('/data-conges/:id', [dataLogin], routes.conges.get);
+ 
+// Mise à jour via POST
+//app.post('/data-users/:id', routes.users.update);
+ 
+// Ajout via POST
+app.post('/data-conges/:id', [dataLogin], routes.conges.save);
+app.post('/data-conges', [dataLogin], routes.conges.save);
+
+// Suppression via POST
+app.delete('/data-conges/:id', [dataLogin], routes.conges.remove);
+
+app.post('/login', routes.users.login);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', [requireLogin], routes.index);
