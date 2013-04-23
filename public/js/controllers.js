@@ -12,6 +12,10 @@ app.run(["$rootScope", function($rootScope) {
         users: { 
             name: "Gestion des utilisateurs",
             searcher: "users"
+        },
+        conges: { 
+            name: "Gestion des congés",
+            searcher: false
         }
     }
     $rootScope.roles = [
@@ -230,3 +234,8 @@ function UsersGrid($scope, $rootScope, UsersService) {
         }, 250);
     });
 };
+
+function CongesGauges($scope) {
+    $scope.cp = 22;
+    $scope.rtt = 15;
+}

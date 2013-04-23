@@ -13,6 +13,10 @@
           templateUrl: 'partials/users.html',
           controller: appController
       })
+      .when('/conges', {
+           templateUrl: 'partials/conges.html',
+           controller: appController
+      })
       .when('/logout', {
           redirectTo: '/logout'
        })

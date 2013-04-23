@@ -48,4 +48,30 @@ directive('appVersion', ['version', function (version) {
             }, true);
         }
     };
+})
+.directive('gauge', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            model: '=ngModel'
+        },
+        template: '<div class="gauge"></div>',
+        replace: true,
+        require: 'ngModel',
+        link: function ($scope, elem, attr, ctrl) {
+            var g5 = new JustGage({
+                id: elem[0].id,
+                value: $scope.model || 0,
+                min: attr.min || 0,
+                max: attr.max || 25,
+                title: attr.title,
+                label: attr.label,
+                levelColorsGradient: false,
+                levelColors: ["#ff0000", "#f9c802", "#a9d70b"]
+            });
+            $scope.$watch("model", function (newValue, oldValue) {
+                g5.refresh(newValue);
+            }, true);
+        }
+    };
 });

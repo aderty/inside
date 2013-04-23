@@ -136,3 +136,9 @@ input.ng-pristine + .input-help {
 #inputCivilite {
     width: 206px;
 }
+
+.gauge {
+    width:250px; 
+    height:200px;
+    margin-left: 25px;
+}
