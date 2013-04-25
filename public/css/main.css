@@ -177,3 +177,54 @@ input.ng-pristine + .input-help {
     margin-right: 4px;
     float: left;
 }
+#mainConges .etatConges
+{
+	margin: 2px 0 0 5px;
+	width: 25px;
+	height: 25px;
+	float: left;
+	border: solid 1px #CCC;
+	border-radius: 20px;
+}
+#mainConges .valConges{
+	background-color: Orange;
+    background: -moz-linear-gradient(
+		top,
+		rgb(243, 211, 85) 0%,
+		rgb(187, 114, 20));
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(rgb(243, 211, 85)),
+		to(rgb(187, 114, 20)));
+}
+#mainConges .accConges{
+	background-color: Green;
+    background: -moz-linear-gradient(
+		top,
+		#bcd6ab 0%,
+		#475e3c);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#bcd6ab),
+		to(#475e3c));
+}
+#mainConges .refConges{
+	background-color: Red;
+    background: -moz-linear-gradient(
+		top,
+		#c40808 0%,
+		#96274c);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#c40808),
+		to(#96274c));
+}
+
+.typeDate
+{
+	margin-left: 400px;
+}
+.typeDate .aprem
+{
+	width: 80px;
+}

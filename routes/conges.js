@@ -17,7 +17,7 @@ var routes = {
     // Lecture, via GET
     list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.conges.listConges(req.session.username, dataCallback(res));
+        data.conges.listConges(req.session.username,false, dataCallback(res));
     },
 
     get: function(req, res) {

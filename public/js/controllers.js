@@ -29,11 +29,21 @@ app.run(["$rootScope", function($rootScope) {
         { id: 'CP_ACC', libelle: 'CP Anticipé' },
         { id: 'EX', libelle: 'Absence exceptionnelle' }
     ];
-    $rootScope.etatsConges = [
-        { id: '1', libelle: 'En attente de validation' },
-        { id: '2', libelle: 'Validés' },
-        { id: '3', libelle: 'Refusés' }
+    $rootScope.motifsCongesExcep = [
+        { id: 'SS', libelle: 'Sans solde' },
+        { id: 'DC', libelle: 'Décé' },
+        { id: 'MA', libelle: 'Mariage' }
     ];
+    $rootScope.etatsConges = [
+        { id: '1', libelle: 'En attente de validation' , cssClass: 'val'},
+        { id: '2', libelle: 'Validés' , cssClass: 'val'},
+        { id: '3', libelle: 'Refusés' , cssClass: 'val'}
+    ];
+    $rootScope.cssConges ={
+         1: 'valConges',
+         2: 'accConges',
+         3: 'refConges'
+    };
     $rootScope.connected = window.config.connected ? true : false;
     $rootScope.role = window.config.role;
     $rootScope.username = window.config.prenom;
@@ -262,7 +272,10 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.create = function () {
         $scope.error = null;
         $scope.editConges.$setPristine();
-        $scope.currentConges = {};
+        $scope.currentConges = {
+            debutType: 0,
+            finType: 1
+        };
         $scope.edition = 1;
         $scope.mode = "Création";
         $scope.lblMode = "Nouvelle demande de congés";
@@ -295,6 +308,10 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             }
         });
     }
+    
+    $scope.isEditable = function(currentConges) {
+        return moment(currentConges.creation).add('days', 1) > moment();
+    };
 
     $scope.isUnchanged = function(currentConges) {
         $scope.haschanged = angular.equals(currentConges, $scope.currentCongesSaved);
@@ -357,6 +374,9 @@ function CongesGrid($scope, $rootScope, CongesService) {
             $rootScope.conges[i].creation = new Date($rootScope.conges[i].creation);
             $rootScope.conges[i].debut = new Date($rootScope.conges[i].debut);
             $rootScope.conges[i].fin = new Date($rootScope.conges[i].fin);
+            $rootScope.conges[i].debutType = 1;
+            $rootScope.conges[i].finType = 0;
+            $rootScope.conges[i].etat = 1;
         }
     });
 
@@ -367,6 +387,7 @@ function CongesGrid($scope, $rootScope, CongesService) {
     $scope.gridOptionsConges = {
         data: 'conges',
         columnDefs: [
+            { field: '', displayName: '', width: 36, cellTemplate: '<span class="etatConges {{cssConges[row.entity.etat]}}">&nbsp;</span>', resizable: false },
             { field: 'debut', displayName: 'Date de défut', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'fin', displayName: 'Date de fin', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'duree', displayName: 'Duree', width: 60, headerCellTemplate: myHeaderCellTemplate, resizable: false },

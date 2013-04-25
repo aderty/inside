@@ -26,7 +26,14 @@ db.events.once('connected', function (result) {
 
 var data = {
     // Lecture, via GET
-    listConges: function(matricule, fn) {
+    listConges: function (matricule, past, fn) {
+        if (!past) {
+            db.query('SELECT * FROM conges WHERE user = ? AND fin > NOW();', [matricule], function (err, ret) {
+                if (err) return fn("Erreur lors de la récupération des congès.");
+                fn(null, cleanConges(ret));
+            });
+            return;
+        }
         db.read("conges", { user: matricule }, null, function(err, ret) {
             if (err) return fn("Erreur lors de la récupération des congès.");
             fn(null, cleanConges(ret));
