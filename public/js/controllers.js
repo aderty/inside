@@ -120,7 +120,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
             id: $rootScope.nextId,
             role: 1,
             cp: 0,
-            cp_acc: 0,
+            cp_ant: 0,
             rtt: 0
         };
         $scope.edition = 1;
@@ -233,8 +233,8 @@ function UsersGrid($scope, $rootScope, UsersService) {
             { field: 'nom', displayName: 'Nom', headerCellTemplate: myHeaderCellTemplate },
             { field: 'prenom', displayName: 'Prénom', headerCellTemplate: myHeaderCellTemplate },
             { field: 'role', displayName: 'Rôle', cellFilter: "role", width: 60, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'cp', displayName: 'CP', width: 50, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'cp_acc', displayName: 'CP Aquis', width: 50, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'cp', displayName: 'CP aquis', width: 50, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'cp_ant', displayName: 'CP en cours', width: 50, headerCellTemplate: myHeaderCellTemplate },
             { field: 'rtt', displayName: 'RTT', width: 50, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35, headerCellTemplate: myHeaderCellTemplate }
@@ -265,7 +265,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
 
     var user = UsersService.get({ id: 0 }, function (retour) {
         $scope.cp = user.cp;
-        $scope.cp_acc = user.cp_acc;
+        $scope.cp_ant = user.cp_ant;
         $scope.rtt = user.rtt;
     });
 
@@ -273,6 +273,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.error = null;
         $scope.editConges.$setPristine();
         $scope.currentConges = {
+            etat: 1,
             debutType: 0,
             finType: 1
         };
@@ -301,16 +302,25 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         var msgbox = $dialog.messageBox('Suppression d\'un congés', 'Etes-vous sûr de supprimer la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
         msgbox.open().then(function(result){
             if (result === 'yes') {
-                CongesService.remove(row.entity, function (err) {
+                CongesService.remove(row.entity, function (reponse) {
+                    if (reponse.error) {
+                        $scope.error = reponse.error;
+                        return;
+                    }
                     var index = $rootScope.conges.indexOf(row.entity);
                     $rootScope.conges.splice(index, 1);
+                    user = UsersService.get({ id: 0 }, function (retour) {
+                        $scope.cp = user.cp;
+                        $scope.cp_ant = user.cp_ant;
+                        $scope.rtt = user.rtt;
+                    });
                 });
             }
         });
     }
     
     $scope.isEditable = function(currentConges) {
-        return moment(currentConges.creation).add('days', 1) > moment();
+        return moment(currentConges.creation).add('days', 1) > moment() && currentConges.etat == 1;
     };
 
     $scope.isUnchanged = function(currentConges) {
@@ -321,10 +331,20 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
 
     $scope.save = function (currentConges) {
         var conges = angular.copy(currentConges);
+        delete conges.etat;
         if ($scope.edition == 1) {
             // Création -> Flag création
             conges.create = true;
         }
+        if (conges.debutType == 1) {
+            conges.debut.setHours(12);
+        }
+        delete conges.debutType;
+        conges.fin.setHours(12);
+        if (conges.finType == 1) {
+            conges.fin.setHours(18);
+        }
+        delete conges.finType;
         CongesService.save(conges, function (reponse) {
             if (reponse.error) {
                 $scope.error = reponse.error;
@@ -332,10 +352,18 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             }
             $scope.error = null;
             $scope.edition = 0;
+            currentConges.id = reponse.id;
+            currentConges.duree = reponse.duree;
             var index = $rootScope.conges.indexOf(currentConges);
             if (index == -1) {
+
                 $rootScope.conges.push(currentConges);
             }
+            user = UsersService.get({ id: 0 }, function (retour) {
+                $scope.cp = user.cp;
+                $scope.cp_ant = user.cp_ant;
+                $scope.rtt = user.rtt;
+            });
         });
     }
 }
@@ -374,8 +402,8 @@ function CongesGrid($scope, $rootScope, CongesService) {
             $rootScope.conges[i].creation = new Date($rootScope.conges[i].creation);
             $rootScope.conges[i].debut = new Date($rootScope.conges[i].debut);
             $rootScope.conges[i].fin = new Date($rootScope.conges[i].fin);
-            $rootScope.conges[i].debutType = 1;
-            $rootScope.conges[i].finType = 0;
+            $rootScope.conges[i].debutType = $rootScope.conges[i].debut.getHours() == 12 ? 1 : 0;
+            $rootScope.conges[i].finType = $rootScope.conges[i].fin.getHours() == 18 ? 1 : 0;
             $rootScope.conges[i].etat = 1;
         }
     });

@@ -113,8 +113,8 @@ exports.removeById = function (table, id, callback) {
     remove(table, { 'id': id }, callback);
 }
 
-exports.findAll = function (table, callback) {
-    read(table, null, null, callback);
+exports.findAll = function (table, where, callback) {
+    read(table, where, null, callback);
 }
 
 // Dans certains cas les méthodes CRUD simples ne suffisent pas à obtenir le

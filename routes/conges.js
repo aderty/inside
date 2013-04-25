@@ -29,12 +29,13 @@ var routes = {
     save: function (req, res) {
         var conges = req.body;
         conges.user = req.session.username;
+        conges.type = 'N';
         if (conges.create) {
             delete conges.create;
             data.conges.addConges(conges, dataCallback(res));
             return;
         }
-
+        conges.justification = conges.justification || "";
         data.conges.updateConges(conges, dataCallback(res));
     },
 

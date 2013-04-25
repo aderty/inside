@@ -5,6 +5,9 @@ shasum.update("utf8");
 
 function checkUser(user) {
     if (user && user.nom != "" && user.prenom != "" && user.email != "") {
+        if (user.creation) {
+            delete user.creation;
+        }
         return true;
     }
     return false;
@@ -28,7 +31,7 @@ var data = {
         // Chiffrage du pass en sha1
         var hash = crypto.createHash('sha1').update(pwd).digest("hex");
         // On test l'existance du compte
-        db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '"', function (error, ret) {
+        db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '" AND etat=1', function (error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
                 return fn("Erreur lors de la tentative de login.");
@@ -41,15 +44,21 @@ var data = {
     },
     // Lecture, via GET
     listUsers: function (fn) {
-        db.findAll("users", function (err, ret) {
-            if (err) return fn("Erreur lors de la récupération des utilisateurs.");
+        db.findAll("users", {etat: 1}, function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des utilisateurs.");
+            }
             fn(null, cleanUsers(ret));
         });
     },
 
     getUser: function (id, fn) {
         db.find("users", id, function (err, ret) {
-            if (err) return fn("Erreur lors de la récupération de l'utilisateur " + id);
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération de l'utilisateur " + id);
+            }
             fn(null, cleanUsers(ret)[0]);
         });
     },
@@ -71,6 +80,7 @@ var data = {
                     if (err.code && err.code == "ER_DUP_ENTRY") {
                         return fn("Matricule déjà attribué !");
                     }
+                    console.log('ERROR: ' + err);
                     return fn("Erreur lors de l'insertion de l'utilisateur " + user.nom);
                 }
                 fn(null, { id: ret.insertId });
@@ -86,6 +96,7 @@ var data = {
                 if (err.code && err.code == "ER_DUP_ENTRY") {
                     return fn("Matricule déjà attribué !");
                 }
+                console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification de l'utilisateur " + user.id);
             }
             fn(null, cleanUsers(ret));
@@ -107,10 +118,20 @@ var data = {
         if (!id || id == "") {
             return fn("Id d'utilisateur invalide");
         }
-        db.removeById("users", id, function (err, ret) {
+        db.query('UPDATE users SET etat=3 WHERE id="' + id + '"', function (error, ret) {
+            if (error) {
+                console.log('ERROR: ' + error);
+                return fn("Erreur lors de la tentative de login.");
+            }
+            if (ret && ret.length == 1) {
+                return fn(null, cleanUsers(ret[0]));
+            }
+            return fn(null, false);
+        });
+        /*db.removeById("users", id, function (err, ret) {
             if (err) fn("Erreur lors de la suppresion de l'utilisateur " + id);
             fn(null, true);
-        });
+        });*/
     },
     getNextId: function (fn) {
         db.query('SELECT MAX(id) + 1 AS next FROM users', function (error, ret) {
