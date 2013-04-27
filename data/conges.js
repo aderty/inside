@@ -94,6 +94,9 @@ var data = {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
+        if (!conges.id) {
+            return fn("Congés inconnu");
+        }
         db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

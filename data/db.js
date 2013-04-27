@@ -12,6 +12,26 @@ var events = new EventEmitter();
 // l'objet config précédemment initialisé.
 var client = mysql.createConnection(config);
 
+function handleDisconnect(connection) {
+    connection.on('error', function (err) {
+        if (!err.fatal) {
+            return;
+        }
+
+        if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+            throw err;
+        }
+
+        console.log('Re-connecting lost connection: ' + err.stack);
+
+        client = mysql.createConnection(config);
+        handleDisconnect(client);
+        client.connect();
+    });
+}
+
+handleDisconnect(client);
+
 // On se connecte à la base de données. Un programme node.js ne possède qu'un
 // seul thread d'exécution, nous n'avons donc pas besoin de nous inquiéter
 // des problèmes de concurrence.
