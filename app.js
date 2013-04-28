@@ -149,6 +149,8 @@ function cleanLogin(req, res, next) {
 app.get('/', [cookieKeep], routes.index);
 app.get('/index', [cookieKeep], routes.index);
 app.get('/partials/:name', routes.partials);
+app.get('/admin-partials/:name', [dataLogin, dataRh], routes.partials);
+app.get('/forms/:name', [dataLogin], routes.forms);
 
 app.get('/logout', routes.users.logout);
 
@@ -181,6 +183,25 @@ app.post('/data-conges', [dataLogin], routes.conges.save);
 
 // Suppression via POST
 app.delete('/data-conges/:id', [dataLogin], routes.conges.remove);
+
+
+
+// Lecture, via GET
+app.get('/data-admin-conges', [dataLogin, dataRh], routes.congesAdmin.list);
+app.get('/data-admin-conges/:id', [dataLogin, dataRh], routes.congesAdmin.get);
+ 
+// Mise à jour via POST
+//app.post('/data-users/:id', routes.users.update);
+ 
+// Ajout via POST
+app.post('/data-admin-conges/:id', [dataLogin, dataRh], routes.congesAdmin.save);
+app.post('/data-admin-conges', [dataLogin, dataRh], routes.congesAdmin.save);
+
+// Suppression via POST
+app.delete('/data-admin-conges/:id', [dataLogin, dataRh], routes.congesAdmin.remove);
+
+
+
 
 app.post('/login', routes.users.login);
 

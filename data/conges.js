@@ -11,6 +11,12 @@ function checkConges(conges) {
         if (conges.creation) {
             delete conges.creation;
         }
+        if (conges.nom) {
+            delete conges.nom;
+        }
+        if (conges.prenom) {
+            delete conges.prenom;
+        }
         return true;
     }
     return false;
@@ -38,6 +44,25 @@ var data = {
             return;
         }
         db.read("conges", { user: matricule }, null, function(err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des congès.");
+            }
+            fn(null, cleanConges(ret));
+        });
+    },
+    listCongesEtat: function (etat, past, fn) {
+        if (!past) {
+            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function (err, ret) {
+                if (err) {
+                    console.log('ERROR: ' + err);
+                    return fn("Erreur lors de la récupération des congès.");
+                }
+                fn(null, cleanConges(ret));
+            });
+            return;
+        }
+        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
@@ -126,6 +151,22 @@ var data = {
             }
             fn(null, cleanConges(ret));
         });*/
+    },
+    // Mise à jour via POST
+    updateEtatConges: function (conges, fn) {
+        if (!checkConges(conges)) {
+            return fn("Congés invalide");
+        }
+        if (!conges.id) {
+            return fn("Congés inconnu");
+        }
+        db.updateById("conges", conges.id, {etat: conges.etat}, function(err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la modification du congés " + conges.id);
+            }
+            fn(null, cleanConges(ret));
+        });
     },
 
     removeConges: function(id, fn) {

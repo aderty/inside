@@ -58,8 +58,10 @@ app.run(["$rootScope", function($rootScope) {
 // Contrôleur de la navigation de l'application
 function appController($scope, $routeParams, $rootScope) {
     var id = location.pathname;
-    $rootScope.page = $rootScope.pages[id.substring(1)].name;
-    $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
+    if ($rootScope.pages[id.substring(1)]) {
+        $rootScope.page = $rootScope.pages[id.substring(1)].name;
+        $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
+    }
 }
 
 // Contrôleur de la barre de navigation
@@ -387,7 +389,7 @@ function CongesGauges($scope, $rootScope) {
     $scope.rtt = 15;*/
 }
 
-    // Contrôleur de la grille des congés
+// Contrôleur de la grille des congés
 function CongesGrid($scope, $rootScope, CongesService) {
 
     $scope.filterOptions = {
@@ -454,6 +456,218 @@ function CongesGrid($scope, $rootScope, CongesService) {
     $scope.$on('ngGridEventColumns', function (e) {
         setTimeout(function () {
             $('.ngHeaderText').tooltip({ container: 'body' });
+        }, 250);
+    });
+};
+
+function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService) {
+    $scope.edition = 0;
+    $scope.mode = "";
+    $scope.lblMode = "";
+    $scope.currentConges = {};
+    $scope.currentCongesSaved = null;
+
+    $scope.accepter = function (row) {
+        $scope.currentConges = row.entity;
+        var conges = angular.copy($scope.currentConges);
+        conges.etat = 2;
+        CongesAdminService.updateEtat(conges, false).then(function (reponse) {
+            $scope.error = null;
+            $scope.currentConges.etat = 2;
+            var index = $rootScope.congesAvalider.indexOf(row.entity);
+            $rootScope.congesAvalider.splice(index, 1);
+            $rootScope.congesValider.push(row.entity);
+        }, function (error) {
+            $scope.error = error;
+            return;
+        });
+    };
+    $scope.refuser = function (row) {
+        $scope.currentConges = row.entity;
+        var conges = angular.copy($scope.currentConges);
+        conges.etat = 3;
+        CongesAdminService.updateEtat(conges, false).then(function (reponse) {
+            $scope.error = null;
+            $scope.currentConges.etat = 3;
+            var index = $rootScope.congesAvalider.indexOf(row.entity);
+            $rootScope.congesAvalider.splice(index, 1);
+
+        }, function (error) {
+            $scope.error = error;
+            return;
+        });
+    };
+
+    $scope.create = function () {
+        $scope.error = null;
+        $scope.editConges.$setPristine();
+        $scope.currentConges = {
+            etat: 1,
+            debutType: 0,
+            finType: 1
+        };
+        $scope.edition = 1;
+        $scope.mode = "Création";
+        $scope.lblMode = "Nouvelle régulation de congés";
+    }
+
+    $scope.cancel = function () {
+        $scope.error = null;
+        $scope.edition = 0;
+        $.extend($scope.currentConges, $scope.currentCongesSaved);
+    }
+
+    $scope.edit = function (row) {
+        $scope.error = null;
+        $scope.currentConges = row.entity;
+        $scope.editConges.$setPristine();
+        $scope.currentCongesSaved = angular.copy($scope.currentConges);
+        $scope.edition = 2;
+        $scope.mode = "Edition";
+        $scope.lblMode = "Modification d'une demande de congés";
+    }
+
+    $scope.delete = function (row) {
+        var msgbox = $dialog.messageBox('Suppression d\'un congés', 'Etes-vous sûr de supprimer la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+        msgbox.open().then(function (result) {
+            if (result === 'yes') {
+                CongesAdminService.remove(row.entity).then(function (reponse) {
+                    var index = $rootScope.conges.indexOf(row.entity);
+                    $rootScope.conges.splice(index, 1);
+                }, function (error) {
+                    $scope.error = error;
+                });
+            }
+        });
+    }
+
+    $scope.isEditable = function (currentConges) {
+        return true;
+    };
+
+    $scope.isUnchanged = function (currentConges) {
+        $scope.haschanged = angular.equals(currentConges, $scope.currentCongesSaved);
+        return
+    };
+
+
+    $scope.save = function (currentConges) {
+        var conges = angular.copy(currentConges);
+        CongesAdminService.save(conges, $scope.edition == 1).then(function (reponse) {
+            $scope.error = null;
+            $scope.edition = 0;
+            if (reponse.id) {
+                currentConges.id = reponse.id;
+            }
+            if (reponse.duree) {
+                currentConges.duree = reponse.duree;
+            }
+            var index = $rootScope.conges.indexOf(currentConges);
+            if (index == -1) {
+                $rootScope.conges.push(currentConges);
+            }
+        }, function (error) {
+            $scope.error = error;
+            return;
+        });
+    }
+}
+
+// Contrôleur de la grille des congés
+function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
+
+    $scope.filterOptions = {
+        filterText: "",
+        useExternalFilter: false
+    };
+
+    $scope.$on('search', function (event, data) {
+        if (data.searcher == "users") {
+            $scope.filterOptions.filterText = data.search;
+        }
+    });
+    setTimeout(function () {
+        $(".tabbable").each(function () {
+            $(this).scope().select = (function (select) {
+                return function (e) {
+                    select.apply(this, arguments);
+                    if (e.heading == "Congés en attente de validation") {
+                        $timeout(layoutPlugin1.updateGridLayout, 0);
+                    }
+                    else {
+                        $timeout(layoutPlugin2.updateGridLayout, 0);
+                    }
+                };
+            })($(this).scope().select)
+        });
+        updateLayout();
+    }, 250);
+
+    function updateLayout() {
+        layoutPlugin1.updateGridLayout();
+        layoutPlugin2.updateGridLayout();
+    };
+
+    $scope.pagingOptions = {
+        pageSizes: [25, 50, 100],
+        pageSize: 50,
+        totalServerItems: 0,
+        currentPage: 1
+    };
+
+    CongesAdminService.listValidation().then(function (conges) {
+        $rootScope.congesAvalider = conges;
+    });
+
+    CongesAdminService.listValider().then(function (conges) {
+        $rootScope.congesValider = conges;
+    });
+
+    $scope.etatOptions = {
+        type: 1
+    };
+
+
+    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
+    var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
+    var justificationCellTemplate = $.trim($('#justificationTmpl').html());
+    var validationCellTemplate = $.trim($('#validationTmpl').html());
+    var layoutPlugin1 = new ngGridLayoutPlugin();
+    var layoutPlugin2 = new ngGridLayoutPlugin();
+
+    var defauts = {
+        columnDefs: [
+            { field: 'user', displayName: 'Utilisateur', width: 85, cellTemplate: matriculeCellTemplate, resizable: false },
+            { field: 'debut', displayName: 'Date de défut', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'fin', displayName: 'Date de fin', width: 120, cellFilter: "moment:'DD/MM/YYYY h:m'", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'duree', displayName: 'Duree', width: 60, headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'motif', displayName: 'Modif', width: 100, cellFilter: "motifConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'justification', displayName: 'Justification', width: "*", headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
+            { field: '', displayName: 'Validation', width: 85, headerCellTemplate: myHeaderCellTemplate, cellTemplate: validationCellTemplate, resizable: false },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 35, headerCellTemplate: myHeaderCellTemplate },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 35, headerCellTemplate: myHeaderCellTemplate }
+        ],
+        enablePaging: false,
+        showFooter: false,
+        enableRowSelection: false,
+        enableColumnResize: true,
+        showColumnMenu: false,
+        showFilter: false,
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions
+    };
+    $scope.gridOptionsConges = angular.extend({
+        data: "congesAvalider",
+        plugins: [layoutPlugin1]
+    }, defauts);
+    $scope.gridOptionsCongesVal = angular.extend({
+        data: "congesValider",
+        plugins: [layoutPlugin2]
+    }, defauts);
+    
+    $scope.$on('ngGridEventColumns', function (e) {
+        setTimeout(function () {
+            $('.matriculeCell>span').tooltip({ container: 'body' });
         }, 250);
     });
 };

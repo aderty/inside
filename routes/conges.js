@@ -35,7 +35,6 @@ var routes = {
             data.conges.addConges(conges, dataCallback(res));
             return;
         }
-        conges.justification = conges.justification || "";
         data.conges.updateConges(conges, dataCallback(res));
     },
 
@@ -48,7 +47,39 @@ var routes = {
         data.conges.removeConges(req.params.id, dataCallback(res));
     }
 };
+
+var routesAdmin = {
+    // Lecture, via GET
+    list: function (req, res) {
+        res.header('Cache-Control', 'no-cache');
+        data.conges.listCongesEtat(req.query.etat, false, dataCallback(res));
+    },
+    get: function (req, res) {
+        res.header('Cache-Control', 'no-cache');
+        data.conges.getConges(req.params.id, dataCallback(res));
+    },
+    // Ajout ou Mise à jour via POST
+    save: function (req, res) {
+        var conges = req.body;
+        if (conges.create) {
+            delete conges.create;
+            conges.type = 'R';
+            data.conges.addConges(conges, dataCallback(res));
+            return;
+        }
+        if (req.query.etat) {
+            data.conges.updateEtatConges(conges, dataCallback(res));
+            return;
+        }
+        data.conges.updateConges(conges, dataCallback(res));
+    },
+    remove: function (req, res) {
+        data.conges.removeConges(req.params.id, dataCallback(res));
+    }
+};
+
 exports.routes = routes;
+exports.routesAdmin = routesAdmin;
 exports.getNextId = function (fn) {
     data.users.getNextId(fn);
 }

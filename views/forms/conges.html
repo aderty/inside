@@ -1,0 +1,85 @@
+﻿<form id="editConges" name="editConges" class="form-horizontal" novalidate ng-class="{masquer: edition == 0}">
+    <!--Saisie motif-->
+    <div class="control-group" ng-class="{error: editConges.inputMotif.$dirty && editConges.inputMotif.$invalid, success:editConges.inputMotif.$dirty && !editConges.inputMotif.$invalid}">
+        <label class="control-label" for="inputRole">Motif</label>
+        <div class="controls inline">
+            <select id="inputMotif" name="inputMotif" required ng-model="currentConges.motif" ng-options="motif.id as motif.libelle for motif in motifsConges">
+            </select>
+            <div class="input-help">
+                <h4>Vous devez renseigner un motif de congés.</h4>
+            </div>
+            <select ng-show="currentConges.motif == 'AE'" id="inputMotifExcep" ng-required="currentConges.motif == 'AE'" name="inputMotifExcep" ng-model="currentConges.motifExcep" ng-options="motif.id as motif.libelle for motif in motifsCongesExcep">
+                <option></option>
+            </select>
+            <div class="input-help">
+                <h4>Vous devez renseigner un motif exceptionnel de congés.</h4>
+            </div>
+        </div>
+    </div>
+    <!--Saisie date de début de congés-->
+    <div class="control-group inline" ng-class="{error: editConges.inputDateDebut.$dirty && editConges.inputDateDebut.$invalid, success:editConges.inputDateDebut.$dirty && !editConges.inputDateDebut.$invalid}">
+        <label class="control-label" for="inputDateDebut">Date de début</label>
+        <div class="controls">
+            <input type="datetime" ng-model="currentConges.debut" required id="inputDateDebut" name="inputDateDebut" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '0:+1Y', minDate: '0'}" placeholder="">
+            <div class="input-help">
+                <h4>Vous devez renseigner une date de début de congés.</h4>
+            </div>
+        </div>
+        <div ng-show="!editConges.inputDateDebut.$invalid" class="typeDate">
+            <label class="radio inline">
+                <input type="radio" ng-model="currentConges.debutType" checked="checked" id="inputMatinDebut" name="inputTypeDebut" value="0" />Matin
+               
+            </label>
+            <label class="radio inline aprem">
+                <input type="radio" ng-model="currentConges.debutType" required id="inputApremDebut" name="inputTypeDebut" value="1" />Après-midi
+             
+            </label>
+        </div>
+    </div>
+    <!--Saisie date de début de congés-->
+    <div class="control-group" ng-class="{error: editConges.inputDateFin.$dirty && editConges.inputDateFin.$invalid, success:editConges.inputDateFin.$dirty && !editConges.inputDateFin.$invalid}">
+        <label class="control-label" for="inputDateFin">Date de début</label>
+        <div class="controls">
+            <input type="datetime" ng-model="currentConges.fin" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut'}" ui-validate-watch=" 'currentConges.debut' " ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '0:+1Y', minDate: '0'}" placeholder="">
+            <div class="input-help">
+                <h4>Vous devez renseigner une date de fin de congés supérieure ou égale à la date de début.</h4>
+            </div>
+        </div>
+        <div ng-show="!editConges.inputDateFin.$invalid" class="typeDate">
+            <label class="radio inline">
+                <input type="radio" ng-model="currentConges.finType" required id="inputMidiFin" name="inputTypeFin" value="0" />Midi
+               
+            </label>
+            <label class="radio inline aprem">
+                <input type="radio" ng-model="currentConges.finType" checked="checked" required id="inputSoirFin" name="inputTypeFin" value="1" />Soir
+             
+            </label>
+        </div>
+    </div>
+    <!--Saisie justification-->
+    <div class="control-group" ng-class="{error: editConges.inputJustificatif.$dirty && editConges.inputJustificatif.$invalid, success:editConges.inputJustificatif.$dirty && !editConges.inputJustificatif.$invalid}">
+        <label class="control-label" for="inputJustificatif">Justification (optionnel)</label>
+        <div class="controls">
+            <textarea type="text" id="Text1" name="inputJustification" rows="3" class="input-xxlarge justification" ng-model="currentConges.justification" placeholder="Justification"></textarea>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+        </div>
+    </div>
+    <!--Zone d'action du formulaire-->
+    <div class="form-actions">
+        <div class="control-group">
+            <span ng-class="{masquer: editConges.$valid}" class="label label-important">Tous les champs doivent être valides pour enregistrer.</span>
+        </div>
+        <div class="control-group" ng-class="{masquer: !error}">
+            <span class="label label-important">{{error}}</span>
+        </div>
+        <button type="button" ng-disabled="editConges.$invalid  || isUnchanged(currentConges)" ng-click="save(currentConges);" class="btn btn-primary">Envoyer</button>
+        <button type="button" class="btn" ng-click="cancel();">Annuler</button>
+    </div>
+</form>

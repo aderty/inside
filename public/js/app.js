@@ -10,16 +10,20 @@
           controller: appController
       })
       .when('/users', {
-          templateUrl: 'partials/users.html',
+          templateUrl: 'admin-partials/users.html',
           controller: appController
       })
       .when('/conges', {
            templateUrl: 'partials/conges.html',
            controller: appController
       })
+      .when('/admin-conges', {
+           templateUrl: 'admin-partials/admin-conges.html',
+           controller: appController
+      })
       .when('/logout', {
           redirectTo: '/logout'
-       })
+      })
       .otherwise({
           redirectTo: '/index'
       });

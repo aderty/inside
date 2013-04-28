@@ -37,5 +37,12 @@ exports.partials = function (req, res) {
     res.render('partials/' + name);
 };
 
+exports.forms = function (req, res) {
+    var name = req.params.name;
+    res.render('forms/' + name);
+};
+
+
 exports.users = users.routes;
 exports.conges = conges.routes;
+exports.congesAdmin = conges.routesAdmin;
