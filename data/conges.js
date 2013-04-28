@@ -53,7 +53,7 @@ var data = {
     },
     listCongesEtat: function (etat, past, fn) {
         if (!past) {
-            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function (err, ret) {
+            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function (err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");
@@ -62,7 +62,7 @@ var data = {
             });
             return;
         }
-        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function (err, ret) {
+        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
