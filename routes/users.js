@@ -56,6 +56,9 @@ var routes = {
     // Lecture, via GET
     list: function (req, res) {
         res.header('Cache-Control', 'no-cache');
+        if (req.query.search) {
+            return data.users.search({ type: req.query.type, search: req.query.search }, dataCallback(res));
+        }
         data.users.listUsers(dataCallback(res));
     },
 

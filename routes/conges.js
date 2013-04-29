@@ -61,6 +61,7 @@ var routesAdmin = {
     // Ajout ou Mise à jour via POST
     save: function (req, res) {
         var conges = req.body;
+        console.log(conges);
         if (conges.create) {
             delete conges.create;
             conges.type = 'R';

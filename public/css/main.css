@@ -255,3 +255,8 @@ input.ng-pristine + .input-help {
 #adminConges .btn-group.val {
     margin: 2px 2px 2px 2px;
 }
+
+#adminConges .select2-container
+{
+	min-width: 207px;
+}

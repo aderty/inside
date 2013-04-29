@@ -122,6 +122,7 @@ var data = {
         if (!conges.id) {
             return fn("Congés inconnu");
         }
+        console.log(conges);
         db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

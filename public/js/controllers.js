@@ -14,6 +14,10 @@ app.run(["$rootScope", function($rootScope) {
             searcher: "users"
         },
         conges: { 
+            name: "Mes congés",
+            searcher: false
+        },
+        "admin-conges": { 
             name: "Gestion des congés",
             searcher: false
         }
@@ -270,6 +274,16 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.currentConges = {};
     $scope.currentCongesSaved = null;
 
+    $scope.showMatricule = false;
+
+    $scope.dateOptions = {
+        dateFormat: 'dd/mm/yy',
+        changeYear: true,
+        changeMonth: true,
+        yearRange: '0:+1Y',
+        minDate: '0'
+    };
+
     var user = UsersService.get({ id: 0 }, function (retour) {
         $scope.cp = user.cp;
         $scope.cp_ant = user.cp_ant;
@@ -346,12 +360,12 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         if (conges.motifExcep) {
             conges.motif = conges.motifExcep;
         }
-        conges.debut.setHours(20);
+        conges.debut.setHours(22);
         if (conges.debutType == 1) {
             conges.debut.setHours(12);
         }
         delete conges.debutType;
-        conges.fin.setHours(20);
+        conges.fin.setHours(22);
         if (conges.finType == 0) {
             conges.fin.setHours(12);
         }
@@ -381,6 +395,16 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             });
         });
     }
+
+    $scope.selectUserOptions = {
+        query: function (options) {
+            options.callback({
+                more: false,
+                results: [
+                ]
+            });
+        }
+    };
 }
 
 function CongesGauges($scope, $rootScope) {
@@ -460,12 +484,21 @@ function CongesGrid($scope, $rootScope, CongesService) {
     });
 };
 
-function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService) {
+function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersService) {
     $scope.edition = 0;
     $scope.mode = "";
     $scope.lblMode = "";
     $scope.currentConges = {};
     $scope.currentCongesSaved = null;
+
+    $scope.showMatricule = true;
+
+    $scope.dateOptions = {
+        dateFormat: 'dd/mm/yy',
+        changeYear: true,
+        changeMonth: true,
+        yearRange: '-2Y:+1Y'
+    };
 
     $scope.accepter = function (row) {
         $scope.currentConges = row.entity;
@@ -562,14 +595,57 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService) {
             if (reponse.duree) {
                 currentConges.duree = reponse.duree;
             }
-            var index = $rootScope.conges.indexOf(currentConges);
+            var index = $rootScope.congesAvalider.indexOf(currentConges);
             if (index == -1) {
-                $rootScope.conges.push(currentConges);
+                $rootScope.congesAvalider.push(currentConges);
             }
+            $scope.currentConges = null;
         }, function (error) {
             $scope.error = error;
             return;
         });
+    }
+    $scope.selectUserOptions = {
+        placeholder: "Rechercher un utilisateur",
+        minimumInputLength: 1,
+        query: function(options){
+            var type = isNaN(options.term) ? "text" : "id";
+            $rootScope.$apply(function () {
+                UsersService.search({ type: type, search: options.term }).then(function (result) {
+                    options.callback({
+                        more: false,
+                        results: result
+                    });
+                });
+            });
+        },
+        /*ajax: {
+            url: "data-users",
+            dataType: 'json',
+            quietMillis: 100,
+            data: function (term, page) { // page is the one-based page number tracked by Select2
+                return {
+                    type: isNaN(term) ? "text": "id",
+                    search: term, //search term
+                    page_limit: 10, // page size
+                    page: page
+                };
+            },
+            results: function (data, page) {
+                var more = (page * 10) < data.total; // whether or not there are more results available
+     
+                // notice we return the value of more so Select2 knows if more results can be loaded
+                return {results: data.movies, more: more};
+            }
+        },*/
+        formatResult: format, // omitted for brevity, see the source of this page
+        formatSelection: format, // omitted for brevity, see the source of this page
+        dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+        escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+    };
+
+    function format(user) {
+        return user.nom.toLowerCase()+ " " + user.prenom;
     }
 }
 

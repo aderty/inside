@@ -26,13 +26,13 @@
                       <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon-user"></i> Utilisateurs</a></li>
                       <li authenticate><a href="#"><i class="icon-tasks"></i> Activité</a></li>
                       <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Congés</a></li>
-                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.conges.name}">
+                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.conges.name || page == pages['admin-conges'].name}">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-globe"></i> Congés <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.conges.name]"><a href="/conges"><i class="icon-user"></i> Mes congés</a></li>
                               <li class="divider"></li>
                               <li class="nav-header">Rh</li>
-                              <li authenticate><a href="/admin-conges">Gestion des demandes</a></li>
+                              <li authenticate ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges">Gestion des demandes</a></li>
                             </ul>
                       </li>
                     </ul>

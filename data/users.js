@@ -44,7 +44,7 @@ var data = {
     },
     // Lecture, via GET
     listUsers: function (fn) {
-        db.findAll("users", {etat: 1}, function (err, ret) {
+        db.findAll("users", { etat: 1 }, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des utilisateurs.");
@@ -52,7 +52,25 @@ var data = {
             fn(null, cleanUsers(ret));
         });
     },
-
+    search: function (search, fn) {
+        if (search.type == "id") {
+            db.query('SELECT * FROM users WHERE id= ? AND etat=1', [search.search], function (error, ret) {
+                if (error) {
+                    console.log('ERROR: ' + error);
+                    return fn("Erreur lors de la tentative de login.");
+                }
+                return fn(null, cleanUsers(ret));
+            });
+            return;
+        }
+        db.query('SELECT * FROM users WHERE nom LIKE "%' + db.escape(search.search) + '%" OR prenom LIKE "%' + db.escape(search.search) + '%"', function (error, ret) {
+            if (error) {
+                console.log('ERROR: ' + error);
+                return fn("Erreur lors de la tentative de login.");
+            }
+            return fn(null, cleanUsers(ret));
+        });
+    },
     getUser: function (id, fn) {
         db.find("users", id, function (err, ret) {
             if (err) {

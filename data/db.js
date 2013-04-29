@@ -118,6 +118,7 @@ exports.insert = insert;
 exports.remove = remove;
 exports.read = read;
 exports.update = update;
+exports.escape = escape;
 
 // On peut simplifier les opérations courantes (liste, modification via
 // l'id, etc.) avec les fonctions suivantes.

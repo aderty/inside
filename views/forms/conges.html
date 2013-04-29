@@ -1,4 +1,14 @@
 ﻿<form id="editConges" name="editConges" class="form-horizontal" novalidate ng-class="{masquer: edition == 0}">
+    <!--Saisie matricule-->
+    <div class="control-group" ng-class="{masquer: !showMatricule ,error: editConges.inputMatricule.$dirty && editConges.inputMatricule.$invalid, success:editConges.inputMatricule.$dirty && !editConges.inputMatricule.$invalid}">
+        <label class="control-label" for="inputRole">Utilisateur</label>
+        <div class="controls inline">
+            <input type="text" ng-model="currentConges.user" ng-required="showMatricule" id="inputMatricule" name="inputMatricule" ui-select2="selectUserOptions" placeholder="">
+            <div class="input-help">
+                <h4>Vous devez renseigner un utilisateur.</h4>
+            </div>
+        </div>
+    </div>
     <!--Saisie motif-->
     <div class="control-group" ng-class="{error: editConges.inputMotif.$dirty && editConges.inputMotif.$invalid, success:editConges.inputMotif.$dirty && !editConges.inputMotif.$invalid}">
         <label class="control-label" for="inputRole">Motif</label>
@@ -20,7 +30,7 @@
     <div class="control-group inline" ng-class="{error: editConges.inputDateDebut.$dirty && editConges.inputDateDebut.$invalid, success:editConges.inputDateDebut.$dirty && !editConges.inputDateDebut.$invalid}">
         <label class="control-label" for="inputDateDebut">Date de début</label>
         <div class="controls">
-            <input type="datetime" ng-model="currentConges.debut" required id="inputDateDebut" name="inputDateDebut" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '0:+1Y', minDate: '0'}" placeholder="">
+            <input type="datetime" ng-model="currentConges.debut" required id="inputDateDebut" name="inputDateDebut" ui-date="dateOptions" placeholder="">
             <div class="input-help">
                 <h4>Vous devez renseigner une date de début de congés.</h4>
             </div>
@@ -40,7 +50,7 @@
     <div class="control-group" ng-class="{error: editConges.inputDateFin.$dirty && editConges.inputDateFin.$invalid, success:editConges.inputDateFin.$dirty && !editConges.inputDateFin.$invalid}">
         <label class="control-label" for="inputDateFin">Date de début</label>
         <div class="controls">
-            <input type="datetime" ng-model="currentConges.fin" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut'}" ui-validate-watch=" 'currentConges.debut' " ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '0:+1Y', minDate: '0'}" placeholder="">
+            <input type="datetime" ng-model="currentConges.fin" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut'}" ui-validate-watch=" 'currentConges.debut' " ui-date="dateOptions" placeholder="">
             <div class="input-help">
                 <h4>Vous devez renseigner une date de fin de congés supérieure ou égale à la date de début.</h4>
             </div>

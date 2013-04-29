@@ -50,12 +50,20 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
-  factory('UsersService', function ($resource) {
-      var UsersService = $resource('/data-users/:id',
+  factory('UsersService', function ($resource, $q) {
+      var resource = $resource('/data-users/:id',
              { id: '@id' }, {
-             charge: {method:'POST', params:{charge:true}}
-         });
-      return UsersService;/*{
+                 charge: { method: 'POST', params: { charge: true } },
+                 searcher: { method: 'GET', params: { search: true }, isArray: true }
+             });
+      resource.search = function (recherche) {
+          var defered = $q.defer();
+          var users = resource.searcher(recherche, function () {
+              defered.resolve(users);
+          });
+          return defered.promise;
+      };
+      return resource;/*{
           on: function (eventName, callback) {
               socket.on(eventName, function () {
                   var args = arguments;
@@ -127,14 +135,17 @@ angular.module('inside.services', ['ngResource']).
               if (conges.motifExcep) {
                   conges.motif = conges.motifExcep;
               }
-              conges.debut.setHours(20);
+              conges.debut.setHours(22);
               if (conges.debutType == 1) {
                   conges.debut.setHours(12);
               }
               delete conges.debutType;
-              conges.fin.setHours(20);
+              conges.fin.setHours(22);
               if (conges.finType == 0) {
                   conges.fin.setHours(12);
+              }
+              if (conges.user && conges.user.id) {
+                  conges.user = conges.user.id;
               }
               resource.save(conges, function (reponse) {
                   if (reponse.error) {
