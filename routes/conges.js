@@ -35,7 +35,7 @@ var routes = {
             data.conges.addConges(conges, dataCallback(res));
             return;
         }
-        data.conges.updateConges(conges, dataCallback(res));
+        data.conges.updateConges(conges, false,dataCallback(res));
     },
 
     // Ajout via POST
@@ -52,7 +52,12 @@ var routesAdmin = {
     // Lecture, via GET
     list: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.conges.listCongesEtat(req.query.etat, false, dataCallback(res));
+        if (req.query.etat) {
+            data.conges.listCongesEtat(req.query.etat, false, dataCallback(res));
+        }
+        else {
+            data.conges.listToutConges(false, dataCallback(res));
+        }
     },
     get: function (req, res) {
         res.header('Cache-Control', 'no-cache');
@@ -61,10 +66,9 @@ var routesAdmin = {
     // Ajout ou Mise à jour via POST
     save: function (req, res) {
         var conges = req.body;
-        console.log(conges);
+        conges.type = 'R';
         if (conges.create) {
             delete conges.create;
-            conges.type = 'R';
             data.conges.addConges(conges, dataCallback(res));
             return;
         }
@@ -72,7 +76,7 @@ var routesAdmin = {
             data.conges.updateEtatConges(conges, dataCallback(res));
             return;
         }
-        data.conges.updateConges(conges, dataCallback(res));
+        data.conges.updateConges(conges, true, dataCallback(res));
     },
     remove: function (req, res) {
         data.conges.removeConges(req.params.id, dataCallback(res));

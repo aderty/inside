@@ -32,6 +32,25 @@ db.events.once('connected', function (result) {
 
 var data = {
     // Lecture, via GET
+    listToutConges: function (past, fn) {
+        if (!past) {
+            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW();', function (err, ret) {
+                if (err) {
+                    console.log('ERROR: ' + err);
+                    return fn("Erreur lors de la récupération des congès.");
+                }
+                fn(null, cleanConges(ret));
+            });
+            return;
+        }
+        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id;', function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des congès.");
+            }
+            fn(null, cleanConges(ret));
+        });
+    },
     listConges: function (matricule, past, fn) {
         if (!past) {
             db.query('SELECT * FROM conges WHERE user = ? AND fin > NOW();', [matricule], function (err, ret) {
@@ -115,15 +134,14 @@ var data = {
         });*/
     },
     // Mise à jour via POST
-    updateConges: function (conges, fn) {
+    updateConges: function (conges, forcer, fn) {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        console.log(conges);
-        db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
+        db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification, forcer], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur  de la mise à jour du congés.");
@@ -131,7 +149,7 @@ var data = {
             db.query("select @duree,@retour;", function (err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
-                    fn("Erreur lors de la mise à jour du congés.");
+                    return fn("Erreur lors de la mise à jour du congés.");
                 }
                 if (ret2[0]['@duree'] == -1) {
                     return fn(ret2[0]['@retour']);
@@ -161,20 +179,36 @@ var data = {
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        db.updateById("conges", conges.id, {etat: conges.etat}, function(err, ret) {
+        db.query("CALL UpdateEtatConges(?, ?, @retour)", [conges.id, conges.etat], function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la modification du congés " + conges.id);
+            }
+            db.query("select @retour;", function (err2, ret2) {
+                if (err2 || ret2.length == 0) {
+                    console.log('ERROR: ' + err2);
+                    return fn("Erreur lors de la modification du congés " + conges.id);
+                }
+                if (ret2[0]['@retour']) {
+                    return fn(ret2[0]['@retour']);
+                }
+                fn(null, true);
+            });
+        });
+
+        /*db.updateById("conges", conges.id, {etat: conges.etat}, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification du congés " + conges.id);
             }
             fn(null, cleanConges(ret));
-        });
+        });*/
     },
 
     removeConges: function(id, fn) {
         if (!id || id == "") {
             return fn("Id de congés invalide");
         }
-        console.log(id);
         db.query("CALL RemoveConges(?, @retour)", [id], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

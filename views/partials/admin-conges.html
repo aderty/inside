@@ -14,6 +14,9 @@
                             <pane heading="Congés validés">
                                  <div id="congesAdminGridVal" class="gridStyle" ng-grid="gridOptionsCongesVal"></div>
                             </pane>
+                            <pane heading="Congés refusés">
+                                 <div id="congesAdminGridRef" class="gridStyle" ng-grid="gridOptionsCongesRef"></div>
+                            </pane>
                         </tabs>
                     </div>
 
@@ -26,7 +29,7 @@
             <!--Body content-->
             <div class="row">
                 <div class="span12">
-                    <button type="button" class="btn btn-primary" ng-class="{masquer: edition > 0}" ng-click="create();"><i class="icon-plus icon-white"></i>Créer une régulation de congés</button>
+                    <button type="button" class="btn btn-primary" ng-class="{masquer: edition > 0}" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
                     <div class="alert alert-block alert-info" ng-class="{masquer: edition != 1}">
                         <h4>{{lblMode}}</h4>
                     </div>
@@ -64,7 +67,7 @@
     <div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>
 </script>
 <script type="text/x-handlebars-template" id="matriculeTmpl">
-    <div class="ngCellText matriculeCell" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.getProperty('nom')}} {{row.getProperty('prenom')}}">{{row.getProperty('nom')}} {{row.getProperty('prenom')}}</span></div>
+    <div class="ngCellText matriculeCell" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.getProperty(col.field).nom}} {{row.getProperty(col.field).prenom}}">{{row.getProperty(col.field).nom}} {{row.getProperty(col.field).prenom}}</span></div>
 </script>
 
 <script type="text/x-handlebars-template" id="justificationTmpl">
@@ -72,8 +75,8 @@
 </script>
 <script type="text/x-handlebars-template" id="validationTmpl">
   <div class="btn-group val">
-    <a class="btn btn-success" href="#" title="Accepter la demande" ng-click="accepter(row)"><i class="icon-ok"></i></a>
-    <a class="btn btn-danger" href="#" title="Refuser la demande" ng-click="refuser(row)"><i class="icon-ban-circle"></i></a>
+    <a class="btn btn-success" href="#" title="Accepter la demande" ng-disabled="row.getProperty('etat') != 1" ng-click="accepter(row)"><i class="icon-ok"></i></a>
+    <a class="btn btn-danger" href="#" title="Refuser la demande" ng-disabled="row.getProperty('etat') == 3" ng-click="refuser(row)"><i class="icon-ban-circle"></i></a>
   </div>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">

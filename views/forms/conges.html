@@ -3,25 +3,26 @@
     <div class="control-group" ng-class="{masquer: !showMatricule ,error: editConges.inputMatricule.$dirty && editConges.inputMatricule.$invalid, success:editConges.inputMatricule.$dirty && !editConges.inputMatricule.$invalid}">
         <label class="control-label" for="inputRole">Utilisateur</label>
         <div class="controls inline">
-            <input type="text" ng-model="currentConges.user" ng-required="showMatricule" id="inputMatricule" name="inputMatricule" ui-select2="selectUserOptions" placeholder="">
+            <input type="text" ng-model="currentConges.user" ng-disabled="edition != 1" ng-required="showMatricule" id="inputMatricule" name="inputMatricule" ui-select2="selectUserOptions" placeholder="">
             <div class="input-help">
                 <h4>Vous devez renseigner un utilisateur.</h4>
             </div>
         </div>
     </div>
     <!--Saisie motif-->
-    <div class="control-group" ng-class="{error: editConges.inputMotif.$dirty && editConges.inputMotif.$invalid, success:editConges.inputMotif.$dirty && !editConges.inputMotif.$invalid}">
+    <div class="control-group" ng-class="{multiple: currentConges.motif == 'AE', error: editConges.inputMotif.$dirty && editConges.inputMotif.$invalid, success:editConges.inputMotif.$dirty && !editConges.inputMotif.$invalid}">
         <label class="control-label" for="inputRole">Motif</label>
         <div class="controls inline">
             <select id="inputMotif" name="inputMotif" required ng-model="currentConges.motif" ng-options="motif.id as motif.libelle for motif in motifsConges">
+                <option value="">-</option>
             </select>
             <div class="input-help">
                 <h4>Vous devez renseigner un motif de congés.</h4>
             </div>
-            <select ng-show="currentConges.motif == 'AE'" id="inputMotifExcep" ng-required="currentConges.motif == 'AE'" name="inputMotifExcep" ng-model="currentConges.motifExcep" ng-options="motif.id as motif.libelle for motif in motifsCongesExcep">
-                <option></option>
+            <select ng-show="currentConges.motif == 'AE'" id="inputMotifExcep" class="motifexp" ng-required="currentConges.motif == 'AE'" name="inputMotifExcep" ng-model="currentConges.motifExcep" ng-options="motif.id as motif.libelle for motif in motifsCongesExcep">
+                <option value="">-</option>
             </select>
-            <div class="input-help">
+            <div class="input-help motifexp">
                 <h4>Vous devez renseigner un motif exceptionnel de congés.</h4>
             </div>
         </div>
@@ -30,38 +31,37 @@
     <div class="control-group inline" ng-class="{error: editConges.inputDateDebut.$dirty && editConges.inputDateDebut.$invalid, success:editConges.inputDateDebut.$dirty && !editConges.inputDateDebut.$invalid}">
         <label class="control-label" for="inputDateDebut">Date de début</label>
         <div class="controls">
-            <input type="datetime" ng-model="currentConges.debut" required id="inputDateDebut" name="inputDateDebut" ui-date="dateOptions" placeholder="">
+            <input type="datetime" ng-model="currentConges.debut.date" required id="inputDateDebut" name="inputDateDebut" ui-date="dateOptionsDebut" placeholder="01/08/2013">
             <div class="input-help">
                 <h4>Vous devez renseigner une date de début de congés.</h4>
             </div>
         </div>
-        <div ng-show="!editConges.inputDateDebut.$invalid" class="typeDate">
+        <div ng-show="!editConges.inputDateDebut.$invalid" class="controls typeDate">
             <label class="radio inline">
-                <input type="radio" ng-model="currentConges.debutType" checked="checked" id="inputMatinDebut" name="inputTypeDebut" value="0" />Matin
+                <input type="radio" ng-model="currentConges.debut.type" checked="checked" id="inputMatinDebut" name="inputTypeDebut" value="0" />Matin
                
             </label>
             <label class="radio inline aprem">
-                <input type="radio" ng-model="currentConges.debutType" required id="inputApremDebut" name="inputTypeDebut" value="1" />Après-midi
-             
+                <input type="radio" ng-model="currentConges.debut.type" required id="inputApremDebut" name="inputTypeDebut" value="1" />Après-midi
             </label>
         </div>
     </div>
-    <!--Saisie date de début de congés-->
+    <!--Saisie date de fin de congés-->
     <div class="control-group" ng-class="{error: editConges.inputDateFin.$dirty && editConges.inputDateFin.$invalid, success:editConges.inputDateFin.$dirty && !editConges.inputDateFin.$invalid}">
         <label class="control-label" for="inputDateFin">Date de début</label>
         <div class="controls">
-            <input type="datetime" ng-model="currentConges.fin" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut'}" ui-validate-watch=" 'currentConges.debut' " ui-date="dateOptions" placeholder="">
+            <input type="datetime" ng-model="currentConges.fin.date" ng-disabled="editConges.inputDateDebut.$invalid" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut.date'}" ui-validate-watch=" 'currentConges.debut.date' " ui-date="dateOptionsFin" placeholder="01/08/2013">
             <div class="input-help">
                 <h4>Vous devez renseigner une date de fin de congés supérieure ou égale à la date de début.</h4>
             </div>
         </div>
-        <div ng-show="!editConges.inputDateFin.$invalid" class="typeDate">
+        <div ng-show="!editConges.inputDateFin.$invalid" class="controls typeDate">
             <label class="radio inline">
-                <input type="radio" ng-model="currentConges.finType" required id="inputMidiFin" name="inputTypeFin" value="0" />Midi
+                <input type="radio" ng-model="currentConges.fin.type" required id="inputMidiFin" name="inputTypeFin" value="0" />Midi
                
             </label>
             <label class="radio inline aprem">
-                <input type="radio" ng-model="currentConges.finType" checked="checked" required id="inputSoirFin" name="inputTypeFin" value="1" />Soir
+                <input type="radio" ng-model="currentConges.fin.type" checked="checked" required id="inputSoirFin" name="inputTypeFin" value="1" />Soir
              
             </label>
         </div>

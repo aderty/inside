@@ -78,4 +78,25 @@ directive('appVersion', ['version', function(version) {
             }, true);
         }
     };
-});
+})
+.directive('autocompleteUser', [ '$compile', function(compile) {
+    return {
+        restrict: 'A',
+        scope: {
+            model: '=ngModel'
+        },
+        require: 'ngModel',
+        replace: false,
+        link: function($scope, elem, attr, ctrl) {
+            attr.$set("uiSelect2", attr.autocompleteUser);
+            //attr.$set("uiSelect2", "selectOptions");
+            attr.$set("autocompleteUser", null);
+                elem.on("select", function(e, data) {
+            });
+            compile(elem[0].outerHTML)($scope.$parent);
+            $scope.$watch("model", function(newValue, oldValue) {
+                //gauge.refresh(newValue);
+            }, true);
+        }
+    };
+}])

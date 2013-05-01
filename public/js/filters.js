@@ -34,4 +34,28 @@ filter('moment', function () {
     return function (dateString, format) {
         return moment(dateString).format(format);
     };
+}).
+filter('momentCongesDebut', function () {
+    return function (dateString, format) {
+        var d = moment(dateString.date).format(format);
+        if (dateString.type == 1) {
+            d += " après-midi";
+        }
+        else {
+            d += " matin";
+        }
+        return d;
+    };
+}).
+filter('momentCongesFin', function () {
+    return function (dateString, format) {
+        var d = moment(dateString.date).format(format);
+        if (dateString.type == 0) {
+            d += " midi";
+        }
+        else {
+            d += " soir";
+        }
+        return d;
+    };
 });

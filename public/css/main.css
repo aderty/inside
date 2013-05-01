@@ -102,6 +102,10 @@ ul.actionEdit
   border:1px solid #ddd;
   opacity: 0.9;
 }
+select+.input-help {
+  left: 230px;
+
+}
 .input-help::before {
   content: "\25C0";
   position: absolute;
@@ -219,9 +223,15 @@ input.ng-pristine + .input-help {
 		to(#96274c));
 }
 
-.typeDate
+#mainConges .typeDate
 {
 	margin-left: 400px;
+}
+#adminConges .typeDate
+{
+	/*margin-left: 400px;*/
+    margin-top: 40px;
+    position: relative;
 }
 .typeDate .aprem
 {
@@ -241,13 +251,14 @@ input.ng-pristine + .input-help {
 
 #adminConges .tab-content {
         height: 85%;
+        overflow-x: hidden;
 }
 
 /*#congesAdminGrid {
     height: 80%;
 }*/
 
-
+/* textarea justification */
 #adminConges .justification {
     width: 270px;
 }
@@ -255,8 +266,26 @@ input.ng-pristine + .input-help {
 #adminConges .btn-group.val {
     margin: 2px 2px 2px 2px;
 }
-
+/* DDL choix utilisateur */
 #adminConges .select2-container
 {
 	min-width: 207px;
+}
+/* DDL absence exceptionnel */
+#adminConges .multiple {
+    height: 62px;
+}
+#adminConges .multiple select.motifexp {
+    margin-top: 2px;
+}
+
+/* Tooltip aide motif expectionnel */
+.input-help.motifexp {
+  left: 455px;
+}
+
+/* Tooltip aide motif expectionnel */
+#adminConges .multiple .input-help.motifexp {
+  left: 230px;
+  top: 27px;
 }
