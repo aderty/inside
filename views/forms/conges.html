@@ -1,9 +1,20 @@
 ﻿<form id="editConges" name="editConges" class="form-horizontal" novalidate ng-class="{masquer: edition == 0}">
     <!--Saisie matricule-->
-    <div class="control-group" ng-class="{masquer: !showMatricule ,error: editConges.inputMatricule.$dirty && editConges.inputMatricule.$invalid, success:editConges.inputMatricule.$dirty && !editConges.inputMatricule.$invalid}">
-        <label class="control-label" for="inputRole">Utilisateur</label>
+    <div class="control-group" ui-if="showMatricule">
+        <label class="control-label" for="typeuser">Utilisateur</label>
         <div class="controls inline">
-            <input type="text" ng-model="currentConges.user" ng-disabled="edition != 1" ng-required="showMatricule" id="inputMatricule" name="inputMatricule" ui-select2="selectUserOptions" placeholder="">
+            <label class="radio inline">
+                <input type="radio" value="1"  ng-disabled="edition != 1" ng-model="currentConges.typeuser" id="typeuser" name="typeuser" checked="checked" />Un seul
+            </label>
+            <label class="radio inline">
+                <input type="radio" value="2" ng-disabled="edition != 1" ng-model="currentConges.typeuser"  name="typeuser"  />Tous
+            </label>
+            </div>
+        </div>
+    <div class="control-group" ui-if="showMatricule" ng-class="{error: editConges.inputMatricule.$dirty && editConges.inputMatricule.$invalid, success:editConges.inputMatricule.$dirty && !editConges.inputMatricule.$invalid}">
+        <label class="control-label" for="inputRole">&nbsp;</label>
+        <div class="controls inline">
+            <input type="text" ng-model="currentConges.user" ng-disabled="edition != 1 || currentConges.typeuser == '2'" ng-required="showMatricule && currentConges.typeuser == '1'" id="inputMatricule" name="inputMatricule" ui-select2="selectUserOptions" placeholder="">
             <div class="input-help">
                 <h4>Vous devez renseigner un utilisateur.</h4>
             </div>

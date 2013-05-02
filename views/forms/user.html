@@ -96,14 +96,30 @@
             </select>
             <div class="input-help">
                 <h4>Vous devez attribuer un rôle.</h4>
+                <div class="input-help">
+                    <h4>Le nombre de congé doit être inférieur à 50.</h4>
+                </div>
             </div>
         </div>
     </div>
-    <!--Saisie CP-->
+    <!--Saisie CP aquis-->
     <div class="control-group" ng-class="{error: editUser.inputCp.$dirty && editUser.inputCp.$invalid, success:editUser.inputCp.$dirty && !editUser.inputCp.$invalid}">
-        <label class="control-label" for="inputCp">Congés payés</label>
+        <label class="control-label" for="inputCp">Congés payés acquis</label>
         <div class="controls">
             <input type="number" min="0" max="50" id="inputCp" name="inputCp" ng-model="currentUser.cp" required placeholder="0">
+            <div class="input-help">
+                <h4>Le nombre de congé doit être inférieur à 50.</h4>
+            </div>
+        </div>
+    </div>
+    <!--Saisie CP en cours-->
+    <div class="control-group" ng-class="{error: editUser.inputCpAnt.$dirty && editUser.inputCpAnt.$invalid, success:editUser.inputCpAnt.$dirty && !editUser.inputCpAnt.$invalid}">
+        <label class="control-label" for="inputCp">Congés payés en cours</label>
+        <div class="controls">
+            <input type="number" min="0" max="50" id="inputCpAnt" name="inputCpAnt" ng-model="currentUser.cp_ant" required placeholder="0">
+            <div class="input-help">
+                <h4>Le nombre de congé doit être inférieur à 50.</h4>
+            </div>
         </div>
     </div>
     <!--Saisie RTT-->
@@ -111,6 +127,9 @@
         <label class="control-label" for="inputRtt">RTT</label>
         <div class="controls">
             <input type="number" min="0" max="50" id="inputRtt" name="inputRtt" ng-model="currentUser.rtt" required placeholder="0">
+            <div class="input-help">
+                <h4>Le nombre de congé doit être inférieur à 50.</h4>
+            </div>
         </div>
     </div>
     <!--Saisie envoi de mail-->

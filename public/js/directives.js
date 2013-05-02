@@ -79,7 +79,7 @@ directive('appVersion', ['version', function(version) {
         }
     };
 })
-.directive('autocompleteUser', [ '$compile', function(compile) {
+.directive('autocompleteUser', ['$compile', function(compile) {
     return {
         restrict: 'A',
         scope: {
@@ -91,7 +91,7 @@ directive('appVersion', ['version', function(version) {
             attr.$set("uiSelect2", attr.autocompleteUser);
             //attr.$set("uiSelect2", "selectOptions");
             attr.$set("autocompleteUser", null);
-                elem.on("select", function(e, data) {
+            elem.on("select", function(e, data) {
             });
             compile(elem[0].outerHTML)($scope.$parent);
             $scope.$watch("model", function(newValue, oldValue) {
@@ -99,4 +99,120 @@ directive('appVersion', ['version', function(version) {
             }, true);
         }
     };
-}])
+} ]).
+directive('grid', function($compile, $timeout) {
+    var template = '<thead>' +
+                            '<tr>' +
+                                '<th ng-repeat="(i,th) in options.columnDefs" ng-class="selectedCls(th)" style="width: {{width(th)}};" ng-click="changeSorting(th)">{{th.displayName}}</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>' +
+                            '<tr ng-show="filter(row)" ng-repeat="row in data | orderBy:sorter:sort.descending">' +
+                                '<td ng-repeat="def in options.columnDefs" class="cell" rowgrid>' +
+                                '</td>' +
+                            '</tr>' +
+                        '</tbody>';
+
+    return {
+        restrict: 'E',
+        template: '<table class="table table-bordered table-hover"></table>',
+        replace: true,
+        compile: function compile(tElement, tAttrs, transclude) {
+            return {
+                pre: function preLink($scope, iElement, iAttrs, controller) {
+                    var timer;
+                    $scope.sort = {
+                        column: 'b',
+                        descending: false
+                    };
+                    $scope.selectedCls = function(column) {
+                        return (column.field == $scope.sort.column || column.sort == $scope.sort.column) && 'sort-' + $scope.sort.descending;
+                    };
+                    $scope.sortCls = function (column) {
+                        return (column.field == $scope.sort.column || column.sort == $scope.sort.column) && $scope.sort.descending ? 'icon-chevron-up' : 'icon-chevron-down';
+                    }; 
+                    $scope.width = function (column) {
+                        return column.width ? column.width + "px" : "auto";
+                    };
+
+                    $scope.options = $scope.$eval(tAttrs.ngOptions);
+
+                    $scope.sorter = function (row) {
+                        if ($scope.sort.column.indexOf(".") > -1) {
+                            var list = $scope.sort.column.split("."), temp = row;
+                            for (var i = 0, l = list.length; i < l; i++) {
+                                temp = temp[list[i]];
+                            }
+                            return temp;
+                        }
+                        return row[$scope.sort.column];
+                    }
+
+                    $scope.changeSorting = function(column) {
+                        var sort = $scope.sort;
+                        if (sort.column == column.field || sort.column == column.sort) {
+                            sort.descending = !sort.descending;
+                        } else {
+                            sort.column = column.sort || column.field;
+                            sort.descending = false;
+                        }
+                    };
+
+                    $scope.filter = function (row) {
+                        if(!$scope.filterOptions || $scope.filterOptions.filterText == "") return true;
+                        for (var prop in row) {
+                            if (row[prop] && typeof row[prop] != "function" && row[prop].toString().toLowerCase().indexOf($scope.filterOptions.filterText.toLowerCase()) > -1) return true;
+                        }
+                        return false;
+                    };
+                    $scope.$root.$watch($scope.options.data, function(data) {
+                        $scope.data = data;
+                    });
+                    $scope.$root.$watch($scope.options.filterOptions, function (filterOptions) {
+                        $scope.filterOptions = angular.copy(filterOptions);
+                    }, true);
+
+                    iElement.append($compile(template)($scope));
+                },
+                post: function preLink($scope, iElement, iAttrs, controller) {
+                    setTimeout(function () {
+                        $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+                    }, 250);
+                }
+            }
+        }
+    };
+}).
+directive('rowgrid', function($compile) {
+    var template = '<div>{{row[def.field]',
+    templateFin = '}}</div>';
+    return {
+        restrict: 'A',
+        compile: function compile(tElement, tAttrs, transclude) {
+            return {
+                pre: function preLink($scope, iElement, iAttrs, controller) {
+                    $scope.entity = $scope.row;
+                    if ($scope.def.cellTemplate) {
+                        return iElement.append($compile($scope.def.cellTemplate)($scope));
+                    }
+                    var tmpl = template;
+                    if ($scope.def.cellFilter) {
+                        tmpl = tmpl + '|' + $scope.def.cellFilter;
+                    }
+                    
+                    $scope.$watch("row", function(data) {
+                        $scope.row = data;
+                    });
+                    tmpl = tmpl + templateFin;
+                    iElement.append($compile(tmpl)($scope));
+                }/*,
+                post: function preLink($scope, iElement, iAttrs, controller) {
+                    setTimeout(function () {
+                        $('.matriculeCell>span').tooltip({ container: 'body' });
+                        
+                    }, 250);
+                }*/
+            }
+        }
+    };
+});

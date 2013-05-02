@@ -9,13 +9,16 @@
                     <div class="bs-docs-example">
                         <tabs>
                             <pane heading="Congés en attente de validation">
-                                 <div id="congesAdminGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>
+                                 <grid id="congesAdminGrid" ng-options="gridOptionsConges"></grid>
+                                 <!--<div id="congesAdminGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>-->
                             </pane>
                             <pane heading="Congés validés">
-                                 <div id="congesAdminGridVal" class="gridStyle" ng-grid="gridOptionsCongesVal"></div>
+                                 <grid id="congesAdminGridVal" ng-options="gridOptionsCongesVal"></grid>
+                                 <!--<div id="congesAdminGridVal" class="gridStyle" ng-grid="gridOptionsCongesVal"></div>-->
                             </pane>
                             <pane heading="Congés refusés">
-                                 <div id="congesAdminGridRef" class="gridStyle" ng-grid="gridOptionsCongesRef"></div>
+                                 <grid id="congesAdminGridRef" ng-options="gridOptionsCongesRef"></grid>
+                                 <!--<div id="congesAdminGridRef" class="gridStyle" ng-grid="gridOptionsCongesRef"></div>-->
                             </pane>
                         </tabs>
                     </div>
@@ -67,21 +70,21 @@
     <div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>
 </script>
 <script type="text/x-handlebars-template" id="matriculeTmpl">
-    <div class="ngCellText matriculeCell" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.getProperty(col.field).nom}} {{row.getProperty(col.field).prenom}}">{{row.getProperty(col.field).nom}} {{row.getProperty(col.field).prenom}}</span></div>
+    <div class="ngCellText matriculeCell"><span data-toggle="tooltip" title="{{row.user.nom}} {{row.user.prenom}}">{{row.user.nom}} {{row.user.prenom}}</span></div>
 </script>
 
 <script type="text/x-handlebars-template" id="justificationTmpl">
-    <div class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.getProperty(col.field)}}">{{row.getProperty(col.field)}}</span></div>
+    <div class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</span></div>
 </script>
 <script type="text/x-handlebars-template" id="validationTmpl">
   <div class="btn-group val">
-    <a class="btn btn-success" href="#" title="Accepter la demande" ng-disabled="row.getProperty('etat') != 1" ng-click="accepter(row)"><i class="icon-ok"></i></a>
-    <a class="btn btn-danger" href="#" title="Refuser la demande" ng-disabled="row.getProperty('etat') == 3" ng-click="refuser(row)"><i class="icon-ban-circle"></i></a>
+    <a class="btn btn-success" href="#" title="Accepter la demande" ng-disabled="row.etat != 1" ng-click="accepter(row)"><i class="icon-ok"></i></a>
+    <a class="btn btn-danger" href="#" title="Refuser la demande" ng-disabled="row.etat == 3" ng-click="refuser(row)"><i class="icon-ban-circle"></i></a>
   </div>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
-    <a href="#" title="Modifier" ng-show="isEditable(row.entity)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
+    <a href="#" title="Modifier" ng-show="isEditable(row)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
-    <a href="#" title="Supprimer" ng-show="isEditable(row.entity)" ng-click="delete(row)"><i class="icon-trash"></i></a>
+    <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>

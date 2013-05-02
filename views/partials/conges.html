@@ -50,7 +50,8 @@
             <div class="row">
                 <div class="span12" ng-controller="CongesGrid">
                     <!--Grilles des congés-->
-                    <div id="congesGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>
+                    <grid id="congesGrid" ng-options="gridOptionsConges"></grid>
+                    <!--<div id="congesGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>-->
                 </div>
                 <!-- <div class="span12">-->
             </div>
@@ -84,8 +85,8 @@
     </div>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
-    <a href="#" title="Modifier" ng-show="isEditable(row.entity)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
+    <a href="#" title="Modifier" ng-show="isEditable(row)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
-    <a href="#" title="Supprimer" ng-show="isEditable(row.entity)" ng-click="delete(row)"><i class="icon-trash"></i></a>
+    <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>

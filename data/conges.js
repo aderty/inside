@@ -30,11 +30,19 @@ db.events.once('connected', function (result) {
     console.log("connected to MySQL");
 });
 
+var errors = {
+    CONGES_PRESENT: "Vous avez dejà posé un congés chevauchant votre demande.",
+    ZERO_JOUR_TRAVAIL: "Pas de jour travaillé durant la période demandé.",
+    PAS_ASSEZ: "Vous n'avez pas assez de congés.",
+    EN_VALIDATION: "La demande est déjà en cours de validation.",
+    DEJA_REFUSE: "La demande de congés a été refusée, impossible de modifier son état."
+}
+
 var data = {
     // Lecture, via GET
-    listToutConges: function (past, fn) {
+    listToutConges: function(past, fn) {
         if (!past) {
-            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW();', function (err, ret) {
+            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW();', function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");
@@ -43,7 +51,7 @@ var data = {
             });
             return;
         }
-        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id;', function (err, ret) {
+        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id;', function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
@@ -51,9 +59,9 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    listConges: function (matricule, past, fn) {
+    listConges: function(matricule, past, fn) {
         if (!past) {
-            db.query('SELECT * FROM conges WHERE user = ? AND fin > NOW();', [matricule], function (err, ret) {
+            db.query('SELECT * FROM conges WHERE user = ? AND fin > NOW();', [matricule], function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");
@@ -70,9 +78,9 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    listCongesEtat: function (etat, past, fn) {
+    listCongesEtat: function(etat, past, fn) {
         if (!past) {
-            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function (err, ret) {
+            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");
@@ -81,7 +89,7 @@ var data = {
             });
             return;
         }
-        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function (err, ret) {
+        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
@@ -99,22 +107,23 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    addConges: function (conges, fn) {
+    addConges: function(conges, fn) {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
-        db.query("CALL AddConges(?, ?, ?, ?, ?, ?, @rowid, @duree, @retour)", [conges.user, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
+        db.query("CALL AddConges(?, ?, ?, ?, ?, ?, @rowid, @duree, @retour)", [conges.user, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de l'insertion du congés.");
             }
-            db.query("select @rowid, @duree,@retour;", function (err2, ret2) {
+            db.query("select @rowid, @duree,@retour;", function(err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     fn("Erreur lors de l'insertion du congés.");
                 }
-                if (ret2[0]['@duree'] == -1) {
-                    return fn(ret2[0]['@retour']);
+                if (ret2[0]['@retour']) {
+                    var error = ret2[0]['@retour'];
+                    return fn(errors[error] || error);
                 }
                 fn(null, {
                     id: ret2[0]['@rowid'],
@@ -123,85 +132,87 @@ var data = {
             });
         });
         /*db.insert("conges", conges, function(err, ret) {
-            if (err) {
-                if (err.code && err.code == "ER_DUP_ENTRY") {
-                    return fn("Matricule déjà attribué !");
-                }
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de l'insertion du congés.");
-            }
-            fn(null, { id: ret.insertId });
+        if (err) {
+        if (err.code && err.code == "ER_DUP_ENTRY") {
+        return fn("Matricule déjà attribué !");
+        }
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de l'insertion du congés.");
+        }
+        fn(null, { id: ret.insertId });
         });*/
     },
     // Mise à jour via POST
-    updateConges: function (conges, forcer, fn) {
+    updateConges: function(conges, forcer, fn) {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification, forcer], function (err, ret) {
+        db.query("CALL UpdateConges(?, ?, ?, ?, ?, ?, ?, @duree, @retour)", [conges.id, conges.type, conges.motif, conges.debut, conges.fin, conges.justification, forcer], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur  de la mise à jour du congés.");
             }
-            db.query("select @duree,@retour;", function (err2, ret2) {
+            db.query("select @duree,@retour;", function(err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     return fn("Erreur lors de la mise à jour du congés.");
                 }
-                if (ret2[0]['@duree'] == -1) {
-                    return fn(ret2[0]['@retour']);
+                if (ret2[0]['@retour']) {
+                    var error = ret2[0]['@retour'];
+                    return fn(errors[error] || error);
                 }
                 fn(null, {
                     duree: ret2[0]['@duree']
                 });
             });
         });
-        
+
         /*db.updateById("conges", conges.id, conges, function(err, ret) {
-            if (err) {
-                if (err.code && err.code == "ER_DUP_ENTRY") {
-                    return fn("Matricule déjà attribué !");
-                }
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de la modification du congés " + conges.id);
-            }
-            fn(null, cleanConges(ret));
+        if (err) {
+        if (err.code && err.code == "ER_DUP_ENTRY") {
+        return fn("Matricule déjà attribué !");
+        }
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de la modification du congés " + conges.id);
+        }
+        fn(null, cleanConges(ret));
         });*/
     },
     // Mise à jour via POST
-    updateEtatConges: function (conges, fn) {
+    updateEtatConges: function(conges, fn) {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        db.query("CALL UpdateEtatConges(?, ?, @retour)", [conges.id, conges.etat], function (err, ret) {
+        db.query("CALL UpdateEtatConges(?, ?, @retour)", [conges.id, conges.etat], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification du congés " + conges.id);
             }
-            db.query("select @retour;", function (err2, ret2) {
+            db.query("select @retour;", function(err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     return fn("Erreur lors de la modification du congés " + conges.id);
                 }
                 if (ret2[0]['@retour']) {
-                    return fn(ret2[0]['@retour']);
+                    var error = ret2[0]['@retour'];
+                    return fn(errors[error] || error);
                 }
                 fn(null, true);
             });
         });
 
         /*db.updateById("conges", conges.id, {etat: conges.etat}, function(err, ret) {
-            if (err) {
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de la modification du congés " + conges.id);
-            }
-            fn(null, cleanConges(ret));
+        if (err) {
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de la modification du congés " + conges.id);
+        }
+        fn(null, cleanConges(ret));
         });*/
     },
 
@@ -209,28 +220,29 @@ var data = {
         if (!id || id == "") {
             return fn("Id de congés invalide");
         }
-        db.query("CALL RemoveConges(?, @retour)", [id], function (err, ret) {
+        db.query("CALL RemoveConges(?, @retour)", [id], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de l'insertion du congés.");
             }
-            db.query("select @retour;", function (err2, ret2) {
+            db.query("select @retour;", function(err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     fn("Erreur lors de l'insertion du congés.");
                 }
                 if (ret2[0]['@retour']) {
-                    return fn(ret2[0]['@retour']);
+                    var error = ret2[0]['@retour'];
+                    return fn(errors[error] || error);
                 }
                 fn(null, {});
             });
         });
         /*db.removeById("conges", id, function(err, ret) {
-            if (err) {
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de la suppresion du congés " + id);
-            }
-            fn(null, true);
+        if (err) {
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de la suppresion du congés " + id);
+        }
+        fn(null, true);
         });*/
     }
 };
