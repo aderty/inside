@@ -13,10 +13,7 @@ table th > i
 	position: absolute;
     margin-top: -10px;
 }
-.cell:nth-child(1) > *{
-      max-width: 80px;
-      width: 80px;
-}
+
 table td.cell {
         overflow: hidden;
           text-overflow: ellipsis;
@@ -318,6 +315,11 @@ input.ng-pristine + .input-help {
 #adminConges .multiple .input-help.motifexp {
   left: 230px;
   top: 27px;
+}
+
+#adminConges .cell:nth-child(1) > *{
+      max-width: 80px;
+      width: 80px;
 }
 
 #adminConges .cell:nth-child(5) > *{
