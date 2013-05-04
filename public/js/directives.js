@@ -107,7 +107,7 @@ directive('grid', function($compile, $timeout) {
                             '</tr>' +
                         '</thead>' +
                         '<tbody>' +
-                            '<tr ng-show="filter(row)" ng-repeat="row in data | orderBy:sorter:sort.descending">' +
+                            '<tr ng-show="filter(row)" ng-repeat="row in data |filter:filterRow | orderBy:sorter:sort.descending">' +
                                 '<td ng-repeat="def in options.columnDefs" class="cell" rowgrid>' +
                                 '</td>' +
                             '</tr>' +
@@ -128,16 +128,16 @@ directive('grid', function($compile, $timeout) {
                     $scope.selectedCls = function(column) {
                         return (column.field == $scope.sort.column || column.sort == $scope.sort.column) && 'sort-' + $scope.sort.descending;
                     };
-                    $scope.sortCls = function (column) {
+                    $scope.sortCls = function(column) {
                         return (column.field == $scope.sort.column || column.sort == $scope.sort.column) && $scope.sort.descending ? 'icon-chevron-up' : 'icon-chevron-down';
-                    }; 
-                    $scope.width = function (column) {
+                    };
+                    $scope.width = function(column) {
                         return column.width ? column.width + "px" : "auto";
                     };
 
                     $scope.options = $scope.$eval(tAttrs.ngOptions);
 
-                    $scope.sorter = function (row) {
+                    $scope.sorter = function(row) {
                         if ($scope.sort.column.indexOf(".") > -1) {
                             var list = $scope.sort.column.split("."), temp = row;
                             for (var i = 0, l = list.length; i < l; i++) {
@@ -146,6 +146,14 @@ directive('grid', function($compile, $timeout) {
                             return temp;
                         }
                         return row[$scope.sort.column];
+                    }
+
+                    $scope.filterRow = function(row) {
+                        if (!$scope.options.filterOptions || !$scope.options.filterOptions.filterRow) return true;
+                        for (var prop in $scope.options.filterOptions.filterRow) {
+                            if (!angular.equals(row[prop], $scope.options.filterOptions.filterRow[prop])) return false;
+                        }
+                        return true;
                     }
 
                     $scope.changeSorting = function(column) {
@@ -158,24 +166,27 @@ directive('grid', function($compile, $timeout) {
                         }
                     };
 
-                    $scope.filter = function (row) {
-                        if(!$scope.filterOptions || $scope.filterOptions.filterText == "") return true;
+                    $scope.filter = function(row) {
+                        if (!$scope.options.filterOptions || $scope.options.filterOptions.filterText == "") return true;
                         for (var prop in row) {
-                            if (row[prop] && typeof row[prop] != "function" && row[prop].toString().toLowerCase().indexOf($scope.filterOptions.filterText.toLowerCase()) > -1) return true;
+                            if (row[prop] && typeof row[prop] != "function") {
+                                if (row[prop].toString().toLowerCase().indexOf($scope.options.filterOptions.filterText.toLowerCase()) > -1) return true;
+                                if (typeof row[prop] == "object" && JSON.stringify(row[prop]).toLowerCase().indexOf($scope.options.filterOptions.filterText.toLowerCase()) > -1) return true;
+                            }
                         }
                         return false;
                     };
                     $scope.$root.$watch($scope.options.data, function(data) {
                         $scope.data = data;
                     });
-                    $scope.$root.$watch($scope.options.filterOptions, function (filterOptions) {
-                        $scope.filterOptions = angular.copy(filterOptions);
+                    $scope.$watch('filterOptions', function(filterOptions) {
+                        $scope.options.filterOptions = angular.copy(filterOptions);
                     }, true);
 
                     iElement.append($compile(template)($scope));
                 },
                 post: function preLink($scope, iElement, iAttrs, controller) {
-                    setTimeout(function () {
+                    setTimeout(function() {
                         $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
                     }, 250);
                 }
@@ -199,13 +210,13 @@ directive('rowgrid', function($compile) {
                     if ($scope.def.cellFilter) {
                         tmpl = tmpl + '|' + $scope.def.cellFilter;
                     }
-                    
+
                     $scope.$watch("row", function(data) {
                         $scope.row = data;
                     });
                     tmpl = tmpl + templateFin;
                     iElement.append($compile(tmpl)($scope));
-                }/*,
+                } /*,
                 post: function preLink($scope, iElement, iAttrs, controller) {
                     setTimeout(function () {
                         $('.matriculeCell>span').tooltip({ container: 'body' });

@@ -22,6 +22,14 @@ filter('motifConges', function ($rootScope) {
         return "";
     };
 }).
+filter('motifCongesShort', function($rootScope) {
+    return function(motif) {
+        for (var i = 0, l = $rootScope.motifsConges.length; i < l; i++) {
+            if ($rootScope.motifsConges[i].id == motif) return $rootScope.motifsConges[i].shortlibelle || $rootScope.motifsConges[i].libelle;
+        }
+        return "";
+    };
+}).
     filter('etatConges', function ($rootScope) {
         return function (motif) {
             for (var i = 0, l = $rootScope.etatsConges.length; i < l; i++) {

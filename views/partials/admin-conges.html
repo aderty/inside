@@ -1,7 +1,7 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="adminConges" ng-controller="CongesAdmin">
     <div class="row-fluid">
-        <div class="span7" ng-controller="CongesAdminGrid">
+        <div class="span8" ng-controller="CongesAdminGrid">
             <!--Sidebar content-->
             <div class="row-fluid">
                 <div class="span12">
@@ -28,7 +28,7 @@
             <!--<div class="row-fluid">-->
         </div>
         <!--<div class="span6">-->
-        <div class="span5">
+        <div class="span4">
             <!--Body content-->
             <div class="row">
                 <div class="span12">
@@ -70,11 +70,11 @@
     <div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>
 </script>
 <script type="text/x-handlebars-template" id="matriculeTmpl">
-    <div class="ngCellText matriculeCell"><span data-toggle="tooltip" title="{{row.user.nom}} {{row.user.prenom}}">{{row.user.nom}} {{row.user.prenom}}</span></div>
+    <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{row.user.nom}} {{row.user.prenom}}">{{row.user.nom}} {{row.user.prenom}}</div>
 </script>
 
 <script type="text/x-handlebars-template" id="justificationTmpl">
-    <div class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</span></div>
+    <div class="cellJustification" data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</div>
 </script>
 <script type="text/x-handlebars-template" id="validationTmpl">
   <div class="btn-group val">

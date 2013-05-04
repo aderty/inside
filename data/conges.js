@@ -61,7 +61,7 @@ var data = {
     },
     listConges: function(matricule, past, fn) {
         if (!past) {
-            db.query('SELECT * FROM conges WHERE user = ? AND fin > NOW();', [matricule], function(err, ret) {
+            db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin > NOW();', [matricule], function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");

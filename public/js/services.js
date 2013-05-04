@@ -53,9 +53,9 @@ angular.module('inside.services', ['ngResource']).
   factory('UsersService', function($resource, $q) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {
-             charge: { method: 'POST', params: { charge: true} },
-             searcher: { method: 'GET', params: { search: true }, isArray: true }
-       });
+                 charge: { method: 'POST', params: { charge: true} },
+                 searcher: { method: 'GET', params: { search: true }, isArray: true }
+             });
       resource.search = function(recherche) {
           var defered = $q.defer();
           var users = resource.searcher(recherche, function() {
@@ -84,15 +84,15 @@ angular.module('inside.services', ['ngResource']).
           }
       };*/
   }).
-  factory('CongesService', function ($resource, $q, $rootScope) {
+  factory('CongesService', function($resource, $q, $rootScope) {
       var resource = $resource('/data-conges/:id',
              { id: '@id' }, {
                  create: { method: 'POST', params: { creation: true} }
              });
       return {
-          list: function () {
+          list: function() {
               var defered = $q.defer();
-              var conges = resource.query(function () {
+              var conges = resource.query(function() {
                   // GET: /user/123/card
                   // server returns: [ {id:456, number:'1234', name:'Smith'} ];
                   for (var i = 0, l = conges.length; i < l; i++) {
@@ -107,98 +107,7 @@ angular.module('inside.services', ['ngResource']).
                       };
                       //conges[i].debutType = conges[i].debut.getHours() > 14 ? 0 : 1;
                       //conges[i].finType = conges[i].fin.getHours() > 14 ? 1 : 0;
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'CP_ANT') {
-                          conges[i].motifExcep = conges[i].motif;
-                          conges[i].motif = 'AE';
-                      }
-                      if (conges[i].user) {
-                          conges[i].user = {
-                              nom: conges[i].nom,
-                              prenom: conges[i].prenom,
-                              id: conges[i].user
-                          }
-                          delete conges[i].nom;
-                          delete conges[i].prenom;
-                      }
-                  }
-                  defered.resolve(conges);
-              });
-              return defered.promise;
-          },
-          save: function (conges, creation) {
-              var defered = $q.defer();
-              if (creation) {
-                  // Création -> Flag création
-                  conges.create = true;
-              }
-              if (conges.motifExcep) {
-                  conges.motif = conges.motifExcep;
-              }
-              conges.debut.date.setHours(22);
-              if (conges.debut.type == 1) {
-                  conges.debut.date.setHours(12);
-              }
-              conges.fin.date.setHours(22);
-              if (conges.fin.type == 0) {
-                  conges.fin.date.setHours(12);
-              }
-              conges.debut = conges.debut.date;
-              conges.fin = conges.fin.date;
-              resource.save(conges, function (reponse) {
-                  if (reponse.error) {
-                      $rootScope.error = reponse.error;
-                      defered.reject(reponse.error);
-                      return;
-                  }
-                  defered.resolve(reponse);
-              }, function (response) {
-                  $rootScope.error = reponse;
-                  defered.reject(response);
-              });
-              return defered.promise;
-          },
-          remove: function (conges) {
-              var defered = $q.defer();
-              resource.remove(conges, function (reponse) {
-                  if (reponse.error) {
-                      $rootScope.error = reponse.error;
-                      defered.reject(reponse.error);
-                      return;
-                  }
-                  defered.resolve(reponse);
-              }, function (response) {
-                  $rootScope.error = reponse;
-                  defered.reject(response);
-              });
-              return defered.promise;
-          }
-      };
-  }).
-  factory('CongesAdminService', function($resource, $q, $rootScope) {
-      var resource = $resource('/data-admin-conges/:id',
-             { id: '@id' }, {
-                 /*'queryValidation': { method: 'GET', isArray: true, params: { etat: 1} },
-                 'queryValider': { method: 'GET', isArray: true, params: { etat: 2} },*/
-                 create: { method: 'POST', params: { create: true } },
-                 updateEtat: { method: 'POST', params: { etat: true } }
-             });
-      return {
-          list: function (options) {
-              var defered = $q.defer();
-              var conges = resource.query(options, function () {
-                  // GET: /user/123/card
-                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
-                  for (var i = 0, l = conges.length; i < l; i++) {
-                      conges[i].creation = new Date(conges[i].creation);
-                      conges[i].debut = {
-                          date: new Date(conges[i].debut),
-                          type: new Date(conges[i].debut).getHours() > 14 ? 0 : 1
-                      };
-                      conges[i].fin = conges[i].fin = {
-                          date: new Date(conges[i].fin),
-                          type: new Date(conges[i].fin).getHours() > 14 ? 1 : 0
-                      }
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'CP_ANT') {
+                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'RTTE' && conges[i].motif != 'CP_ANT') {
                           conges[i].motifExcep = conges[i].motif;
                           conges[i].motif = 'AE';
                       }
@@ -235,6 +144,111 @@ angular.module('inside.services', ['ngResource']).
               }
               conges.debut = conges.debut.date;
               conges.fin = conges.fin.date;
+              resource.save(conges, function(reponse) {
+                  if (reponse.error) {
+                      $rootScope.error = reponse.error;
+                      defered.reject(reponse.error);
+                      return;
+                  }
+                  conges.user = {
+                      nom: conges.nom,
+                      prenom: conges.prenom,
+                      id: conges.user
+                  }
+                  defered.resolve(reponse);
+              }, function(response) {
+                  $rootScope.error = reponse;
+                  defered.reject(response);
+              });
+              return defered.promise;
+          },
+          remove: function(conges) {
+              var defered = $q.defer();
+              resource.remove(conges, function(reponse) {
+                  if (reponse.error) {
+                      $rootScope.error = reponse.error;
+                      defered.reject(reponse.error);
+                      return;
+                  }
+                  defered.resolve(reponse);
+              }, function(response) {
+                  $rootScope.error = reponse;
+                  defered.reject(response);
+              });
+              return defered.promise;
+          }
+      };
+  }).
+  factory('CongesAdminService', function($resource, $q, $rootScope) {
+      var resource = $resource('/data-admin-conges/:id',
+             { id: '@id' }, {
+                 /*'queryValidation': { method: 'GET', isArray: true, params: { etat: 1} },
+                 'queryValider': { method: 'GET', isArray: true, params: { etat: 2} },*/
+                 create: { method: 'POST', params: { create: true} },
+                 updateEtat: { method: 'POST', params: { etat: true} }
+             });
+      return {
+          list: function(options) {
+              var defered = $q.defer();
+              var conges = resource.query(options, function() {
+                  // GET: /user/123/card
+                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                  for (var i = 0, l = conges.length; i < l; i++) {
+                      conges[i].creation = new Date(conges[i].creation);
+                      conges[i].debut = {
+                          date: new Date(conges[i].debut),
+                          type: new Date(conges[i].debut).getHours() > 14 ? 0 : 1
+                      };
+                      conges[i].fin = conges[i].fin = {
+                          date: new Date(conges[i].fin),
+                          type: new Date(conges[i].fin).getHours() > 14 ? 1 : 0
+                      }
+                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'RTTE' && conges[i].motif != 'CP_ANT') {
+                          conges[i].motifExcep = conges[i].motif;
+                          conges[i].motif = 'AE';
+                      }
+                      if (conges[i].user) {
+                          conges[i].user = {
+                              nom: conges[i].nom,
+                              prenom: conges[i].prenom,
+                              id: conges[i].user
+                          }
+                          delete conges[i].nom;
+                          delete conges[i].prenom;
+                          conges[i].typeuser = conges[i].user.id == 999999 ? 2 : 1;
+                      }
+                  }
+                  defered.resolve(conges);
+              });
+              return defered.promise;
+          },
+          save: function(conges, creation) {
+              var defered = $q.defer();
+              if (creation) {
+                  // Création -> Flag création
+                  conges.create = true;
+              }
+              if (conges.motifExcep) {
+                  conges.motif = conges.motifExcep;
+              }
+              if (conges.typeuser == 2) {
+                  conges.user = {
+                      id: 999999,
+                      nom: 'Tous',
+                      prenom: ''
+                  };
+              }
+              delete conges.typeuser;
+              conges.debut.date.setHours(22);
+              if (conges.debut.type == 1) {
+                  conges.debut.date.setHours(12);
+              }
+              conges.fin.date.setHours(22);
+              if (conges.fin.type == 0) {
+                  conges.fin.date.setHours(12);
+              }
+              conges.debut = conges.debut.date;
+              conges.fin = conges.fin.date;
               if (conges.user && conges.user.id) {
                   conges.nom = conges.user.nom;
                   conges.prenom = conges.user.prenom;
@@ -246,8 +260,13 @@ angular.module('inside.services', ['ngResource']).
                       defered.reject(reponse.error);
                       return;
                   }
+                  conges.user = {
+                      nom: conges.nom,
+                      prenom: conges.prenom,
+                      id: conges.user
+                  }
                   defered.resolve(reponse);
-              }, function (response) {
+              }, function(response) {
                   $rootScope.error = response;
                   defered.reject(response);
               });
@@ -262,7 +281,7 @@ angular.module('inside.services', ['ngResource']).
                       return;
                   }
                   defered.resolve(reponse);
-              }, function (response) {
+              }, function(response) {
                   $rootScope.error = response;
                   defered.reject(response);
               });
@@ -277,7 +296,7 @@ angular.module('inside.services', ['ngResource']).
                       return;
                   }
                   defered.resolve(reponse);
-              }, function (response) {
+              }, function(response) {
                   $rootScope.error = response;
                   defered.reject(response);
               });

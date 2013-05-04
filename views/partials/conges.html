@@ -50,7 +50,18 @@
             <div class="row">
                 <div class="span12" ng-controller="CongesGrid">
                     <!--Grilles des congés-->
-                    <grid id="congesGrid" ng-options="gridOptionsConges"></grid>
+                        <tabs>
+                            <pane heading="Tous mes congés à venir">
+                            </pane>
+                            <pane heading="Congés en attente de validation">
+                            </pane>
+                            <pane heading="Congés validés">
+                            </pane>
+                            <pane heading="Congés refusés">
+                            </pane>
+                        </tabs>
+                        <grid id="congesGrid" ng-options="gridOptionsConges"></grid>
+                    
                     <!--<div id="congesGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>-->
                 </div>
                 <!-- <div class="span12">-->

@@ -1,7 +1,13 @@
+.tab-pane 
+{
+	overflow:auto;
+}
+
 table
 {
 	font-size: 12px;
 	text-overflow: ellipsis;
+	max-width: inherit;
 }
 table th
 {
@@ -21,11 +27,20 @@ table td.cell {
           vertical-align: middle;
 
     }
-    table td.cell > span {
+table td.cell > span,
+table td.cell > div {
         overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-    }
+}
+/* Colonne nom */
+#usersGrid .cell:nth-child(2) > *{
+      max-width: 90px;
+}
+/* Colonne prenom */ 
+#usersGrid .cell:nth-child(3) > *{
+      max-width: 100px;
+}
 
 .background {
         background: transparent url('/img/bg.jpg') center center no-repeat;
@@ -250,6 +265,10 @@ input.ng-pristine + .input-help {
 		to(#96274c));
 }
 
+#mainConges .cell:nth-child(7) > *{
+      max-width: 130px;
+}
+
 #mainConges .typeDate
 {
 	margin-left: 400px;
@@ -284,10 +303,15 @@ input.ng-pristine + .input-help {
 /*#congesAdminGrid {
     height: 80%;
 }*/
+/* Message validation */
+#adminConges .form-actions .label
+{
+	float: right;
+}
 
 /* textarea justification */
 #adminConges .justification {
-    width: 270px;
+    width: 210px;
 }
 
 #adminConges .btn-group.val {
@@ -328,4 +352,11 @@ input.ng-pristine + .input-help {
 
 #adminConges .matriculeCell > * {
     width: 80px;
+}
+
+#adminConges .cellJustification
+{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100px;
 }
