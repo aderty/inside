@@ -20,6 +20,10 @@ app.run(["$rootScope", function($rootScope) {
         "admin-conges": { 
             name: "Gestion des congés",
             searcher: "admin-conges"
+        },
+        activite: { 
+            name: "Mon activité",
+            searcher: false
         }
     }
     $rootScope.roles = [
@@ -492,6 +496,7 @@ function CongesGrid($scope, $rootScope, CongesService, $timeout) {
     }
 
     var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
+    var justificationCellTemplate = $.trim($('#justificationTmpl').html());
 
     $scope.gridOptionsConges = {
         data: 'conges',
@@ -502,7 +507,7 @@ function CongesGrid($scope, $rootScope, CongesService, $timeout) {
             { field: 'duree', displayName: 'Duree', width: 35, headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'motif', displayName: 'Modif', width: 65, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'etat', displayName: 'Etat', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
         ],
@@ -824,7 +829,7 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
         columnDefs: [
             { field: 'user', displayName: 'Utilisateur', width: 85, cellTemplate: matriculeCellTemplate, resizable: false },
             { field: 'debut', displayName: 'Date de défut', width: 130, cellFilter: "momentCongesDebut:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'debut.date' },
-        { field: 'fin', displayName: 'Date de fin', width: 130, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
+            { field: 'fin', displayName: 'Date de fin', width: 130, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
             { field: 'duree', displayName: 'Duree', width: 60, headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'motif', displayName: 'Modif', width: 60, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
@@ -861,3 +866,127 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
         }, 250);
     });
 };
+
+function ActiviteMain($scope, $rootScope, uiCalendarConfig) {
+    $scope.calendarConfig = {
+        height: 450,
+        editiable: true,
+        dayClick: $scope.alertEventOnClick
+    };
+
+    $scope.activite = {
+        events: [
+            {
+                title: 'Event1',
+                start: '2011-04-04'
+            },
+            {
+                title: 'Event2',
+                start: '2011-05-05'
+            }
+        ],
+        color: 'yellow',   // an option!
+        textColor: 'black' // an option!
+    };
+
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+    /* event source that pulls from google.com */
+    $scope.eventSource = {
+        
+    };
+    /* event source that contains custom events on the scope */
+    $scope.events = [
+      { title: 'All Day Event', start: new Date(y, m, 1) },
+      { title: 'Long Event', start: new Date(y, m, d - 5), end: new Date(y, m, d - 2) },
+      { id: 999, title: 'Repeating Event', start: new Date(y, m, d - 3, 16, 0), allDay: false },
+      { id: 999, title: 'Repeating Event', start: new Date(y, m, d + 4, 16, 0), allDay: false },
+      { title: 'Birthday Party', start: new Date(y, m, d + 1, 19, 0), end: new Date(y, m, d + 1, 22, 30), allDay: false },
+      { title: 'Click for Google', start: new Date(y, m, 28), end: new Date(y, m, 29), url: 'http://google.com/' }
+    ];
+    /* event source that calls a function on every view switch */
+    $scope.eventsF = function (start, end, callback) {
+        var s = new Date(start).getTime() / 1000;
+        var e = new Date(end).getTime() / 1000;
+        var m = new Date(start).getMonth();
+        var events = [{ title: 'Feed Me ' + m, start: s + (50000), end: s + (100000), allDay: false, className: ['customFeed'] }];
+        callback(events);
+    };
+    /* alert on eventClick */
+    $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
+        $scope.$apply(function () {
+            $scope.alertMessage = ('Day Clicked ' + date);
+        });
+    };
+    /* alert on Drop */
+    $scope.alertOnDrop = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+        $scope.$apply(function () {
+            $scope.alertMessage = ('Event Droped to make dayDelta ' + dayDelta);
+        });
+    };
+    /* alert on Resize */
+    $scope.alertOnResize = function (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
+        $scope.$apply(function () {
+            $scope.alertMessage = ('Event Resized to make dayDelta ' + minuteDelta);
+        });
+    };
+    /* add and removes an event source of choice */
+    $scope.addRemoveEventSource = function (sources, source) {
+        var canAdd = 0;
+        angular.forEach(sources, function (value, key) {
+            if (sources[key] === source) {
+                sources.splice(key, 1);
+                canAdd = 1;
+            }
+        });
+        if (canAdd === 0) {
+            sources.push(source);
+        }
+    };
+    /* add custom event*/
+    $scope.addEvent = function () {
+        $scope.events.push({
+            title: 'Open Sesame',
+            start: new Date(y, m, 28),
+            end: new Date(y, m, 29),
+            className: ['openSesame']
+        });
+    };
+    /* remove event */
+    $scope.remove = function (index) {
+        $scope.events.splice(index, 1);
+    };
+    /* Change View */
+    $scope.changeView = function (view) {
+        $scope.myCalendar.fullCalendar('changeView', view);
+    };
+
+    var lastValidDate = new Date(new Date().getFullYear(), new Date().getMonth(),1)
+    /* config object */
+    $scope.uiConfig = {
+        calendar: angular.extend({
+            editable: true,
+            header: {
+                //left: 'month basicWeek basicDay agendaWeek agendaDay',
+                //center: 'title',
+                right: 'today prev,next'
+            },
+            viewDisplay: function(view) {
+                if (view.start >= lastValidDate) {
+                    //header.disableButton('prev');
+                    $(".fc-button-next").attr("disabled", "disabled");
+                } else {
+                    //header.enableButton('prev');
+                    $(".fc-button-next").removeAttr("disabled");
+                }
+            },
+            dayClick: $scope.alertEventOnClick,
+            eventDrop: $scope.alertOnDrop,
+            eventResize: $scope.alertOnResize,
+        }, jQuery.fullCalendar)
+    };
+    /* event sources array*/
+    $rootScope.eventSources = $scope.events;
+}

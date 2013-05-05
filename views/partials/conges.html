@@ -95,6 +95,9 @@
         </ul>
     </div>
 </script>
+<script type="text/x-handlebars-template" id="justificationTmpl">
+    <div class="cellJustification" data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</div>
+</script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
     <a href="#" title="Modifier" ng-show="isEditable(row)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
 </script>

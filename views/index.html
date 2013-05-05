@@ -28,7 +28,7 @@
                   <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
                       <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon-user"></i> Utilisateurs</a></li>
-                      <li authenticate><a href="#"><i class="icon-tasks"></i> Activité</a></li>
+                      <li authenticate><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
                       <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
                       <li authenticate="2" class="dropdown" ng-class="{active: page == pages.conges.name || page == pages['admin-conges'].name}">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-globe"></i> Congés <span class="badge badge-important" ng-class="{masquer: infos.nbMesCongesVal == 0 && infos.nbCongesVal == 0}">{{infos.nbMesCongesVal + infos.nbCongesVal}}</span> <b class="caret"> </b></a>

@@ -1,4 +1,4 @@
-﻿var app = angular.module('inside', ['inside.directives', 'inside.filters', 'inside.services', 'ngGrid', 'ui.bootstrap', 'ui'])
+﻿var app = angular.module('inside', ['inside.directives', 'inside.filters', 'inside.services', 'ui.bootstrap', 'ui', 'ui.calendar'])
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $routeProvider
         .when('/index', {
@@ -20,6 +20,10 @@
       .when('/admin-conges', {
            templateUrl: 'admin-partials/admin-conges.html',
            controller: appController
+      })
+      .when('/activite', {
+          templateUrl: 'partials/activite.html',
+          controller: appController
       })
       .when('/logout', {
           redirectTo: '/logout'
