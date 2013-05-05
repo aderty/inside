@@ -82,6 +82,25 @@ var routes = {
     }
 };
 exports.routes = routes;
+exports.setUser = function (req, res, user) {
+    setSession(req, user);
+    setCookie(res, user);
+}
+exports.infos = function (req, res, fn) {
+    if (!req.session || !req.session.username) {
+        return fn(null, {});
+    }
+    data.users.infos(req.session.username, req.session.role, function (err, infos) {
+        if (infos.roleChanged) {
+            exports.setUser(req, res, {
+                id: req.session.username,
+                role: parseInt(infos.roleChanged),
+                prenom: req.session.prenom
+            });
+        }
+        fn(err, infos);
+    });
+}
 exports.getNextId = function (fn) {
     data.users.getNextId(fn);
 }

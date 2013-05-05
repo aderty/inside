@@ -64,6 +64,7 @@ app.run(["$rootScope", function($rootScope) {
     $rootScope.role = window.config.role;
     $rootScope.username = window.config.prenom;
     $rootScope.searcher = false;
+    $rootScope.infos = window.config.infos;
 }]);
 
 // Contrôleur de la navigation de l'application
@@ -116,6 +117,7 @@ function LoginController($scope, $rootScope, LoginService) {
             $rootScope.connected = true;
             $rootScope.username = response.prenom;
             $rootScope.role = response.role;
+            $rootScope.infos = response.infos;
         });
     }
 }
@@ -494,7 +496,7 @@ function CongesGrid($scope, $rootScope, CongesService, $timeout) {
             { field: 'debut', displayName: 'Date de défut', width: 160, cellFilter: "momentCongesDebut:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'debut.date' },
             { field: 'fin', displayName: 'Date de fin', width: 160, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
             { field: 'duree', displayName: 'Duree', width: 35, headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'motif', displayName: 'Modif', width: 50, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'motif', displayName: 'Modif', width: 65, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'etat', displayName: 'Etat', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
@@ -573,6 +575,7 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
             if (result === 'yes') {
                 CongesAdminService.updateEtat(conges, false).then(function (reponse) {
                     $rootScope.error = null;
+                    $rootScope.infos.nbCongesVal--;
                     $scope.currentConges.etat = 2;
                     var index = $rootScope.congesAvalider.indexOf(row);
                     if (index > -1) {
@@ -599,6 +602,7 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
             if (result === 'yes') {
                 CongesAdminService.updateEtat(conges, false).then(function (reponse) {
                     $rootScope.error = null;
+                    $rootScope.infos.nbCongesVal--;
                     $scope.currentConges.etat = 3;
                     var index = $rootScope.congesAvalider.indexOf(row);
                     if (index > -1) {

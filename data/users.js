@@ -26,7 +26,42 @@ db.events.once('connected', function (result) {
     console.log("connected to MySQL");
 });
 
+var errors = {
+    USER_INVALIDE: "Votre login n'est pas autorisé"
+}
+
 var data = {
+    infos: function (id, role, fn) {
+        db.query("CALL StartUser(?, ?, @retour, @params)", [id, role], function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des informations de démarage.");
+            }
+            db.query("select @retour,@params;", function (err2, ret2) {
+                if (err2 || ret2.length == 0) {
+                    console.log('ERROR: ' + err2);
+                    fn("Erreur lors de l'insertion du congés.");
+                }
+                if (ret2[0]['@retour']) {
+                    var error = ret2[0]['@retour'];
+                    return fn(errors[error] || error);
+                }
+                var params = ret2[0]['@params'].split('|'),
+                infos = {};
+                if (params && params.length) {
+                    for (var i = 0, l = params.length; i < l; i++) {
+                        try {
+                            infos[params[i].split(':')[0]] = parseInt(params[i].split(':')[1]);
+                        }
+                        catch (e) {
+                            infos[params[i].split(':')[0]] = params[i].split(':')[1];
+                        }
+                    }
+                }
+                fn(null, infos);
+            });
+        });
+    },
     login: function(email, pwd, fn) {
         // Chiffrage du pass en sha1
         var hash = crypto.createHash('sha1').update(pwd).digest("hex");
@@ -37,7 +72,16 @@ var data = {
                 return fn("Erreur lors de la tentative de login.");
             }
             if (ret && ret.length == 1) {
-                return fn(null, cleanUsers(ret[0]));
+                var user = cleanUsers(ret[0]);
+                data.infos(user.id, user.role, function (err, infos) {
+                    if (err) {
+                        console.log('ERROR: ' + err);
+                        return fn("Erreur lors de la récupération des informations de démarage.");
+                    }
+                    user.infos = infos;
+                    return fn(null, user);
+                });
+                return;
             }
             return fn(null, false);
         });

@@ -17,10 +17,17 @@ exports.manifest = function (req, res) {
 exports.index = function (req, res) {
     //res.setHeader('Cache-Control', 'public, max-age=' + 31557600000);
     res.setHeader('Cache-Control', 'no-cache');
-    res.render('index', {
-        connected: req.session.username ? true : false,
-        role: req.session.role ? req.session.role : 0,
-        prenom: req.session.prenom
+    users.infos(req, res, function (err, infos) {
+        if (err) {
+            console.log(err);
+            res.redirect("/logout");
+        }
+        res.render('index', {
+            connected: req.session.username ? true : false,
+            role: req.session.role ? req.session.role : 0,
+            prenom: req.session.prenom,
+            infos: infos || {}
+        });
     });
 };
 
