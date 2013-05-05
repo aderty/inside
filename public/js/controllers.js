@@ -395,6 +395,9 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         }
         CongesService.save(conges, $scope.edition == 1).then(function (reponse) {
             $rootScope.error = null;
+            if ($scope.edition == 1) {
+                $rootScope.infos.nbCongesVal++;
+            }
             $scope.edition = 0;
             if (reponse.id) {
                 currentConges.id = reponse.id;
@@ -404,7 +407,6 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             }
             var index = $rootScope.conges.indexOf(currentConges);
             if (index == -1) {
-
                 $rootScope.conges.push(currentConges);
             }
             user = UsersService.get({ id: 0 }, function (retour) {
