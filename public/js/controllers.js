@@ -165,8 +165,9 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         $scope.lblMode = "Modification de "; // +$scope.currentUser.nom + " " + $scope.currentUser.prenom;
     }
 
-    $scope.delete = function(row) {
-        var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûr de supprimer ' + row.prenom + ' ' + row.nom + '?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+    $scope.delete = function (row) {
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûr de supprimer ' + row.prenom + ' ' + row.nom + '?', btns);
         msgbox.open().then(function(result){
             if (result === 'yes') {
                 UsersService.remove(row, function (err) {
@@ -356,8 +357,9 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.lblMode = "Modification d'une demande de congés";
     }
 
-    $scope.delete = function(row) {
-        var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+    $scope.delete = function (row) {
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
         msgbox.open().then(function(result){
             if (result === 'yes') {
                 CongesService.remove(row).then(function (reponse) {
@@ -570,7 +572,9 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
         if ($scope.currentConges.etat == 2 || $scope.currentConges.etat == 3) return;
         var conges = angular.copy($scope.currentConges);
         conges.etat = 2;
-        var msgbox = $dialog.messageBox('Validation d\'un congé', 'Etes-vous sûr de vouloir valider la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+        var msg = 'Etes-vous sûr de vouloir valider la demande de congés ?';
+        var btns = [{ label: 'Oui', result: 'yes' , cssClass: 'btn-primary'}, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Validation d\'un congé', msg, btns);
         msgbox.open().then(function (result) {
             if (result === 'yes') {
                 CongesAdminService.updateEtat(conges, false).then(function (reponse) {
@@ -597,7 +601,8 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
         if ($scope.currentConges.etat == 3) return;
         var conges = angular.copy($scope.currentConges);
         conges.etat = 3;
-        var msgbox = $dialog.messageBox('Refus d\'un congé', 'Etes-vous sûr de vouloir refuser la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Refus d\'un congé', 'Etes-vous sûr de vouloir refuser la demande de congés ?', btns);
         msgbox.open().then(function (result) {
             if (result === 'yes') {
                 CongesAdminService.updateEtat(conges, false).then(function (reponse) {
@@ -656,7 +661,8 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
     }
 
     $scope.delete = function (row) {
-        var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', [{ label: 'Oui', result: 'yes' }, { label: 'Non', result: 'no' }]);
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
         msgbox.open().then(function (result) {
             if (result === 'yes') {
                 CongesAdminService.remove(row).then(function (reponse) {
