@@ -970,13 +970,13 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     /* alert on eventClick */
     $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
         $scope.$apply(function () {
-            $scope.eventSelectionne = new moment(date).format('LLLL');
+            $scope.eventSelectionne = new moment(date).format('dddd D MMMM YYYY');
         });
     };
     $scope.eventOnClick = function (calEvent, jsEvent, view) {
         $scope.$apply(function () {
             $scope.currentDate = calEvent.data;
-            $scope.eventSelectionne = new moment(calEvent.start).format('LLLL');
+            $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
         });
     };
     
