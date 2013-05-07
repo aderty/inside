@@ -360,3 +360,16 @@ input.ng-pristine + .input-help {
 	text-overflow: ellipsis;
 	width: 100px;
 }
+/* Popover du calendier de l'activité */
+.fc-view {
+	overflow: visible;
+}
+/* Event congé */
+.sleeping
+{
+	background-color: rgb(138, 192, 79);
+}
+
+.popover.in .arrow{
+        top: 85px;
+}

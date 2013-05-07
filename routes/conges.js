@@ -17,7 +17,16 @@ var routes = {
     // Lecture, via GET
     list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.conges.listConges(req.session.username,false, dataCallback(res));
+        var options = {
+            past: false
+        };
+        if (req.query.start) {
+            options.start = new Date(req.query.start);
+        }
+        if (req.query.end) {
+            options.end = new Date(req.query.end);
+        }
+        data.conges.listConges(req.session.username, options, dataCallback(res));
     },
 
     get: function(req, res) {
@@ -26,7 +35,7 @@ var routes = {
     },
 
     // Ajout ou Mise à jour via POST
-    save: function (req, res) {
+    save: function(req, res) {
         var conges = req.body;
         conges.user = req.session.username;
         conges.type = 'N';
@@ -35,7 +44,7 @@ var routes = {
             data.conges.addConges(conges, dataCallback(res));
             return;
         }
-        data.conges.updateConges(conges, false,dataCallback(res));
+        data.conges.updateConges(conges, false, dataCallback(res));
     },
 
     // Ajout via POST

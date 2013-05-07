@@ -59,9 +59,19 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    listConges: function(matricule, past, fn) {
-        if (!past) {
-            db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin > NOW();', [matricule], function(err, ret) {
+    listConges: function(matricule, options, fn) {
+        if (!options.past) {
+            if (options.start && options.end) {
+                db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND debut >= ? AND fin <= ? ORDER BY debut;', [matricule, options.start, options.end], function(err, ret) {
+                    if (err) {
+                        console.log('ERROR: ' + err);
+                        return fn("Erreur lors de la récupération des congès.");
+                    }
+                    fn(null, cleanConges(ret));
+                });
+                return;
+            }
+            db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin > NOW() ORDER BY debut;', [matricule], function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");

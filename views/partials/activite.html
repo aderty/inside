@@ -6,17 +6,16 @@
             <div class="row">
                 <div class="span6 offset3">
                     <!--Grilles des congés-->
-                        <tabs>
-                            <pane heading="Tous mes congés à venir">
-                            </pane>
-                            <pane heading="Congés en attente de validation">
-                            </pane>
-                            <pane heading="Congés validés">
-                            </pane>
-                            <pane heading="Congés refusés">
-                            </pane>
-                        </tabs>
-                        <div id="activiteCalendar" ui-calendar="uiConfig.calendar" ng-model="events" >
+                    <div class="alert alert-info" ng-class="{masquer: !eventSelectionne}">
+                      <h4>Journée sélectionnée</h4> {{eventSelectionne}}
+                    </div>
+                </div>
+                <!-- <div class="span12">-->
+            </div>
+            <div class="row">
+                <div class="span6 offset3">
+                    <!--Grilles des congés-->
+                        <div id="activiteCalendar" ui-calendar="uiConfig.calendar" config="uiConfig.calendar" ng-model="eventSources" >
                 </div>
                 <!-- <div class="span12">-->
             </div>
@@ -27,3 +26,23 @@
     <!--<div class="row-fluid">-->
 </div>
 <!--<div class="container-fluid">-->
+
+<script type="text/x-handlebars-template" id="popover_content_wrapper">
+  <h3 class="popover-title">Détails de la journée</h3>
+  <accordion close-others="true">
+    <accordion-group heading="Activité effectuée" is-open="true">
+      <p>Choisisez l'activté effectuée cette journée :</p>
+      <select id="inputType" name="inputType" required ng-model="currentDate.type" ng-options="motif.id as motif.libelle for motif in typeActivite">
+      </select>
+    </accordion-group>
+    <accordion-group heading="Informations complémentaires">
+      <p>Remarques...</p>
+        <textarea id="inputInfos" name="inputInfos" ng-model="currentDate.informations"></textarea>
+    </accordion-group>
+  </accordion>
+  <div class="modal-footer">
+    <button class="btn btn-primary" >Valider</button>
+    <button class="btn" ng-click="popClose();">Fermer</button>
+  </div>
+</script>
+

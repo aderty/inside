@@ -90,9 +90,9 @@ angular.module('inside.services', ['ngResource']).
                  create: { method: 'POST', params: { creation: true} }
              });
       return {
-          list: function() {
+          list: function(options) {
               var defered = $q.defer();
-              var conges = resource.query(function() {
+              var conges = resource.query(options, function() {
                   // GET: /user/123/card
                   // server returns: [ {id:456, number:'1234', name:'Smith'} ];
                   for (var i = 0, l = conges.length; i < l; i++) {
