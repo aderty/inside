@@ -226,11 +226,6 @@ function UsersGrid($scope, $rootScope, UsersService) {
         useExternalFilter: false
     };
 
-    /*$scope.$on('search', function (event, data) {
-        if (data.searcher == "users") {
-            $scope.filterOptions.filterText = data.search;
-        }
-    });*/
     $scope.$on('search', function (event, data) {
         if (data.searcher == "users") {
             $scope.filterOptions = {
@@ -767,31 +762,6 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
             $scope.gridOptionsCongesRef.filterOptions.filterText = data.search;
         }
     });
-    /*setTimeout(function () {
-        $(".tabbable").each(function () {
-            $(this).scope().select = (function (select) {
-                return function (e) {
-                    select.apply(this, arguments);
-                    if (e.heading == "Congés en attente de validation") {
-                        $timeout(layoutPlugin1.updateGridLayout, 0);
-                    }
-                    else if (e.heading == "Congés validés") {
-                        $timeout(layoutPlugin2.updateGridLayout, 0);
-                    }
-                    else {
-                        $timeout(layoutPlugin3.updateGridLayout, 0);
-                    }
-                };
-            })($(this).scope().select)
-        });
-        updateLayout();
-    }, 250);*/
-
-    function updateLayout() {
-        /*layoutPlugin1.updateGridLayout();
-        layoutPlugin2.updateGridLayout();
-        layoutPlugin3.updateGridLayout();*/
-    };
 
     $scope.pagingOptions = {
         pageSizes: [25, 50, 100],
@@ -821,9 +791,6 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
     var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
     var justificationCellTemplate = $.trim($('#justificationTmpl').html());
     var validationCellTemplate = $.trim($('#validationTmpl').html());
-    /*var layoutPlugin1 = new ngGridLayoutPlugin();
-    var layoutPlugin2 = new ngGridLayoutPlugin();
-    var layoutPlugin3 = new ngGridLayoutPlugin();*/
 
     var defauts = {
         columnDefs: [
@@ -847,16 +814,13 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
         filterOptions: $scope.filterOptions
     };
     $scope.gridOptionsConges = angular.extend({
-        data: "congesAvalider"/*,
-        plugins: [layoutPlugin1]*/
+        data: "congesAvalider"
     }, defauts);
     $scope.gridOptionsCongesVal = angular.extend({
-        data: "congesValider"/*,
-        plugins: [layoutPlugin2]*/
+        data: "congesValider"
     }, defauts);
     $scope.gridOptionsCongesRef = angular.extend({
-        data: "congesRefuser"/*,
-        plugins: [layoutPlugin3]*/
+        data: "congesRefuser"
     }, defauts);
     
     
@@ -874,8 +838,117 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     var m = date.getMonth();
     var y = date.getFullYear();
 
+    function businessDay(momentDate) {
+        return momentDate.format("d") != 0 && momentDate.format("d") != 6;
+    }
+
+    $scope.user = UsersService.get({ id: 0 }, function (retour) {
+    });
+
+    $scope.nbJourTravailles = 0;
+    $scope.nbJourNonTravailles = 0;
+    $scope.eventSelectionne = null;
+    $scope.events = [];
+
     $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
     $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Journée travaillée' });
+
+    $scope.refresh = function () {
+        $scope.activiteCalendar.fullCalendar('refetchEvents');
+    };
+
+    $scope.load = function (callback) {
+        $scope.eventSelectionne = null;
+
+        CongesService.list({
+            start: $scope.start,
+            end: $scope.end
+        }).then(function (conges) {
+            $scope.conges = conges;
+            $scope.indexEvents = [];
+            $scope.events = [];
+            // On ré-init le nombre de jours travaillés
+            $scope.nbJourTravailles = 0;
+            // On ré-init le nombre de jours non travaillés
+            $scope.nbJourNonTravailles = 0;
+
+            var cong = $scope.conges.shift();
+            var lastCong;
+            var first = true;
+            var inConges = false;
+            var current = new moment($scope.start);
+
+            function startEventConges(current, skip) {
+                inConges = true;
+                cong.type = cong.motif;
+                if (businessDay(current) && !skip) {
+                    var data = angular.copy(cong);
+                    data.start = true;
+                    $scope.events.push({ title: $filter('motifCongesShort')(cong.type), start: new Date(current.toDate()), data: data });
+                    $scope.indexEvents[current.date()] = $scope.events.length - 1;
+                    $scope.nbJourNonTravailles++;
+                }
+                lastCong = angular.copy(cong);
+                cong = $scope.conges.shift();
+            }
+            function inEventConges(current) {
+                var data = angular.copy(lastCong);
+                if (lastCong.fin.date.getDate() <= current.date()) {
+                    data.end = true;
+                }
+                $scope.events.push({ title: $filter('motifCongesShort')(lastCong.type), start: new Date(current.toDate()), data: data });
+                $scope.indexEvents[current.date()] = $scope.events.length - 1;
+                $scope.nbJourNonTravailles++;
+            }
+            function endEventConges(current) {
+                inConges = false;
+            }
+            function workEvent(current) {
+                $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT' } });
+                $scope.indexEvents[current.date()] = $scope.events.length - 1;
+                $scope.nbJourTravailles++;
+            }
+            // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
+            if (current.date() != 1) {
+                while (current.date() != 1) {
+                    /*if (inConges && businessDay(current)) {
+                        inEventConges(current, true);
+                    }*/
+                    if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                        endEventConges(current);
+                    }
+                    if (cong && cong.debut.date.getDate() == current.date()) {
+                        startEventConges(current, true);
+                    }
+                    current = current.add('days', 1);
+                }
+            }
+            // Traitement du 1er du mois à la fin du mois.
+            while (current.date() != 1 || first) {
+                first = false; // On signale qu'on a démarré
+                if (inConges && businessDay(current)) {
+                    // Dans une période de congés.
+                    inEventConges(current);
+                }
+                if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                    // A la fin d'une période de congés.
+                    endEventConges(current);
+                }
+                if (cong && cong.debut.date.getDate() == current.date()) {
+                    // Au début d'une période de congés.
+                    startEventConges(current);
+                }
+                if (!inConges && businessDay(current) && !$scope.indexEvents[current.date()]) {
+                    // Journée travaillée.
+                    workEvent(current);
+                }
+                current = current.add('days', 1); // On incrément la date courante dans le mois.
+            }
+            if (callback) {
+                callback($scope.events);
+            }
+        });
+    };
 
     /* event source that contains custom events on the scope */
     $scope.eventsA = [];
@@ -891,82 +964,72 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
         var s = new Date(start).getTime() / 1000;
         var e = new Date(end).getTime() / 1000;
         var m = new Date(start).getMonth();
-        $timeout(function(){
-        CongesService.list({
-            start: start,
-            end: end
-        }).then(function (conges) {
-            $scope.conges = conges;
-            $scope.indexEvents = [];
-            $scope.events = [];
-            
-            var cong = $scope.conges.shift();
-            var lastCong;
-            var inConges = false;
-            var current = new moment(start);
-            if(current.date() != 1){
-                while (current.date() != 1){
-                    if(inConges && lastCong && lastCong.fin.date.getDate() <= current.date()){
-                        inConges = false;
-                    }
-                    if(cong && cong.debut.date.getDate() == current.date()){
-                        inConges = true;
-                        cong.type = cong.motif;
-                        $scope.events.push({ title: $filter('motifCongesShort')(cong.motif), start: cong.debut.date, end: cong.fin.date, className: ['sleeping'], data: cong });
-                        $scope.indexEvents[cong.debut.date.getDate()] = $scope.events.length - 1;
-                        $scope.indexEvents[cong.fin.date.getDate()] = $scope.events.length - 1;
-                        lastCong = angular.copy(cong);
-                        cong = $scope.conges.shift();
-                    }
-                    current = current.add('days', 1);
-                }
-            }
-            if(inConges && lastCong && lastCong.fin.date.getDate() <= current.date()){
-                        inConges = false;
-            }
-            if(cong && cong.debut.date.getDate() == current.date()){
-                inConges = true;
-                cong.type = cong.motif;
-                  $scope.events.push({ title: $filter('motifCongesShort')(cong.motif), start: cong.debut.date, end: cong.fin.date, className: ['sleeping'], data: cong });
-                  $scope.indexEvents[cong.debut.date.getDate()] = $scope.events.length - 1;
-                  $scope.indexEvents[cong.fin.date.getDate()] = $scope.events.length - 1;
-                  lastCong = angular.copy(cong);
-                  cong = $scope.conges.shift();
-            }
-            if(current.format("d") != 0 && current.format("d") != 6 && !inConges && !$scope.indexEvents[current.date()]){
-                $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), className: ['worked'], data: { type: 'JT' } });
-                $scope.indexEvents[current.date()] = $scope.events.length - 1;
-            }
-            current = current.add('days', 1);
-            while (current.date() != 1){
-                //if(current.format("d") != 0 && current.format("d") != 6){
-                    if(inConges && lastCong && lastCong.fin.date.getDate() <= current.date()){
-                        inConges = false;
-                    }
-                    if(cong && cong.debut.date.getDate() == current.date()){
-                        inConges = true;
-                          cong.type = cong.motif;
-                          $scope.events.push({ title: $filter('motifCongesShort')(cong.motif), start: cong.debut.date, end: cong.fin.date, className: ['sleeping'], data: cong });
-                          $scope.indexEvents[cong.debut.date.getDate()] = $scope.events.length - 1;
-                          $scope.indexEvents[cong.fin.date.getDate()] = $scope.events.length - 1;
-                          lastCong = angular.copy(cong);
-                          cong = $scope.conges.shift();
-                    }
-                    if(current.format("d") != 0 && current.format("d") != 6 && !inConges && !$scope.indexEvents[current.date()]){
-                        $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), className: ['worked'], data: {type: 'JT'} });
-                        $scope.indexEvents[current.date()] = $scope.events.length - 1;
-                    }
-                //}
-                current = current.add('days', 1);
-            }
+
+        $scope.start = start;
+        $scope.end = end;
+
+        $timeout(function () {
+            $scope.load(callback);
             //var events = [{ title: 'Feed Me ' + m, start: s + (50000), end: s + (100000), allDay: false, className: ['customFeed'] }];
-            callback($scope.events);
-        });
+            //callback($scope.events);
         });
     };
     
-    $scope.eventRender = function(event, contener){
-    }
+    $scope.eventRender = function (event, element) {
+        // Si on affiche les mois suivant le mois actuel -> On n'affiche que les congés.
+        if (viewStartDate > lastValidDate && event.data.type == "JT") {
+            return false;
+        }
+        var eventScope = $scope.$new(true);
+        angular.extend(eventScope, event);
+        eventScope.typeActivite = $rootScope.typeActivite;
+        eventScope.valid = function (event) {
+            eventScope.error = null;
+            $('[rel=popover]').popover('hide');
+        }
+        eventScope.cancel = function (event) {
+            eventScope.error = null;
+            $.extend(eventScope.data, eventScope.savedEvent);
+            $('[rel=popover]').popover('hide');
+        }
+        eventScope.infos = function (data) {
+            if (data.start && data.debut.type == 1) {
+                return "Matin";
+            }
+            if (data.end && data.fin.type == 0) {
+                return "Ap. midi";
+            }
+        }
+        eventScope.$watch('data.type', function (newValue, oldValue) {
+            if (oldValue && newValue == 'JT' && oldValue != 'JT') {
+                $scope.nbJourTravailles++;
+                $scope.nbJourNonTravailles--;
+            }
+            if (oldValue && newValue != 'JT' && oldValue == 'JT') {
+                $scope.nbJourTravailles--;
+                $scope.nbJourNonTravailles++;
+            }
+        });
+        return $compile($.trim($('#eventTmpl').html()))(eventScope)
+        /*element.addClass("jour")*/.attr("rel", "popover").popover({
+            html : true,
+                     
+            content: function (e) {
+                eventScope.savedEvent = angular.copy(eventScope.data);
+                return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
+            }
+        }).click(function(e){
+            var elm = $(this);
+            $(".popover.in").prev().each(function(i){
+                var $this = $(this);
+                if (!$this.is(elm)) {
+                    $this.scope().cancel();
+                    $this.popover('hide');
+                }
+            });
+        });
+        //return $(template);
+    };
     /* alert on eventClick */
     $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
         $scope.$apply(function () {
@@ -975,13 +1038,13 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     };
     $scope.eventOnClick = function (calEvent, jsEvent, view) {
         $scope.$apply(function () {
-            $scope.currentDate = calEvent.data;
+            $scope.currentEvent = calEvent.data;
             $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
         });
     };
     
     
-    $scope.eventSources = [$scope.eventsA, $scope.eventsF];
+    $scope.eventSources = [$scope.events, $scope.eventsF];
     /* alert on Drop */
     $scope.alertOnDrop = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
         return false;
@@ -1023,72 +1086,42 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     };
     /* Change View */
     $scope.changeView = function (view) {
-        $scope.myCalendar.fullCalendar('changeView', view);
+        $scope.activiteCalendar.fullCalendar('changeView', view);
     };
    
 
-    var lastValidDate = new Date(new Date().getFullYear(), new Date().getMonth(),1)
+    var lastValidDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    viewStartDate;
     /* config object */
     $scope.uiConfig = {
         calendar: angular.extend({
-            editable: true,
+            editable: false,
+            //readonly: true,
             header: {
                 //left: 'month basicWeek basicDay agendaWeek agendaDay',
                 //center: 'title',
                 right: 'today prev,next'
             },
-            viewDisplay: function(view) {
+            viewDisplay: function (view) {
+                viewStartDate = view.start;
                 if (view.start >= lastValidDate) {
                     //header.disableButton('prev');
-                    $(".fc-button-next").attr("disabled", "disabled");
+                    //$(".fc-button-next").attr("disabled", "disabled").hide();
                 } else {
                     //header.enableButton('prev');
-                    $(".fc-button-next").removeAttr("disabled");
+                    //$(".fc-button-next").removeAttr("disabled").show();
                 }
             },
             dayClick: $scope.alertEventOnClick,
             eventDrop: $scope.alertOnDrop,
             eventResize: $scope.alertOnResize,
             eventClick: $scope.eventOnClick,
-            eventRender: function(event, element) { 
-                element.addClass("toto").attr("rel","popover").popover({ 
-                    html : true,
-                     
-                    content: function(e) {
-                          return $compile($.trim($('#popover_content_wrapper').html()))($scope);
-                        }
-                    }).click(function(e){
-                        var elm = $(this);
-                        $(".popover.in").prev().each(function(i){
-                            var $this = $(this);
-                            if(!$this.is(elm)){
-                                $this.popover('hide');
-                            }
-                        });
-                    }); 
-                //return $(template);
+            eventRender: $scope.eventRender,
+            eventAfterAllRender: function () {
+                $timeout(function () {
+                    // Permet la re-génération d'angularjs
+                });
             }
         }, jQuery.fullCalendar)
     };
-    $scope.popClose = function(e){
-        $('[rel=popover]').popover('hide');
-    }
-    
-    /*setTimeout(function(){
-        $('[rel=popover]').popover({ 
-            html : true,
-             
-            content: function() {
-                  return $compile($.trim($('#popover_content_wrapper').html()))($scope);
-                }
-            }).click(function(e){
-                var elm = $(this);
-                $(".popover.in").prev().each(function(i){
-                    var $this = $(this);
-                    if(!$this.is(elm)){
-                        $this.popover('hide');
-                    }
-                });
-            });
-    },500);*/
 }

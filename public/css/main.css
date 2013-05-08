@@ -1,3 +1,21 @@
+#login .control-group {
+    margin-bottom: 45px;
+}
+#login .control-group:nth-child(5) {
+    margin-bottom: 15px;
+}
+#login .input-help {
+    left: 242px;
+}
+.input-prepend {
+    position:absolute;
+    font-size: 14px;
+}
+.input-prepend * {
+    
+     white-space: normal;
+}
+
 .tab-pane 
 {
 	overflow:auto;
@@ -86,7 +104,13 @@ table td.cell > div {
 #login h3 {
     text-align:center;
 }
-
+/* Suppression écart icon input */
+#login input {
+    margin-left: -4px;
+}
+#login input[type='checkbox'] {
+    margin-left: -20px;
+}
 #login input,
 #editConges input,
 #editUser input {
@@ -360,16 +384,40 @@ input.ng-pristine + .input-help {
 	text-overflow: ellipsis;
 	width: 100px;
 }
+
 /* Popover du calendier de l'activité */
 .fc-view {
 	overflow: visible;
 }
-/* Event congé */
-.sleeping
-{
-	background-color: rgb(138, 192, 79);
-}
-
+/* Popover du calendrier : la flèche reste statique avec l'agrandissement de l'accordion */
 .popover.in .arrow{
         top: 85px;
+}
+
+/* Event de base */
+.jour {
+    cursor: hand;
+    height: 22px;
+}
+
+/* Event congé */
+.jour.sleeping
+{
+    height: auto;
+	background-color: rgb(138, 192, 79);
+}
+.jour.worked
+{
+	height: auto;
+}
+
+.titre {
+    display: block;
+    /*float: left;*/
+    padding: 10px 0px 0px 20px;
+    margin-left: -20px;
+    font-size: 17px;
+    font-weight: 200;
+    color: #777;
+    text-shadow: 0 1px 0 #fff;
 }

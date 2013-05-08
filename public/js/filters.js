@@ -15,17 +15,19 @@ filter('role', function () {
     };
 }).
 filter('motifConges', function ($rootScope) {
-    return function (motif) {
-        for (var i = 0, l = $rootScope.motifsConges.length; i < l; i++) {
-            if ($rootScope.motifsConges[i].id == motif) return $rootScope.motifsConges[i].libelle;
+    return function (motif, list) {
+        if (!list) list = $rootScope.motifsConges;
+        for (var i = 0, l = list.length; i < l; i++) {
+            if (list[i].id == motif) return list[i].libelle;
         }
         return "";
     };
 }).
 filter('motifCongesShort', function($rootScope) {
-    return function(motif) {
-        for (var i = 0, l = $rootScope.motifsConges.length; i < l; i++) {
-            if ($rootScope.motifsConges[i].id == motif) return $rootScope.motifsConges[i].shortlibelle || $rootScope.motifsConges[i].libelle;
+    return function (motif, list) {
+        if (!list) list = $rootScope.motifsConges;
+        for (var i = 0, l = list.length; i < l; i++) {
+            if (list[i].id == motif) return list[i].shortlibelle || list[i].libelle;
         }
         return "";
     };

@@ -1,6 +1,8 @@
 ﻿<% include header.html %>
 
 <link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/fontello.css" />
+
 <script>
     var config = {
         connected : <%=connected %>,
@@ -27,15 +29,22 @@
                   
                   <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
-                      <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon-user"></i> Utilisateurs</a></li>
-                      <li authenticate><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
+                      <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
+                      <li authenticate ng-class="{active: page == pages.activite.name, masquer: role > 1}"><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
+                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.activite.name}">
+                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-tasks"></i> Activité <b class="caret"> </b></a>
+                            <ul class="dropdown-menu">
+                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name]"><a href="/activite"><i class="icon-file"></i> Mon activité</a></li>
+                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name || page == pages['admin-conges'].name]" class="divider"></li>
+                              <li authenticate ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités</a></li>
+                            </ul>
+                      </li>
                       <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
                       <li authenticate="2" class="dropdown" ng-class="{active: page == pages.conges.name || page == pages['admin-conges'].name}">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-globe"></i> Congés <span class="badge badge-important" ng-class="{masquer: infos.nbMesCongesVal == 0 && infos.nbCongesVal == 0}">{{infos.nbMesCongesVal + infos.nbCongesVal}}</span> <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.conges.name]"><a href="/conges"><i class="icon-user"></i> Mes congés <span class="badge badge-important" ng-class="{masquer: infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
-                              <li class="divider"></li>
-                              <li class="nav-header">Administration</li>
+                              <li ng-class="{true:'masquer', false:''}[page == pages.conges.name || page == pages['admin-conges'].name]" class="divider"></li>
                               <li authenticate ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges"><i class="icon-list"></i> Gestion des demandes <span class="badge badge-important" ng-class="{masquer:infos.nbCongesVal == 0}">{{infos.nbCongesVal}}</span></a></li>
                             </ul>
                       </li>
@@ -52,7 +61,7 @@
                               <li ng-class="{true:'masquer', false:''}[page == pages.index.name]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
                               <li class="divider"></li>
                               <li class="nav-header">Mon compte</li>
-                              <li authenticate><a href="/logout">Se déconnecter</a></li>
+                              <li authenticate><a href="/logout"><i class="icon_logout"></i> Se déconnecter</a></li>
                             </ul>
                       </li>
                     </ul>
