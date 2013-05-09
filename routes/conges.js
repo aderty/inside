@@ -54,6 +54,10 @@ var routes = {
 
     remove: function(req, res) {
         data.conges.removeConges(req.params.id, dataCallback(res));
+    },
+
+    motifs: function (req, res) {
+        data.conges.listMotifs(dataCallback(res));
     }
 };
 

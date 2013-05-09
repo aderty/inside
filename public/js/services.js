@@ -50,6 +50,27 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
+    factory('MotifsService', function ($http, $q) {
+        var motifs = null;
+        return {
+            list: function () {
+                var defered = $q.defer();
+                if (motifs) {
+                    defered.resolve(motifs);
+                }
+                else {
+                    $http({
+                        method: 'GET',
+                        url: '/data-conges-motifs'
+                    }).then(function (response) {
+                        motifs = response.data;
+                        defered.resolve(motifs);
+                    });
+                }
+                return defered.promise;
+            }
+        };
+    }).
   factory('UsersService', function($resource, $q) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {

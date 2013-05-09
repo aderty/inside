@@ -173,6 +173,9 @@ app.delete('/data-users/:id', [dataLogin, dataRh], routes.users.remove);
 // Lecture, via GET
 app.get('/data-conges', [dataLogin], routes.conges.list);
 app.get('/data-conges/:id', [dataLogin], routes.conges.get);
+// Lectures des motifs de congés
+app.get('/data-conges-motifs', [dataLogin], routes.conges.motifs);
+
  
 // Mise à jour via POST
 //app.post('/data-users/:id', routes.users.update);
@@ -183,6 +186,7 @@ app.post('/data-conges', [dataLogin], routes.conges.save);
 
 // Suppression via POST
 app.delete('/data-conges/:id', [dataLogin], routes.conges.remove);
+
 
 
 

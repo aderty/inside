@@ -1,4 +1,5 @@
-﻿var data = require('../data');
+﻿var data = require('../data'),
+    mail = require('../mail');
 
 /// Routes
 function dataCallback(res) {
@@ -69,7 +70,13 @@ var routes = {
 
     // Ajout ou Mise à jour via POST
     save: function (req, res) {
-        data.users.saveUser(req.body, dataCallback(res));
+        data.users.saveUser(req.body, function (err, ret) {
+            if (!err && ret.create) {
+                mail.Mail.ajoutUser(req.body, function (err) {  
+                });
+            }
+            dataCallback(res)(err, ret);
+        });
     },
 
     // Ajout via POST

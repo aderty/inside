@@ -254,6 +254,15 @@ var data = {
         }
         fn(null, true);
         });*/
+    },
+    listMotifs: function (fn) {
+        db.findAll("conges_motifs", null, function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des motifs de congés.");
+            }
+            fn(null, ret);
+        });
     }
 };
 exports.data = data;

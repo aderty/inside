@@ -3,7 +3,7 @@
 /* Controllers */
 
 // Config par défaut
-app.run(["$rootScope", function($rootScope) {
+app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
     $rootScope.pages = {
         index: { 
             name: "Accueil",
@@ -31,7 +31,8 @@ app.run(["$rootScope", function($rootScope) {
         { id: 2, libelle: 'RH' },
         { id: 3, libelle: 'Admin' }
     ];
-    $rootScope.motifsConges = [
+
+    /*$rootScope.motifsConges = [
         { id: 'CP', libelle: 'CP' },
         { id: 'RTTE', libelle: 'RTT employeur', shortlibelle: 'RTT Empl.' },
         { id: 'RTT', libelle: 'RTT' },
@@ -53,7 +54,7 @@ app.run(["$rootScope", function($rootScope) {
         { id: 'MA', libelle: 'Maladie' },
         { id: 'DC', libelle: 'Décès ascendants, descendants, collatéraux' }
         
-    ];
+    ];*/
     $rootScope.etatsConges = [
         { id: '1', libelle: 'En attente de validation' , cssClass: 'val'},
         { id: '2', libelle: 'Validés' , cssClass: 'val'},
@@ -64,11 +65,25 @@ app.run(["$rootScope", function($rootScope) {
          2: 'accConges',
          3: 'refConges'
     };
+    $rootScope.initConnected = function () {
+        MotifsService.list().then(function (motifs) {
+            $rootScope.motifsConges = jQuery.grep(motifs, function (n, i) {
+                return (n.id == 'CP' || n.id == 'RTTE' || n.id == 'RTT' || n.id == 'CP_ANT');
+            });
+            $rootScope.motifsConges.push({ id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' });
+            $rootScope.motifsCongesExcep = jQuery.grep(motifs, function (n, i) {
+                return (n.id != 'CP' && n.id != 'RTTE' && n.id != 'RTT' && n.id != 'CP_ANT');
+            });
+        });
+    }
     $rootScope.connected = window.config.connected ? true : false;
     $rootScope.role = window.config.role;
     $rootScope.username = window.config.prenom;
     $rootScope.searcher = false;
     $rootScope.infos = window.config.infos;
+    if ($rootScope.connected) {
+        $rootScope.initConnected();
+    }
 }]);
 
 // Contrôleur de la navigation de l'application
@@ -122,6 +137,7 @@ function LoginController($scope, $rootScope, LoginService) {
             $rootScope.username = response.prenom;
             $rootScope.role = response.role;
             $rootScope.infos = response.infos;
+            $rootScope.initConnected();
         });
     }
 }
@@ -914,11 +930,11 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                     /*if (inConges && businessDay(current)) {
                         inEventConges(current, true);
                     }*/
-                    if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
-                        endEventConges(current);
-                    }
                     if (cong && cong.debut.date.getDate() == current.date()) {
                         startEventConges(current, true);
+                    }
+                    if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                        endEventConges(current);
                     }
                     current = current.add('days', 1);
                 }
@@ -930,13 +946,13 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                     // Dans une période de congés.
                     inEventConges(current);
                 }
-                if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
-                    // A la fin d'une période de congés.
-                    endEventConges(current);
-                }
                 if (cong && cong.debut.date.getDate() == current.date()) {
                     // Au début d'une période de congés.
                     startEventConges(current);
+                }
+                if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                    // A la fin d'une période de congés.
+                    endEventConges(current);
                 }
                 if (!inConges && businessDay(current) && !$scope.indexEvents[current.date()]) {
                     // Journée travaillée.
@@ -994,10 +1010,10 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
         }
         eventScope.infos = function (data) {
             if (data.start && data.debut.type == 1) {
-                return "Matin";
+                return "Ap. midi";
             }
             if (data.end && data.fin.type == 0) {
-                return "Ap. midi";
+                return "Matin";
             }
         }
         eventScope.$watch('data.type', function (newValue, oldValue) {

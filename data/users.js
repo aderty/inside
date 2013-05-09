@@ -88,7 +88,8 @@ var data = {
     },
     // Lecture, via GET
     listUsers: function(fn) {
-        db.query('SELECT * FROM users WHERE id <> 999999 AND etat=1', function(err, ret) {
+        //db.query('SELECT * FROM users JOIN conges_compteurs ON users.id = conges_compteurs.user WHERE id <> 999999 AND etat=1', function (err, ret) {
+        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE id <> 999999 AND etat=1', function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des utilisateurs.");
@@ -123,7 +124,8 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        db.find("users", id, function(err, ret) {
+        //db.find("users", id, function(err, ret) {
+        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE id = ? AND etat=1', id,function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération de l'utilisateur " + id);
@@ -141,6 +143,22 @@ var data = {
             // Chiffrage du pass en sha1
             user.pwd = crypto.createHash('sha1').update(user.pwd).digest("hex");
         }
+        var cp, cp_ant, rtt;
+        if (typeof user.cp != "undefined") {
+            cp = user.cp;
+            delete user.cp;
+        }
+        if (typeof user.cp_ant != "undefined") {
+            cp_ant = user.cp_ant;
+            delete user.cp_ant;
+        }
+        if (typeof user.rtt != "undefined") {
+            rtt = user.rtt;
+            delete user.rtt;
+        }
+        if (user.last_connection) {
+            delete user.last_connection;
+        }
         if (user.create) {
             // Suppression du flag
             delete user.create;
@@ -152,7 +170,13 @@ var data = {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de l'insertion de l'utilisateur " + user.nom);
                 }
-                fn(null, { id: ret.insertId });
+                db.query("CALL AddCompteursUser(?, ?, ?, ?)", [user.id, cp || 0, cp_ant || 0, rtt || 0], function (err2) {
+                    if (err2) {
+                        console.log('ERROR: ' + err2);
+                        return fn("Erreur lors de l'insertion des compteurs de l'utilisateur.");
+                    }
+                    fn(null, { id: user.id, create: true });
+                });
             });
             return;
         }
@@ -168,7 +192,13 @@ var data = {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification de l'utilisateur " + user.id);
             }
-            fn(null, cleanUsers(ret));
+            db.query("CALL UpdateCompteursUser(?, ?, ?, ?)", [id, cp || 0, cp_ant || 0, rtt || 0], function (err2) {
+                if (err2) {
+                    console.log('ERROR: ' + err2);
+                    return fn("Erreur lors de l'insertion des compteurs de l'utilisateur.");
+                }
+                fn(null, cleanUsers(ret));
+            });
         });
         /*db.find("users", user.id, function (err, ret1) {
         if (err) fn("Erreur lors de la récupération de l'utilisateur " + user.id);
