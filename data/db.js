@@ -1,6 +1,7 @@
 ﻿// On utilise le module node-mysql
 var mysql = require('mysql'),
 config = require('../config.json').db;
+config.multipleStatements = true;
 
 // Module natif filesystem pour lire le fichier de configuration
 var fs = require('fs');

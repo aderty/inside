@@ -1,7 +1,8 @@
 
 var path = require('path'),
     users = require('./users'),
-    conges = require('./conges');
+    conges = require('./conges'),
+    activite = require('./activite');
 
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");
@@ -53,3 +54,4 @@ exports.forms = function (req, res) {
 exports.users = users.routes;
 exports.conges = conges.routes;
 exports.congesAdmin = conges.routesAdmin;
+exports.activite = activite.routes;

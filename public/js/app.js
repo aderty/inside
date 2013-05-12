@@ -35,7 +35,9 @@
         // configure html5 to get links working on jsfiddle
       $locationProvider.html5Mode(true);
     }]).run(function ($rootScope, $location) {
-
+        // Suppression de la classe CSS de démarrage.
+        $(document.documentElement).removeClass("start");
+        $(".background").empty();
         // register listener to watch route changes
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
                 // no logged user, we should be going to #login

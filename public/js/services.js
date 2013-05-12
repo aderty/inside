@@ -324,4 +324,99 @@ angular.module('inside.services', ['ngResource']).
               return defered.promise;
           }
       };
+  }).
+  factory('ActiviteService', function ($resource, $q, $rootScope) {
+      var resource = $resource('/data-activite/:mois',
+             { id: '@mois' }, {
+                 list: { method: 'GET' },
+                 create: { method: 'POST', params: { create: true } },
+                 updateEtat: { method: 'POST', params: { etat: true } }
+             });
+      return {
+          list: function (options) {
+              var defered = $q.defer();
+              var activite = resource.list(options, function () {
+                  // GET: /user/123/card
+                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                  var mois;
+                  if (options.start.getDate() == 1) {
+                      mois = new Date(options.start.getFullYear(), options.start.getMonth(), 1);
+                  }
+                  else {
+                      mois = new Date(options.start.getFullYear(), options.start.getMonth() + 1, 1);
+                  }
+                  if (activite.mois) {
+                      activite.mois = new Date(activite.mois);
+                      if (activite.mois.getMonth() != mois.getMonth()) {
+                          activite.etat = -1;
+                          activite.activite = [];
+                      }
+                  }
+                  else {
+                      activite.mois = mois;
+                  }
+                  for (var i = 0, l = activite.activite.length; i < l; i++) {
+                      if (activite.activite[i].jour) {
+                          activite.activite[i].jour = {
+                              date: new Date(activite.activite[i].jour),
+                              type: new Date(activite.activite[i].jour).getHours() > 14 ? 0 : 1
+                          };
+                          if (activite.activite[i].jour.date.getHours() == 0) {
+                              activite.activite[i].duree = 0;
+                          }
+                          else if (activite.activite[i].jour.date.getHours() < 14) {
+                              activite.activite[i].duree = 1;
+                          }
+                          else {
+                              activite.activite[i].duree = 2;
+                          }
+                      }
+                      else {
+                          activite.activite[i].debut = {
+                              date: new Date(activite.activite[i].debut),
+                              type: new Date(activite.activite[i].debut).getHours() > 14 ? 0 : 1
+                          };
+                          activite.activite[i].fin = {
+                              date: new Date(activite.activite[i].fin),
+                              type: new Date(activite.activite[i].fin).getHours() > 14 ? 1 : 0
+                          }
+
+                      }
+                      var types = ['JT', 'JF', 'CP', 'CP_ANT', 'RTT', 'RTTE']
+                      if (types.indexOf(activite.activite[i].type) == -1) {
+                          activite.activite[i].type = 'AE';
+                      }
+                      if (activite.activite[i].type == 'JF' && activite.activite[i].debut && activite.activite[i].fin) {
+                          activite.activite[i].debut.date.setHours(0);
+                          activite.activite[i].debut.date.setMinutes(0);
+                          activite.activite[i].fin.date.setHours(0);
+                          activite.activite[i].fin.date.setMinutes(0);
+                          activite.activite[i].debut.type = 0;
+                          activite.activite[i].fin.type = 1;
+                      }
+                  }
+                  defered.resolve(activite);
+              });
+              return defered.promise;
+          },
+          save: function (activite, creation) {
+              var defered = $q.defer();
+              if (creation) {
+                  // Création -> Flag création
+                  activite.create = true;
+              }
+              resource.save(activite, function (reponse) {
+                  if (reponse.error) {
+                      $rootScope.error = reponse.error;
+                      defered.reject(reponse.error);
+                      return;
+                  }
+                  defered.resolve(reponse);
+              }, function (response) {
+                  $rootScope.error = response;
+                  defered.reject(response);
+              });
+              return defered.promise;
+          }
+      };
   });

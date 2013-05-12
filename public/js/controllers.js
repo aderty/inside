@@ -847,7 +847,7 @@ function CongesAdminGrid($scope, $rootScope, $timeout, CongesAdminService) {
     });
 };
 
-function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout, $filter, $compile) {
+function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeout, $filter, $compile) {
 
     var date = new Date();
     var d = date.getDate();
@@ -865,9 +865,11 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     $scope.nbJourNonTravailles = 0;
     $scope.eventSelectionne = null;
     $scope.events = [];
+    $scope.successOperation = "";
 
     $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Journée travaillée' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travail' });
+    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
 
     $scope.refresh = function () {
         $scope.activiteCalendar.fullCalendar('refetchEvents');
@@ -876,27 +878,22 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
     $scope.load = function (callback) {
         $scope.eventSelectionne = null;
 
-        CongesService.list({
+        ActiviteService.list({
             start: $scope.start,
             end: $scope.end
-        }).then(function (conges) {
-            $scope.conges = conges;
+        }).then(function (activite) {
+            $scope.activite = activite;
             $scope.indexEvents = [];
             $scope.events = [];
             // On ré-init le nombre de jours travaillés
             $scope.nbJourTravailles = 0;
             // On ré-init le nombre de jours non travaillés
             $scope.nbJourNonTravailles = 0;
-
-            var cong = $scope.conges.shift();
-            var lastCong;
-            var first = true;
-            var inConges = false;
-            var current = new moment($scope.start);
+            $scope.successOperation = "";
 
             function startEventConges(current, skip) {
                 inConges = true;
-                cong.type = cong.motif;
+                //cong.type = cong.motif;
                 if (businessDay(current) && !skip) {
                     var data = angular.copy(cong);
                     data.start = true;
@@ -912,6 +909,21 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                 if (lastCong.fin.date.getDate() <= current.date()) {
                     data.end = true;
                 }
+                if (data.debut.type == 0 && !data.end) {
+                    data.duree = 0;
+                }
+                if (data.debut.type == 1 && !data.end) {
+                    data.duree = 2;
+                }
+                if (data.debut.type == 0 && data.end && data.fin.type == 0) {
+                    data.duree = 1;
+                }
+                if (data.debut.type == 1 && data.end && data.fin.type == 0) {
+                    data.duree = 2;
+                }
+                if (data.debut.type == 1 && data.end && data.fin.type == 1) {
+                    data.duree = 0;
+                }
                 $scope.events.push({ title: $filter('motifCongesShort')(lastCong.type), start: new Date(current.toDate()), data: data });
                 $scope.indexEvents[current.date()] = $scope.events.length - 1;
                 $scope.nbJourNonTravailles++;
@@ -920,45 +932,66 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                 inConges = false;
             }
             function workEvent(current) {
-                $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT' } });
+                $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT', duree: 0 } });
                 $scope.indexEvents[current.date()] = $scope.events.length - 1;
                 $scope.nbJourTravailles++;
             }
-            // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
-            if (current.date() != 1) {
-                while (current.date() != 1) {
-                    /*if (inConges && businessDay(current)) {
-                        inEventConges(current, true);
-                    }*/
-                    if (cong && cong.debut.date.getDate() == current.date()) {
-                        startEventConges(current, true);
+            if ($scope.activite.etat > 0 && $scope.activite.activite.length > 0) {
+                for (var i = 0, l = $scope.activite.activite.length; i < l; i++) {
+                    $scope.events.push({ title: $scope.activite.activite[i].type, start: $scope.activite.activite[i].jour.date, data: $scope.activite.activite[i] });
+                    $scope.indexEvents[$scope.activite.activite[i].jour.date] = $scope.events.length - 1;
+                    if ($scope.activite.activite[i].type == "JT") {
+                         $scope.nbJourTravailles++;
                     }
-                    if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
-                        endEventConges(current);
+                    else{
+                        $scope.nbJourNonTravailles++;
                     }
-                    current = current.add('days', 1);
                 }
             }
-            // Traitement du 1er du mois à la fin du mois.
-            while (current.date() != 1 || first) {
-                first = false; // On signale qu'on a démarré
-                if (inConges && businessDay(current)) {
-                    // Dans une période de congés.
-                    inEventConges(current);
+            else{
+                $scope.conges = $scope.activite.activite;
+                var cong = $scope.conges.shift();
+                var lastCong;
+                var first = true;
+                var inConges = false;
+                var current = new moment($scope.start);
+
+                // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
+                if (current.date() != 1) {
+                    while (current.date() != 1) {
+                        /*if (inConges && businessDay(current)) {
+                            inEventConges(current, true);
+                        }*/
+                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
+                            startEventConges(current, true);
+                        }
+                        if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                            endEventConges(current);
+                        }
+                        current = current.add('days', 1);
+                    }
                 }
-                if (cong && cong.debut.date.getDate() == current.date()) {
-                    // Au début d'une période de congés.
-                    startEventConges(current);
+                // Traitement du 1er du mois à la fin du mois.
+                while (current.date() != 1 || first) {
+                    first = false; // On signale qu'on a démarré
+                    if (inConges && businessDay(current)) {
+                        // Dans une période de congés.
+                        inEventConges(current);
+                    }
+                    if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
+                        // Au début d'une période de congés.
+                        startEventConges(current);
+                    }
+                    if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
+                        // A la fin d'une période de congés.
+                        endEventConges(current);
+                    }
+                    if (!inConges && businessDay(current) && typeof $scope.indexEvents[current.date()] == "undefined") {
+                        // Journée travaillée.
+                        workEvent(current);
+                    }
+                    current = current.add('days', 1); // On incrément la date courante dans le mois.
                 }
-                if (inConges && lastCong && lastCong.fin.date.getDate() <= current.date()) {
-                    // A la fin d'une période de congés.
-                    endEventConges(current);
-                }
-                if (!inConges && businessDay(current) && !$scope.indexEvents[current.date()]) {
-                    // Journée travaillée.
-                    workEvent(current);
-                }
-                current = current.add('days', 1); // On incrément la date courante dans le mois.
             }
             if (callback) {
                 callback($scope.events);
@@ -983,12 +1016,17 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
 
         $scope.start = start;
         $scope.end = end;
-
-        $timeout(function () {
-            $scope.load(callback);
-            //var events = [{ title: 'Feed Me ' + m, start: s + (50000), end: s + (100000), allDay: false, className: ['customFeed'] }];
-            //callback($scope.events);
-        });
+        if ($scope.isUpdating) {
+            $scope.isUpdating = false;
+            callback($scope.events);
+        }
+        else {
+            $timeout(function () {
+                $scope.load(callback);
+                //var events = [{ title: 'Feed Me ' + m, start: s + (50000), end: s + (100000), allDay: false, className: ['customFeed'] }];
+                //callback($scope.events);
+            });
+        }
     };
     
     $scope.eventRender = function (event, element) {
@@ -996,12 +1034,58 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
         if (viewStartDate > lastValidDate && event.data.type == "JT") {
             return false;
         }
+
+        function indexOfEvent(start) {
+            var index = 0, l = $scope.events.length;
+            for (; index < l; index++) {
+                if ($scope.events[index].start == start) return index;
+            }
+            return -1;
+        }
         var eventScope = $scope.$new(true);
         angular.extend(eventScope, event);
         eventScope.typeActivite = $rootScope.typeActivite;
         eventScope.valid = function (event) {
             eventScope.error = null;
             $('[rel=popover]').popover('hide');
+            var lastDuree = eventScope.savedEvent.duree;
+            if (this.data.duree == lastDuree) return;
+            if (this.data.duree == 1) {
+                var date = new Date(this.start);
+                date.setHours(16);
+                this.start.setHours(8);
+                this.allDay = false;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                $scope.events.splice(index + 1, 0, { title: 'Ap. midi', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 2 } });
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 2) {
+                var date = new Date(this.start);
+                date.setHours(8);
+                this.start.setHours(16);
+                this.allDay = false;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                $scope.events.splice(index, 0, { title: 'Matin', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 1 } });
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 0 && lastDuree == 1) {
+                this.allDay = true;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                this.start.setHours(0);
+                $scope.events.splice(index + 1, 1);
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 0 && lastDuree == 2) {
+                this.allDay = true;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                this.start.setHours(0);
+                $scope.events.splice(index - 1, 1);
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
         }
         eventScope.cancel = function (event) {
             eventScope.error = null;
@@ -1031,6 +1115,10 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
             html : true,
                      
             content: function (e) {
+                // Jour férié, pas d'édition.
+                if (eventScope.data.type == 'JF') {
+                    return false;
+                }
                 eventScope.savedEvent = angular.copy(eventScope.data);
                 return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
             }
@@ -1044,7 +1132,6 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                 }
             });
         });
-        //return $(template);
     };
     /* alert on eventClick */
     $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
@@ -1058,7 +1145,29 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
             $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
         });
     };
-    
+
+    $scope.closeSuccess = function () {
+        $scope.successOperation = "";
+    };
+
+    $scope.save = function (events) {
+        var activite = angular.copy($scope.activite);
+        if (activite.etat > 1) return;
+        var creation = activite.etat == -1 ? true : false;
+        activite.activite = $.map(events, function (item, index) {
+            return {
+                jour: item.start,
+                type: item.data.type,
+                information: item.data.information
+            };
+        });
+
+        ActiviteService.save(activite, creation).then(function (reponse) {
+            if (reponse.success === true) {
+                $scope.successOperation = "Activité enregistrée";
+            }
+        });
+    };
     
     $scope.eventSources = [$scope.events, $scope.eventsF];
     /* alert on Drop */
@@ -1119,6 +1228,14 @@ function ActiviteMain($scope, $rootScope, UsersService, CongesService, $timeout,
                 right: 'today prev,next'
             },
             viewDisplay: function (view) {
+                $scope.start = view.start;
+                $scope.end = view.end;
+
+                /*$timeout(function () {
+                    $scope.load(function (events) {
+                        $scope.activiteCalendar.fullCalendar('refetchEvents');
+                    });
+                });*/
                 viewStartDate = view.start;
                 if (view.start >= lastValidDate) {
                     //header.disableButton('prev');

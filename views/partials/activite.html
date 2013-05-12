@@ -20,8 +20,8 @@
                 <div class="span12 well">
                     <!--Sidebar content-->
                     <span class="titre">Actions</span>
-                    <p>
-                        <button class="btn btn-large btn-success" type="button"><i class="icon_upload"></i>Enregistrer mon activité</button>
+                    <p ui-if="activite.etat <= 1">
+                        <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon_upload"></i>Enregistrer mon activité</button>
                     </p>
                     <p>
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Recharger les données</button>
@@ -33,6 +33,10 @@
             <!--Body content-->
             <div class="row">
                 <div class="span8">
+                    <div class="alert alert-success" ng-class="{masquer: successOperation == ''}">
+                        <button type="button" class="close" ng-click="closeSuccess();">×</button>
+                        {{successOperation}}
+                    </div>
                     <!--Grilles des congés-->
                     <div class="alert alert-info">
                         <div ui-if="!eventSelectionne">
@@ -74,10 +78,17 @@
       <p>Choisisez l'activté effectuée cette journée :</p>
       <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite">
       </select>
+        <p>Durée :</p>
+       <select id="inputDuree" name="inputDuree" required ng-model="data.duree">
+           <option value="0">Toute la journée</option>
+           <option ng-hide="data.duree == 2" value="1">Matinée</option>
+           <option ng-hide="data.duree == 1" value="2">Après-midi</option>
+      </select>
+
     </accordion-group>
     <accordion-group heading="Informations complémentaires">
       <p>Remarques...</p>
-        <textarea id="inputInfos" name="inputInfos" ng-model="data.informations"></textarea>
+        <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
     </accordion-group>
   </accordion>
   <div class="modal-footer">

@@ -15,37 +15,28 @@ function dataCallback(res) {
 
 var routes = {
     // Lecture, via GET
-    list: function(req, res) {
+    get: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        var options = {
-            past: false
-        };
+        var options = {};
         if (req.query.start) {
             options.start = new Date(req.query.start);
         }
         if (req.query.end) {
             options.end = new Date(req.query.end);
         }
-        data.conges.listConges(req.session.username, options, dataCallback(res));
-    },
-
-    get: function(req, res) {
-        res.header('Cache-Control', 'no-cache');
-        data.conges.getConges(req.params.id, dataCallback(res));
+        data.activite.getActiviteUser(req.session.username, options, dataCallback(res));
     },
 
     // Ajout ou Mise à jour via POST
-    save: function(req, res) {
-        var conges = req.body;
-        conges.user = req.session.username;
-        conges.type = 'N';
-        console.log(conges);
-        if (conges.create) {
-            delete conges.create;
-            data.conges.addConges(conges, dataCallback(res));
+    save: function (req, res) {
+        var activite = req.body;
+        activite.etat = 1;
+        if (activite.create) {
+            delete activite.create;
+            data.activite.addActiviteUser(req.session.username, activite, false, dataCallback(res));
             return;
         }
-        data.conges.updateConges(conges, false, dataCallback(res));
+        data.activite.updateActiviteJoursUser(req.session.username, activite, false, dataCallback(res));
     },
 
     // Ajout via POST
@@ -53,12 +44,12 @@ var routes = {
     data.users.insertUser(req.body, dataCallback(res));
     },*/
 
-    remove: function(req, res) {
-        data.conges.removeConges(req.params.id, dataCallback(res));
+    remove: function (req, res) {
+        data.activite.removeConges(req.params.id, dataCallback(res));
     },
 
     motifs: function (req, res) {
-        data.conges.listMotifs(dataCallback(res));
+        data.activite.listMotifs(dataCallback(res));
     }
 };
 
@@ -67,15 +58,15 @@ var routesAdmin = {
     list: function (req, res) {
         res.header('Cache-Control', 'no-cache');
         if (req.query.etat) {
-            data.conges.listCongesEtat(req.query.etat, false, dataCallback(res));
+            data.activite.listCongesEtat(req.query.etat, false, dataCallback(res));
         }
         else {
-            data.conges.listToutConges(false, dataCallback(res));
+            data.activite.listToutConges(false, dataCallback(res));
         }
     },
     get: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.conges.getConges(req.params.id, dataCallback(res));
+        data.activite.getConges(req.params.id, dataCallback(res));
     },
     // Ajout ou Mise à jour via POST
     save: function (req, res) {
@@ -83,22 +74,19 @@ var routesAdmin = {
         conges.type = 'R';
         if (conges.create) {
             delete conges.create;
-            data.conges.addConges(conges, dataCallback(res));
+            data.activite.addConges(conges, dataCallback(res));
             return;
         }
         if (req.query.etat) {
-            data.conges.updateEtatConges(conges, dataCallback(res));
+            data.activite.updateEtatConges(conges, dataCallback(res));
             return;
         }
-        data.conges.updateConges(conges, true, dataCallback(res));
+        data.activite.updateConges(conges, true, dataCallback(res));
     },
     remove: function (req, res) {
-        data.conges.removeConges(req.params.id, dataCallback(res));
+        data.activite.removeConges(req.params.id, dataCallback(res));
     }
 };
 
 exports.routes = routes;
 exports.routesAdmin = routesAdmin;
-exports.getNextId = function (fn) {
-    data.users.getNextId(fn);
-}

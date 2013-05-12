@@ -70,9 +70,11 @@ var routes = {
 
     // Ajout ou Mise à jour via POST
     save: function (req, res) {
-        data.users.saveUser(req.body, function (err, ret) {
+        var user = req.body;
+        var pwd = user.pwd;
+        data.users.saveUser(user, function (err, ret) {
             if (!err && ret.create) {
-                mail.Mail.ajoutUser(req.body, function (err) {  
+                mail.Mail.ajoutUser(user, pwd, function (err) {
                 });
             }
             dataCallback(res)(err, ret);

@@ -205,6 +205,17 @@ app.post('/data-admin-conges', [dataLogin, dataRh], routes.congesAdmin.save);
 app.delete('/data-admin-conges/:id', [dataLogin, dataRh], routes.congesAdmin.remove);
 
 
+// ACTIVITE
+// Lecture, via GET
+app.get('/data-activite', [dataLogin], routes.activite.get);
+ 
+// Ajout via POST
+app.post('/data-activite/:id', [dataLogin], routes.activite.save);
+app.post('/data-activite', [dataLogin], routes.activite.save);
+
+// Suppression via POST
+app.delete('/data-admin-activite/:id', [dataLogin, dataRh], routes.activite.remove);
+
 
 
 app.post('/login', routes.users.login);
