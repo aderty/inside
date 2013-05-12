@@ -31,12 +31,12 @@
                     <ul class="nav">
                       <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
                       <li authenticate ng-class="{active: page == pages.activite.name, masquer: role > 1}"><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
-                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.activite.name}">
+                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.activite.name || page == pages['admin-activite'].name}">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-tasks"></i> Activité <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.activite.name]"><a href="/activite"><i class="icon-file"></i> Mon activité</a></li>
-                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name || page == pages['admin-conges'].name]" class="divider"></li>
-                              <li authenticate ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités</a></li>
+                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name || page == pages['admin-activite'].name]" class="divider"></li>
+                              <li authenticate ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités</a></li>
                             </ul>
                       </li>
                       <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>

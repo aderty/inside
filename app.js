@@ -216,6 +216,7 @@ app.post('/data-activite', [dataLogin], routes.activite.save);
 // Suppression via POST
 app.delete('/data-admin-activite/:id', [dataLogin, dataRh], routes.activite.remove);
 
+app.get('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.list);
 
 
 app.post('/login', routes.users.login);

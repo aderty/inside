@@ -57,16 +57,18 @@ var routesAdmin = {
     // Lecture, via GET
     list: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        if (req.query.etat) {
-            data.activite.listCongesEtat(req.query.etat, false, dataCallback(res));
+        var options = {};
+        if (req.query.annee) {
+            options.annee = req.query.annee;
         }
-        else {
-            data.activite.listToutConges(false, dataCallback(res));
+        if (req.query.mois) {
+            options.mois = req.query.mois;
         }
+        data.activite.listActivites(options, dataCallback(res));
     },
     get: function (req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.activite.getConges(req.params.id, dataCallback(res));
+        data.activite.getActiviteUser(req.params.id, dataCallback(res));
     },
     // Ajout ou Mise à jour via POST
     save: function (req, res) {

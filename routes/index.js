@@ -55,3 +55,4 @@ exports.users = users.routes;
 exports.conges = conges.routes;
 exports.congesAdmin = conges.routesAdmin;
 exports.activite = activite.routes;
+exports.activiteAdmin = activite.routesAdmin;

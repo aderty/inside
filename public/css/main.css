@@ -1,3 +1,7 @@
+[ng-cloak] {
+      display: none;
+}
+
 html.start {
     visibility: hidden;
 }
@@ -477,4 +481,14 @@ input.ng-pristine + .input-help {
     font-weight: 200;
     color: #777;
     text-shadow: 0 1px 0 #fff;
+}
+
+#adminActivite select {
+    width: 70%;
+}
+
+
+#adminActivite .cell:nth-child(1) > * {
+    max-width: 100px;
+    width: 100px;
 }

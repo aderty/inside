@@ -25,6 +25,10 @@
           templateUrl: 'partials/activite.html',
           controller: appController
       })
+      .when('/admin-activite', {
+           templateUrl: 'admin-partials/admin-activite.html',
+           controller: appController
+      })
       .when('/logout', {
           redirectTo: '/logout'
       })

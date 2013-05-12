@@ -120,7 +120,7 @@ angular.module('inside.services', ['ngResource']).
                       conges[i].creation = new Date(conges[i].creation);
                       conges[i].debut = {
                           date: new Date(conges[i].debut),
-                          type: new Date(conges[i].debut).getHours() > 14 ? 0 : 1
+                          type: new Date(conges[i].debut).getHours() < 8 ? 0 : 1
                       };
                       conges[i].fin = {
                           date: new Date(conges[i].fin),
@@ -155,7 +155,7 @@ angular.module('inside.services', ['ngResource']).
               if (conges.motifExcep) {
                   conges.motif = conges.motifExcep;
               }
-              conges.debut.date.setHours(22);
+              conges.debut.date.setHours(0);
               if (conges.debut.type == 1) {
                   conges.debut.date.setHours(12);
               }
@@ -218,7 +218,7 @@ angular.module('inside.services', ['ngResource']).
                       conges[i].creation = new Date(conges[i].creation);
                       conges[i].debut = {
                           date: new Date(conges[i].debut),
-                          type: new Date(conges[i].debut).getHours() > 14 ? 0 : 1
+                          type: new Date(conges[i].debut).getHours() < 8 ? 0 : 1
                       };
                       conges[i].fin = conges[i].fin = {
                           date: new Date(conges[i].fin),
@@ -260,7 +260,7 @@ angular.module('inside.services', ['ngResource']).
                   };
               }
               delete conges.typeuser;
-              conges.debut.date.setHours(22);
+              conges.debut.date.setHours(0);
               if (conges.debut.type == 1) {
                   conges.debut.date.setHours(12);
               }
@@ -359,7 +359,7 @@ angular.module('inside.services', ['ngResource']).
                       if (activite.activite[i].jour) {
                           activite.activite[i].jour = {
                               date: new Date(activite.activite[i].jour),
-                              type: new Date(activite.activite[i].jour).getHours() > 14 ? 0 : 1
+                              type: new Date(activite.activite[i].jour).getHours() < 8 ? 0 : 1
                           };
                           if (activite.activite[i].jour.date.getHours() == 0) {
                               activite.activite[i].duree = 0;
@@ -374,7 +374,7 @@ angular.module('inside.services', ['ngResource']).
                       else {
                           activite.activite[i].debut = {
                               date: new Date(activite.activite[i].debut),
-                              type: new Date(activite.activite[i].debut).getHours() > 14 ? 0 : 1
+                              type: new Date(activite.activite[i].debut).getHours() < 8 ? 0 : 1
                           };
                           activite.activite[i].fin = {
                               date: new Date(activite.activite[i].fin),
@@ -396,6 +396,58 @@ angular.module('inside.services', ['ngResource']).
                       }
                   }
                   defered.resolve(activite);
+              });
+              return defered.promise;
+          },
+          save: function (activite, creation) {
+              var defered = $q.defer();
+              if (creation) {
+                  // Création -> Flag création
+                  activite.create = true;
+              }
+              resource.save(activite, function (reponse) {
+                  if (reponse.error) {
+                      $rootScope.error = reponse.error;
+                      defered.reject(reponse.error);
+                      return;
+                  }
+                  defered.resolve(reponse);
+              }, function (response) {
+                  $rootScope.error = response;
+                  defered.reject(response);
+              });
+              return defered.promise;
+          }
+      };
+  }).
+ factory('ActiviteAdminService', function ($resource, $q, $rootScope) {
+      var resource = $resource('/data-admin-activite/:id',
+             { id: '@id' }, {
+                 list: { method: 'GET' , isArray: true},
+                 create: { method: 'POST', params: { create: true } },
+                 updateEtat: { method: 'POST', params: { etat: true } }
+             });
+      return {
+          list: function (options) {
+              var defered = $q.defer();
+              var activites = resource.list(options, function () {
+                  // GET: /user/123/card
+                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                  for (var i = 0, l = activites.length; i < l; i++) {
+                      if (activites[i].mois) {
+                          activites[i].mois = new Date(activites[i].mois);
+                      }
+                      if (activites[i].user) {
+                          activites[i].user = {
+                              nom: activites[i].nom,
+                              prenom: activites[i].prenom,
+                              id: activites[i].user
+                          }
+                          delete activites[i].nom;
+                          delete activites[i].prenom;
+                      }
+                  }
+                  defered.resolve(activites);
               });
               return defered.promise;
           },

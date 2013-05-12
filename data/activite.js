@@ -28,7 +28,7 @@ var data = {
                 return fn("Erreur lors de la récupération de l'activité de " + id);
             }
             //console.log(ret[0]);
-            db.query("SELECT @etat, @mois", function (err2, ret2) {
+            db.query("SELECT @etat, CAST(@mois as DATE) as mois", function (err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     return fn("Erreur lors de la récupération de l'activité de " + id);
@@ -36,7 +36,7 @@ var data = {
                 //console.log(ret2);
                 fn(null, {
                     etat: ret2[0]['@etat'],
-                    mois: ret2[0]['@mois'],
+                    mois: ret2[0]['mois'],
                     activite: ret[0]
                 });
             });
@@ -174,11 +174,19 @@ var data = {
             });
         });
     },
-    listMotifs: function (fn) {
-        db.findAll("conges_motifs", null, function (err, ret) {
+    listActivites: function (options, fn) {
+        var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat, (t1.nb + t2.nb * 0.5) AS nbJoursTravailles, (t3.nb + t4.nb * 0.5) as nbJoursNonTravailles" +
+                    " FROM activite JOIN users on activite.user = users.id " +
+                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t1 on t1.user = activite.user" +
+                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t2 on t2.user = activite.user" +
+                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t3 on t3.user = activite.user" +
+                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t4 on t4.user = activite.user" +
+                    " WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?;",
+        values = [options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois];
+        db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
-                return fn("Erreur lors de la récupération des motifs de congés.");
+                return fn("Erreur lors de la récupération des activités du mois " + options.mois + "/" + options.annee + ".");
             }
             fn(null, ret);
         });
