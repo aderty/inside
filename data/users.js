@@ -124,7 +124,6 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        //db.find("users", id, function(err, ret) {
         db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE id = ? AND etat=1', id, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

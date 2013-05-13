@@ -1,21 +1,24 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+﻿<!DOCTYPE html>
 <html>
-    <header>
-        <title>Votre compte viens d'être créé  {{prenom}} !</title>
-    </header>
+    <head>
+        <title>Validation de votre congé !</title>
+    </head>
 <body>
-    <h2>Votre compte viens d'être créé {{prenom}}!</h2>
+    <h2>Votre demande de congés a été validé.</h2>
     <p>
-        Vous pouvez dès maintenant gérer vos demandes de congés et envoyer vos compte rendu d'activité directement <a href="http://176.31.188.68:81/">ici</a>.
+        Information sur le congé validé :
     </p>
     <p>
-        Pour vous connecter, utilisez les informations ci-dessous :
+        Consultant : <strong>{{prenom}} {{nom}}</strong>
     </p>
     <p>
-        Email : <strong>{{email}}</strong>
+        Du : <strong>{{debut}} {{debutType}}</strong>
     </p>
     <p>
-        Mot de passe : <strong>{{password}}</strong>
+        Au : <strong>{{fin}} {{finType}}</strong>
+    </p>
+    <p>
+        Motif du congé : <strong>{{motif}}</strong>
     </p>
 </body>
 </html>

@@ -1,4 +1,5 @@
-﻿var data = require('../data');
+﻿var data = require('../data'),
+    mail = require('../mail');
 
 /// Routes
 function dataCallback(res) {
@@ -39,7 +40,6 @@ var routes = {
         var conges = req.body;
         conges.user = req.session.username;
         conges.type = 'N';
-        console.log(conges);
         if (conges.create) {
             delete conges.create;
             data.conges.addConges(conges, dataCallback(res));
@@ -87,7 +87,15 @@ var routesAdmin = {
             return;
         }
         if (req.query.etat) {
-            data.conges.updateEtatConges(conges, dataCallback(res));
+            data.conges.updateEtatConges(conges, function(err, ret){
+                if (conges.etat == 2) {
+                    data.users.getUser(conges.user.id, function(err, user){
+                        if(err) return;
+                        mail.Mail.validationConges(user, conges);
+                    });
+                }
+                dataCallback(res)(err, ret);
+            });
             return;
         }
         data.conges.updateConges(conges, true, dataCallback(res));
