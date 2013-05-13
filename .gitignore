@@ -12,4 +12,7 @@ sql/
 *.vb
 *.bat
 *.rdb
+Web.config
+Web.Debug.config
+Web.Release.config
 UpgradeLog.XML
