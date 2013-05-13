@@ -91,7 +91,7 @@ var routesAdmin = {
                 if (conges.etat == 2) {
                     data.users.getUser(conges.user.id, function(err, user){
                         if(err) return;
-                        mail.Mail.validationConges(user, conges);
+                        mail.Mail.validationConges(user, conges, req.session.prenom);
                     });
                 }
                 dataCallback(res)(err, ret);

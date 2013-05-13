@@ -216,7 +216,7 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
-  factory('CongesAdminService', function($resource, $q, $rootScope) {
+  factory('CongesAdminService', function ($resource, $q, $rootScope, $filter) {
       var resource = $resource('/data-admin-conges/:id',
              { id: '@id' }, {
                  /*'queryValidation': { method: 'GET', isArray: true, params: { etat: 1} },
@@ -326,6 +326,7 @@ angular.module('inside.services', ['ngResource']).
           },
           updateEtat: function(conges) {
               var defered = $q.defer();
+              conges.libelle = $filter('motifConges')(conges.motif);
               resource.updateEtat(conges, function(reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;

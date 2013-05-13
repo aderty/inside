@@ -11,7 +11,7 @@ var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0
 
 var Mail = {
     ajoutUser: function (user, password, fn) {
-        return fn(null);
+        //return fn(null);
         if (!user) return fn("Utilisateur invalide");
         if (!re.test(user.email)) {
             return fn("Email utilisateur invalide");
@@ -46,7 +46,7 @@ var Mail = {
             if (fn) fn(err);
         });
     },
-    validationConges: function (user, conges, fn) {
+    validationConges: function (user, conges, owner, fn) {
         //return fn(null);
         if (!user) return fn("Utilisateur invalide");
         if (!re.test(user.email)) {
@@ -56,6 +56,14 @@ var Mail = {
             return fn("Pas de congé");
         }
         console.log("envois de l'email à : " + user.email);
+
+        var subject = "[InsideConsulting] Validation de votre demande de congés du ";
+        if (moment(conges.debut.date).diff(moment(conges.fin.date), 'days') != 0) {
+            subject += moment(conges.debut.date).format('D MMMM YYYY') + " au " + moment(conges.fin.date).format('D MMMM YYYY') + " !";
+        }
+        else {
+            subject += moment(conges.debut.date).format('D MMMM YYYY') + " !";
+        }
 
         email.send({
             host: config.host,              // smtp server hostname
@@ -67,18 +75,19 @@ var Mail = {
             password: config.password, //(new Buffer("password")).toString("base64"),
             to: user.email,
             from: "footmap@laposte.net", //"no-reply@insideconsulting.fr",
-            subject: "[InsideConsulting] Validation de votre demande de congé du " + moment(conges.debut).format('D MMMM YYYY') + " au " + moment(conges.fin).format('D MMMM YYYY') + "!",
+            subject: subject,
             //body: "Hello! This is a test of the node_mailer."
             template: path.join(dirTemplate, 'validationConges.html'),   // path to template name
             data: {
                 "email": user.email,
                 "prenom": user.prenom,
                 "nom": user.nom,
-                "debut": moment(conges.debut).format('D MMMM YYYY'),
-                "fin": moment(conges.fin).format('D MMMM YYYY'),
-                "debutType": moment(conges.debut).hour() > 8 ? "après-midi" : "matin",
-                "finType": moment(conges.fin).hour() > 14 ? "soir" : "midi",
-                "motif": conges.motif
+                "debut": moment(conges.debut.date).format('D MMMM YYYY'),
+                "fin": moment(conges.fin.date).format('D MMMM YYYY'),
+                "debutType": conges.debut.type == 1 ? "après-midi" : "matin",
+                "finType": conges.fin.type == 1 ? "soir" : "midi",
+                "motif": conges.libelle,
+                "owner": owner
             }
         },
         function (err, result) {

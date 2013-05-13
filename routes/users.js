@@ -15,9 +15,9 @@ function dataCallback(res) {
 }
 
 function setSession(req, user) {
-    req.session.username = user.id;
-    req.session.role = user.role;
-    req.session.prenom = user.prenom;
+    req.session.username = user.id; // Utilisé partout
+    req.session.role = user.role; // Utilisé pour la vérification des droits
+    req.session.prenom = user.prenom; // Utilisé pour le mail de la validation congés
 }
 
 function setCookie(res, user) {
