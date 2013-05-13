@@ -88,7 +88,7 @@ var routesAdmin = {
         }
         if (req.query.etat) {
             data.conges.updateEtatConges(conges, function(err, ret){
-                if (conges.etat == 2) {
+                if (conges.etat == 2 || conges.etat == 3) {
                     data.users.getUser(conges.user.id, function(err, user){
                         if(err) return;
                         mail.Mail.validationConges(user, conges, req.session.prenom);

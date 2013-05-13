@@ -57,7 +57,7 @@ var Mail = {
         }
         console.log("envois de l'email à : " + user.email);
 
-        var subject = "[InsideConsulting] Validation de votre demande de congés du ";
+        var subject = conges.etat == 2 ? "[InsideConsulting] Validation de votre demande de congés du " : "[InsideConsulting] Refus de votre demande de congés du ";
         if (moment(conges.debut.date).diff(moment(conges.fin.date), 'days') != 0) {
             subject += moment(conges.debut.date).format('D MMMM YYYY') + " au " + moment(conges.fin.date).format('D MMMM YYYY') + " !";
         }
@@ -77,7 +77,7 @@ var Mail = {
             from: "footmap@laposte.net", //"no-reply@insideconsulting.fr",
             subject: subject,
             //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, 'validationConges.html'),   // path to template name
+            template: path.join(dirTemplate, conges.etat == 2 ? 'validationConges.html' : 'refusConges.html'),   // path to template name
             data: {
                 "email": user.email,
                 "prenom": user.prenom,
