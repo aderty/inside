@@ -50,10 +50,10 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
-    factory('MotifsService', function ($http, $q) {
+    factory('MotifsService', function($http, $q) {
         var motifs = null;
         return {
-            list: function () {
+            list: function() {
                 var defered = $q.defer();
                 if (motifs) {
                     defered.resolve(motifs);
@@ -62,7 +62,7 @@ angular.module('inside.services', ['ngResource']).
                     $http({
                         method: 'GET',
                         url: '/data-conges-motifs'
-                    }).then(function (response) {
+                    }).then(function(response) {
                         motifs = response.data;
                         defered.resolve(motifs);
                     });
@@ -71,16 +71,32 @@ angular.module('inside.services', ['ngResource']).
             }
         };
     }).
-  factory('UsersService', function($resource, $q) {
+  factory('UsersService', function($resource, $q, $rootScope) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {
                  charge: { method: 'POST', params: { charge: true} },
+                 changePassword: { method: 'PUT', params: { password: true} },
                  searcher: { method: 'GET', params: { search: true }, isArray: true }
              });
       resource.search = function(recherche) {
           var defered = $q.defer();
           var users = resource.searcher(recherche, function() {
               defered.resolve(users);
+          });
+          return defered.promise;
+      };
+      resource.password = function(options) {
+          var defered = $q.defer();
+          resource.changePassword(options, function(reponse) {
+              if (reponse.error) {
+                  $rootScope.error = reponse.error;
+                  defered.reject(reponse.error);
+                  return;
+              }
+              defered.resolve(reponse);
+          }, function(reponse) {
+              $rootScope.error = reponse;
+              defered.reject(reponse);
           });
           return defered.promise;
       };
@@ -325,17 +341,17 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
-  factory('ActiviteService', function ($resource, $q, $rootScope) {
+  factory('ActiviteService', function($resource, $q, $rootScope) {
       var resource = $resource('/data-activite/:mois',
              { id: '@mois' }, {
                  list: { method: 'GET' },
-                 create: { method: 'POST', params: { create: true } },
-                 updateEtat: { method: 'POST', params: { etat: true } }
+                 create: { method: 'POST', params: { create: true} },
+                 updateEtat: { method: 'POST', params: { etat: true} }
              });
       return {
-          list: function (options) {
+          list: function(options) {
               var defered = $q.defer();
-              var activite = resource.list(options, function () {
+              var activite = resource.list(options, function() {
                   // GET: /user/123/card
                   // server returns: [ {id:456, number:'1234', name:'Smith'} ];
                   var mois;
@@ -399,20 +415,20 @@ angular.module('inside.services', ['ngResource']).
               });
               return defered.promise;
           },
-          save: function (activite, creation) {
+          save: function(activite, creation) {
               var defered = $q.defer();
               if (creation) {
                   // Création -> Flag création
                   activite.create = true;
               }
-              resource.save(activite, function (reponse) {
+              resource.save(activite, function(reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
                       return;
                   }
                   defered.resolve(reponse);
-              }, function (response) {
+              }, function(response) {
                   $rootScope.error = response;
                   defered.reject(response);
               });
@@ -420,55 +436,113 @@ angular.module('inside.services', ['ngResource']).
           }
       };
   }).
- factory('ActiviteAdminService', function ($resource, $q, $rootScope) {
-      var resource = $resource('/data-admin-activite/:id',
+ factory('ActiviteAdminService', function($resource, $q, $rootScope) {
+     var resource = $resource('/data-admin-activite/:id',
              { id: '@id' }, {
-                 list: { method: 'GET' , isArray: true},
-                 create: { method: 'POST', params: { create: true } },
-                 updateEtat: { method: 'POST', params: { etat: true } }
+                 list: { method: 'GET', isArray: true },
+                 removeActivite: { method: 'DELETE' },
+                 create: { method: 'POST', params: { create: true} },
+                 updateEtat: { method: 'POST', params: { etat: true} }
              });
-      return {
-          list: function (options) {
-              var defered = $q.defer();
-              var activites = resource.list(options, function () {
-                  // GET: /user/123/card
-                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
-                  for (var i = 0, l = activites.length; i < l; i++) {
-                      if (activites[i].mois) {
-                          activites[i].mois = new Date(activites[i].mois);
-                      }
-                      if (activites[i].user) {
-                          activites[i].user = {
-                              nom: activites[i].nom,
-                              prenom: activites[i].prenom,
-                              id: activites[i].user
-                          }
-                          delete activites[i].nom;
-                          delete activites[i].prenom;
-                      }
-                  }
-                  defered.resolve(activites);
-              });
-              return defered.promise;
-          },
-          save: function (activite, creation) {
-              var defered = $q.defer();
-              if (creation) {
-                  // Création -> Flag création
-                  activite.create = true;
-              }
-              resource.save(activite, function (reponse) {
-                  if (reponse.error) {
-                      $rootScope.error = reponse.error;
-                      defered.reject(reponse.error);
-                      return;
-                  }
-                  defered.resolve(reponse);
-              }, function (response) {
-                  $rootScope.error = response;
-                  defered.reject(response);
-              });
-              return defered.promise;
-          }
-      };
-  });
+     return {
+         list: function(options) {
+             var defered = $q.defer();
+             var activites = resource.list(options, function() {
+                 // GET: /user/123/card
+                 // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                 for (var i = 0, l = activites.length; i < l; i++) {
+                     if (activites[i].mois) {
+                         activites[i].mois = new Date(activites[i].mois);
+                     }
+                     if (activites[i].user) {
+                         activites[i].user = {
+                             nom: activites[i].nom,
+                             prenom: activites[i].prenom,
+                             id: activites[i].user
+                         }
+                         delete activites[i].nom;
+                         delete activites[i].prenom;
+                     }
+                 }
+                 defered.resolve(activites);
+             });
+             return defered.promise;
+         },
+         get: function(options) {
+             var params = {
+                id: options.user.id,
+                start: options.mois,
+                end: moment(options.mois).add('month', 1).toDate(),
+             }
+             var defered = $q.defer();
+             var activite = resource.get(params, function() {
+                 // GET: /user/123/card
+                 // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                 if (activite.mois) {
+                     activite.mois = new Date(activite.mois);
+                 }
+                 for (var i = 0, l = activite.activite.length; i < l; i++) {
+                     if (activite.activite[i].jour) {
+                         activite.activite[i].jour = {
+                             date: new Date(activite.activite[i].jour),
+                             type: new Date(activite.activite[i].jour).getHours() < 8 ? 0 : 1
+                         };
+                         if (activite.activite[i].jour.date.getHours() == 0) {
+                             activite.activite[i].duree = 0;
+                         }
+                         else if (activite.activite[i].jour.date.getHours() < 14) {
+                             activite.activite[i].duree = 1;
+                         }
+                         else {
+                             activite.activite[i].duree = 2;
+                         }
+                     }
+                     var types = ['JT', 'JF', 'CP', 'CP_ANT', 'RTT', 'RTTE']
+                     if (types.indexOf(activite.activite[i].type) == -1) {
+                         activite.activite[i].type = 'AE';
+                     }
+                 }
+                 defered.resolve(activite);
+             });
+             return defered.promise;
+         },
+         remove: function(activite) {
+             var defered = $q.defer();
+             activite = {
+                user: activite.user.id,
+                mois: activite.mois,
+                etat: activite.etat
+             }
+             resource.removeActivite(activite, function(reponse) {
+                 if (reponse.error) {
+                     $rootScope.error = reponse.error;
+                     defered.reject(reponse.error);
+                     return;
+                 }
+                 defered.resolve(reponse);
+             }, function(response) {
+                 $rootScope.error = response;
+                 defered.reject(response);
+             });
+             return defered.promise;
+         },
+         updateEtat: function(activite) {
+             var defered = $q.defer();
+             if (activite.user) {
+                 activite.user = activite.user.id;
+             }
+             resource.updateEtat(activite, function(reponse) {
+                 if (reponse.error) {
+                     $rootScope.error = reponse.error;
+                     defered.reject(reponse.error);
+                     return;
+                 }
+                 defered.resolve(reponse);
+             }, function(response) {
+                 $rootScope.error = response;
+                 defered.reject(response);
+             });
+             return defered.promise;
+         }
+     };
+ });

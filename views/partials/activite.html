@@ -20,7 +20,7 @@
                 <div class="span12 well">
                     <!--Sidebar content-->
                     <span class="titre">Actions</span>
-                    <p ui-if="activite.etat <= 1">
+                    <p ui-if="activite.etat <= 1 && !future">
                         <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon_upload"></i>Enregistrer mon activité</button>
                     </p>
                     <p>

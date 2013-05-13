@@ -10,7 +10,8 @@
         prenom : "<%=prenom || ''%>",
         infos: {
             nbMesCongesVal: <%=infos.nbMesCongesVal || 0 %>,
-            nbCongesVal: <%=infos.nbCongesVal || 0 %>
+            nbCongesVal: <%=infos.nbCongesVal || 0 %>,
+            nbActivitesVal: <%=infos.nbActivitesVal || 0 %>
         }
     }
 </script> 
@@ -32,11 +33,11 @@
                       <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
                       <li authenticate ng-class="{active: page == pages.activite.name, masquer: role > 1}"><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
                       <li authenticate="2" class="dropdown" ng-class="{active: page == pages.activite.name || page == pages['admin-activite'].name}">
-                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-tasks"></i> Activité <b class="caret"> </b></a>
+                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-tasks"></i> Activité <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span> <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.activite.name]"><a href="/activite"><i class="icon-file"></i> Mon activité</a></li>
                               <li ng-class="{true:'masquer', false:''}[page == pages.activite.name || page == pages['admin-activite'].name]" class="divider"></li>
-                              <li authenticate ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités</a></li>
+                              <li authenticate ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span></a></li>
                             </ul>
                       </li>
                       <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
@@ -61,6 +62,7 @@
                               <li ng-class="{true:'masquer', false:''}[page == pages.index.name]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
                               <li class="divider"></li>
                               <li class="nav-header">Mon compte</li>
+                              <li authenticate><a href="#" ng-click="changePassword();"><i class="icon_key"></i> Modifier son password</a></li>
                               <li authenticate><a href="/logout"><i class="icon_logout"></i> Se déconnecter</a></li>
                             </ul>
                       </li>
@@ -72,6 +74,58 @@
     </div>
   </div>
 </div>
+
+<script type="text/x-handlebars-template" id="passwordTmpl">
+    <div class="modal-header">
+    <h1>Modification du mot de passe</h1>
+    </div>
+    <div class="modal-body" id="pwd">
+    <p>Renseigner votre ancien mot de passe ainsi que le nouveau afin de modifier votre mot de passe actuel. 
+    </p>
+    <form id="pwdUser" name="pwdUser" class="form-horizontal" novalidate>
+    <!--Saisie ancien password-->
+    <div class="control-group" ng-class="{error: pwdUser.oldPassword.$dirty && pwdUser.oldPassword.$invalid, success:pwdUser.oldPassword.$dirty && !pwdUser.oldPassword.$invalid}">
+        <label class="control-label" for="password">Ancien password</label>
+        <div class="controls password">
+            <input type="password" id="oldPassword" name="oldPassword" ng-model="currentUser.oldPwd" password-validate required placeholder="Ancien password">
+            <div class="input-help">
+                <h4>Vous devez renseigner l'ancien password</h4>
+            </div>
+        </div>
+    </div>
+    <!--Saisie password-->
+    <div class="control-group" ng-class="{error: pwdUser.password.$dirty && pwdUser.password.$invalid, success:pwdUser.password.$dirty && !pwdUser.password.$invalid}">
+        <label class="control-label" for="password">Password</label>
+        <div class="controls password">
+            <input type="password" id="password" name="password" ng-model="currentUser.pwd" password-validate required placeholder="Password">
+            <div class="input-help">
+                <h4>Le mot de passe doit avoir au minimum :</h4>
+                <ul>
+                    <li ng-class="pwdHasLetter">Au moins <strong>une lettre</strong></li>
+                    <li ng-class="pwdHasNumber">Au moins <strong>un nombre</strong></li>
+                    <li ng-class="pwdValidLength">Au moins <strong>8 caractères</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--Saisie confirmation du password-->
+    <div class="control-group" ng-class="{error: pwdUser.confirm_password.$dirty && pwdUser.confirm_password.$invalid, success:pwdUser.confirm_password.$dirty && !pwdUser.confirm_password.$invalid}">
+        <label class="control-label" for="confirm_password">Retapez le password</label>
+        <div class="controls">
+            <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Password" required ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
+            <div class="input-help">
+                <h4>Vous devez saisir le même mot de passe.</h4>
+            </div>
+        </div>
+    </div>
+    </form>
+    </div>
+    <div class="modal-footer">
+        <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
+        <button ng-disabled="pwdUser.$invalid" ng-click="save(currentUser)" class="btn btn-primary" >Modifier</button>
+        <button ng-click="close()" class="btn" >Annuler</button>
+    </div>
+</script>
 
 <div ng-view></div>
 

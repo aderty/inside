@@ -4,8 +4,8 @@
         <div class="span5">
             <div class="row-fluid">
                 <div class="span12">
-                    <fieldset>
-                            <legend>Choix du mois d'activité à visualiser</legend>
+                    <fieldset id="adminActiviteChoix">
+                        <legend>Choix du mois à visualiser</legend>
                         <div style="width:30%; float:left">
                             <label>Année</label>
                             <select id="inputAnnee" name="inputAnnee" ng-model="selection.annee" ng-options="annee for annee in lstAnnees"></select>
@@ -56,11 +56,45 @@
     <div class="cellJustification" data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</div>
 </script>
 <script type="text/x-handlebars-template" id="validationTmpl">
-    <a href="#" title="Valider de CRA" ng-show="row.etat == 1" ng-click="valider(row)"><i class="icon-ok"></i></a>
+    <a href="#" title="Valider le CRA" ng-show="row.etat == 1" ng-click="valider(row)"><i class="icon-ok"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
-    <a href="#" title="Modifier" ng-show="isEditable(row)" ng-click="visualiser(row)"><i class="icon-eye-open"></i></a>
+    <a href="#" title="Visualiser" ng-show="isEditable(row)" ng-click="visualiser(row)"><i class="icon-eye-open"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
     <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
+</script>
+
+<script type="text/x-handlebars-template" id="eventTmpl">
+  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT']"  rel="popover" data-original-title="" title="">
+       <div class="fc-event-inner">
+           <span class="fc-event-title">{{data.type | motifCongesShort : typeActivite}} {{infos(data)}}</span>
+       </div>
+  </div>
+</script>
+<script type="text/x-handlebars-template" id="popoverEventTmpl">
+  <h3 class="popover-title">Détails de la journée</h3>
+  <accordion close-others="true">
+    <accordion-group heading="Activité effectuée" is-open="true">
+      <p>Choisisez l'activté effectuée cette journée :</p>
+      <!--<span ng-bind="data.type | motifCongesShort:typeActivite"></span>-->
+      <select id="inputType" ng-disabled="true" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite">
+      </select>
+        <p>Durée :</p>
+       <select id="inputDuree" name="inputDuree" ng-disabled="true" required ng-model="data.duree">
+           <option value="0">Toute la journée</option>
+           <option ng-hide="data.duree == 2" value="1">Matinée</option>
+           <option ng-hide="data.duree == 1" value="2">Après-midi</option>
+      </select>
+
+    </accordion-group>
+    <accordion-group heading="Informations complémentaires">
+      <p>Remarques...</p>
+        <textarea id="inputInfos" name="inputInfos" ng-model="data.information" ng-disabled="true"></textarea>
+    </accordion-group>
+  </accordion>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="valid(currentEvent);" >Valider</button>
+    <button class="btn" ng-click="cancel();">Annuler</button>
+  </div>
 </script>

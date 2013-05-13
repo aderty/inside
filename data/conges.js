@@ -256,7 +256,7 @@ var data = {
         });*/
     },
     listMotifs: function (fn) {
-        db.findAll("conges_motifs", null, function (err, ret) {
+        db.query("SELECT * FROM conges_motifs ORDER BY ordre", null, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des motifs de congés.");

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html manifest="inside.manifest" ng-app="inside" class="start">
+<html manifest="inside.manifest" id="ng-app" ng-app="inside" class="start" xmlns:ng="http://angularjs.org">
 <head>
   <meta charset="utf-8" />
   <title> Inside Consulting </title>
@@ -12,5 +12,22 @@
   <link rel="stylesheet" href="/libs/jqueryui/jquery-ui-1.10.2.custom.min.css" />
   <link rel="stylesheet" href="/libs/select2/select2.css" />
   <link rel="stylesheet" href="/libs/angularjs/fullcalendar.css" />
+    <!--[if lte IE 8]>
+      <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+        document.createElement('grid');
+        document.createElement('rowgrid');
+        document.createElement('tabs');
+        document.createElement('pane');
+        document.createElement('gauge');
+ 
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+      </script>
+    <![endif]-->
 </head>
 <body ng-cloak>

@@ -55,7 +55,7 @@ var routes = {
 
 var routesAdmin = {
     // Lecture, via GET
-    list: function (req, res) {
+    list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
         var options = {};
         if (req.query.annee) {
@@ -66,27 +66,30 @@ var routesAdmin = {
         }
         data.activite.listActivites(options, dataCallback(res));
     },
-    get: function (req, res) {
+    get: function(req, res) {
         res.header('Cache-Control', 'no-cache');
-        data.activite.getActiviteUser(req.params.id, dataCallback(res));
+        var options = {};
+        if (req.query.start) {
+            options.start = new Date(req.query.start);
+        }
+        if (req.query.end) {
+            options.end = new Date(req.query.end);
+        }
+        data.activite.getActiviteUser(req.params.id, options, dataCallback(res));
     },
     // Ajout ou Mise à jour via POST
-    save: function (req, res) {
-        var conges = req.body;
-        conges.type = 'R';
-        if (conges.create) {
-            delete conges.create;
-            data.activite.addConges(conges, dataCallback(res));
-            return;
-        }
+    save: function(req, res) {
+        var activite = req.body;
         if (req.query.etat) {
-            data.activite.updateEtatConges(conges, dataCallback(res));
+            data.activite.updateEtatActivite(activite, dataCallback(res));
             return;
         }
         data.activite.updateConges(conges, true, dataCallback(res));
     },
-    remove: function (req, res) {
-        data.activite.removeConges(req.params.id, dataCallback(res));
+    remove: function(req, res) {
+        var activite = req.query;
+        activite.mois = new Date(activite.mois);
+        data.activite.removeActivite(activite, dataCallback(res));
     }
 };
 

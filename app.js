@@ -167,6 +167,8 @@ app.get('/data-users/:id', [dataLogin], routes.users.get);
 app.post('/data-users/:id', [dataLogin, dataRh], routes.users.save);
 app.post('/data-users', [dataLogin, dataRh], routes.users.save);
 
+app.put('/data-users', [dataLogin], routes.users.password);
+
 // Suppression via POST
 app.delete('/data-users/:id', [dataLogin, dataRh], routes.users.remove);
 
@@ -214,9 +216,13 @@ app.post('/data-activite/:id', [dataLogin], routes.activite.save);
 app.post('/data-activite', [dataLogin], routes.activite.save);
 
 // Suppression via POST
-app.delete('/data-admin-activite/:id', [dataLogin, dataRh], routes.activite.remove);
+app.delete('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.remove);
 
 app.get('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.list);
+app.get('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.get);
+// Ajout via POST
+app.post('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.save);
+app.post('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.save);
 
 
 app.post('/login', routes.users.login);

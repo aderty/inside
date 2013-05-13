@@ -168,11 +168,19 @@ table td.cell > div {
 #login input[type='checkbox'] {
     margin-left: -20px;
 }
+/* Message d'erreur popup */
+#pwd
+{
+	overflow: visible;
+}
+
+#pwd input,
 #login input,
 #editConges input,
 #editUser input {
     height:inherit;
 }
+#pwd .controls,
 #login .controls,
 #editConges .controls,
 #editUser .controls {
@@ -207,6 +215,12 @@ table td.cell > div {
 ul.actionEdit
 {
 	min-width: 0;
+}
+select:focus + .input-help,
+textarea:focus + .input-help,
+input:focus + .input-help 
+{
+	z-index: 5000;
 }
 
 .input-help {
@@ -483,7 +497,7 @@ input.ng-pristine + .input-help {
     text-shadow: 0 1px 0 #fff;
 }
 
-#adminActivite select {
+#adminActiviteChoix select {
     width: 70%;
 }
 

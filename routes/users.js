@@ -80,7 +80,9 @@ var routes = {
             dataCallback(res)(err, ret);
         });
     },
-
+    password: function(req, res) {
+        data.users.password(req.session.username, req.body, dataCallback(res));
+    },
     // Ajout via POST
     /*add: function (req, res) {
         data.users.insertUser(req.body, dataCallback(res));

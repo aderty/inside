@@ -36,29 +36,6 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
         { id: 3, libelle: 'Admin' }
     ];
 
-    /*$rootScope.motifsConges = [
-        { id: 'CP', libelle: 'CP' },
-        { id: 'RTTE', libelle: 'RTT employeur', shortlibelle: 'RTT Empl.' },
-        { id: 'RTT', libelle: 'RTT' },
-        { id: 'CP_ANT', libelle: 'CP Anticipé' , shortlibelle: 'CP ant.'},
-        { id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' }
-    ];
-    $rootScope.motifsCongesExcep = [
-        { id: 'CS', libelle: 'Sans solde' },
-        { id: 'FOR', libelle: 'Formation' },
-        { id: 'INT', libelle: 'Intercontrat' },
-        { id: 'DEL', libelle: 'Délégation DP, CE' },
-        { id: 'MAR', libelle: 'Mariage' },
-        { id: 'NAI', libelle: 'Naissance (3 jours)' },
-        { id: 'PAT', libelle: 'Paternité (9 jours ouvrés)' },
-        { id: 'MAT', libelle: 'Maternité' },
-        { id: 'DEM', libelle: 'Déménagement (1 jour par an)' },
-        { id: 'ENF', libelle: 'Enfant malade (3 jours par an)' },
-        { id: 'PAO', libelle: 'Congés pathologique' },
-        { id: 'MA', libelle: 'Maladie' },
-        { id: 'DC', libelle: 'Décès ascendants, descendants, collatéraux' }
-        
-    ];*/
     $rootScope.etatsConges = [
         { id: '1', libelle: 'En attente de validation' , cssClass: 'val'},
         { id: '2', libelle: 'Validés' , cssClass: 'val'},
@@ -100,7 +77,7 @@ function appController($scope, $routeParams, $rootScope) {
 }
 
 // Contrôleur de la barre de navigation
-function NavBar($scope, $rootScope, LoginService) {
+function NavBar($scope, $rootScope, LoginService, $dialog) {
     $scope.logout = function (user) {
         LoginService.logout(function (err, ret) {
             $rootScope.connected = false;
@@ -112,6 +89,40 @@ function NavBar($scope, $rootScope, LoginService) {
             search: search.value
         });
     }
+    // Inlined template for demo 
+    $scope.opts = { 
+        backdrop: true, 
+        keyboard: true, 
+        backdropClick: true, 
+        template: $.trim($("#passwordTmpl").html()),
+        controller: 'DialogPassword'
+    }; 
+        
+    $scope.changePassword = function(){ 
+        $rootScope.error = "";
+        var d = $dialog.dialog($scope.opts); 
+        d.open().then(function(result){ 
+            if(result) {
+                
+            } 
+        }); 
+    }; 
+}
+// Contrôleur de la popup de modification de password
+function DialogPassword($scope, dialog, UsersService){ 
+    $scope.close = function(){ 
+        dialog.close(); 
+    }; 
+    $scope.save = function (currentUser) {
+        if ($scope.pwdUser.$invalid) {
+            return;
+        }
+        UsersService.password(currentUser).then(function(retour){
+            if(retour){
+                dialog.close(); 
+            }
+        }); 
+    }; 
 }
 
 // Contrôleur de login
@@ -171,13 +182,13 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         $scope.edition = 1;
         $scope.mode = "Création";
         $scope.lblMode = "Création d'un nouvel utilisateur";
-    }
+    };
 
     $scope.cancel = function () {
         $scope.error = null;
         $scope.edition = 0;
         $.extend($scope.currentUser, $scope.currentUserSaved);
-    }
+    };
 
     $scope.edit = function (row) {
         $scope.error = null;
@@ -186,13 +197,13 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         $scope.currentUserSaved = angular.copy($scope.currentUser);
         $scope.edition = 2;
         $scope.mode = "Edition";
-        $scope.lblMode = "Modification de "; // +$scope.currentUser.nom + " " + $scope.currentUser.prenom;
-    }
+        $scope.lblMode = "Modification de ";
+    };
 
-    $scope.delete = function (row) {
+    $scope['delete'] = function (row) {
         var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
         var msgbox = $dialog.messageBox('Suppression d\'un utilisateur', 'Etes-vous sûr de supprimer ' + row.prenom + ' ' + row.nom + '?', btns);
-        msgbox.open().then(function(result){
+        msgbox.open().then(function (result) {
             if (result === 'yes') {
                 UsersService.remove(row, function (err) {
                     var index = $rootScope.users.indexOf(row);
@@ -200,7 +211,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
                 });
             }
         });
-    }
+    };
 
     $scope.isUnchanged = function(currentUser) {
         $scope.haschanged = angular.equals(currentUser, $scope.currentUserSaved);
@@ -234,7 +245,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
                 $rootScope.users.push(currentUser);
             }
         });
-    }
+    };
     
     $scope.currentUser = {};
 }
@@ -376,7 +387,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.lblMode = "Modification d'une demande de congés";
     }
 
-    $scope.delete = function (row) {
+    $scope['delete'] = function (row) {
         var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
         var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
         msgbox.open().then(function(result){
@@ -682,7 +693,7 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
         $scope.dateOptionsFin.minDate = $scope.currentConges.debut.date;
     }
 
-    $scope.delete = function (row) {
+    $scope['delete'] = function (row) {
         var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
         var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
         msgbox.open().then(function (result) {
@@ -1187,7 +1198,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         }
         eventScope.$watch('data.type', function (newValue, oldValue) {
             if (oldValue && newValue == 'JT' && oldValue != 'JT') {
-                if (this.duree == 0) {
+                if (eventScope.data.duree == 0) {
                     $scope.nbJourTravailles++;
                     $scope.nbJourNonTravailles--;
                 }
@@ -1197,7 +1208,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 }
             }
             if (oldValue && newValue != 'JT' && oldValue == 'JT') {
-                if (this.duree == 0) {
+                if (eventScope.data.duree == 0) {
                     $scope.nbJourTravailles--;
                     $scope.nbJourNonTravailles++;
                 }
@@ -1328,18 +1339,18 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 $scope.start = view.start;
                 $scope.end = view.end;
 
-                /*$timeout(function () {
-                    $scope.load(function (events) {
-                        $scope.activiteCalendar.fullCalendar('refetchEvents');
-                    });
-                });*/
                 viewStartDate = view.start;
-                if (view.start >= lastValidDate) {
-                    //header.disableButton('prev');
-                    //$(".fc-button-next").attr("disabled", "disabled").hide();
+                if (view.start > lastValidDate) {
+                    // Calendrier dans le future -> Désactivation de la sauvegarde
+                    $scope.future = true;
                 } else {
-                    //header.enableButton('prev');
-                    //$(".fc-button-next").removeAttr("disabled").show();
+                    // Calendrier dans le passé > 3 mois -> Désactivation de la sauvegarde
+                    if (moment().diff(moment(view.start), 'months', true) > 3) {
+                        $scope.future = true;
+                    }
+                    else {
+                        $scope.future = false;
+                    }
                 }
             },
             dayClick: $scope.alertEventOnClick,
@@ -1356,10 +1367,15 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
     };
 }
 
-function ActiviteAdmin($scope, $rootScope, ActiviteAdminService) {
+function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, ActiviteAdminService) {
     var currentYear = new Date().getFullYear();
     $scope.lstAnnees = [currentYear, currentYear - 1, currentYear - 2];
     $scope.lstMois = jQuery.fullCalendar.monthNames;
+    $scope.activiteUser = [];
+    
+    $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travail' });
+    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
 
     $scope.selection = {
         annee: currentYear,
@@ -1370,6 +1386,7 @@ function ActiviteAdmin($scope, $rootScope, ActiviteAdminService) {
         var options = angular.copy(selection);
         options.mois = $scope.lstMois.indexOf(selection.mois) + 1;
         ActiviteAdminService.list(options).then(function (activites) {
+            $scope.eventSources = null;
             $rootScope.activites = activites;
         });
     }, true);
@@ -1379,13 +1396,135 @@ function ActiviteAdmin($scope, $rootScope, ActiviteAdminService) {
     };
 
     $scope.valider = function (row) {
-        ActiviteAdminService.valider(row).then(function (reponse) {
+        var activite = angular.copy(row);
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Validation d\'un mois d\'activité', 'Etes-vous sûr de valider l\'activité de '+ activite.user.prenom +' du mois de '+ moment(activite.mois).format('MMMM YYYY') +' ?', btns);
+        msgbox.open().then(function(result){
+            if (result === 'yes') {
+                activite.etat = 2;
+                ActiviteAdminService.updateEtat(activite).then(function (reponse) {
+                    if(reponse.success){
+                        row.etat = activite.etat;
+                        $rootScope.infos.nbActivitesVal--;
+                    }
+                });
+            }
         });
     };
     $scope.visualiser = function (row) {
+        $scope.currentActivite = angular.copy(row);
+        $("#activiteCalendar").fullCalendar('gotoDate', $scope.currentActivite.mois);
+        ActiviteAdminService.get($scope.currentActivite).then(function (activites) {
+            $scope.eventSources = null;
+            $scope.activiteUser = [];
+            if (activites.activite.length > 0) {
+                for (var i = 0, l = activites.activite.length; i < l; i++) {
+                    $scope.activiteUser.push({ title: activites.activite[i].type, start: activites.activite[i].jour.date, data: activites.activite[i] });
+                }
+            }
+            if(!$scope.eventSources){
+                $scope.eventSources = [$scope.activiteUser];
+            }
+        });
     };
-    $scope.delete = function (row) {
+    $scope['delete'] = function (row) {
+        var activite = angular.copy(row);
+        var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
+        var msgbox = $dialog.messageBox('Suppression d\'un mois d\'activité', 'Etes-vous sûr de supprimer l\'activité de '+ activite.user.prenom +' du mois de '+ moment(activite.mois).format('MMMM YYYY') +' ?', btns);
+        msgbox.open().then(function(result){
+            if (result === 'yes') {
+                ActiviteAdminService.remove(activite).then(function (reponse) {
+                    if(reponse.success){
+                        var index = $rootScope.activites.indexOf(row);
+                        $rootScope.activites.splice(index, 1);
+                        $rootScope.infos.nbActivitesVal--;
+                    }
+                });
+            }
+        });
+    };
+    
+    /* alert on eventClick */
+    $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
+        $scope.$apply(function () {
+            $scope.eventSelectionne = new moment(date).format('dddd D MMMM YYYY');
+        });
+    };
+    $scope.eventOnClick = function (calEvent, jsEvent, view) {
+        $scope.$apply(function () {
+            $scope.currentEvent = calEvent.data;
+            $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
+        });
+    };
+    
+    $scope.eventRender = function (event, element) {
 
+        function indexOfEvent(start) {
+            var index = 0, l = $scope.events.length;
+            for (; index < l; index++) {
+                if ($scope.events[index].start == start) return index;
+            }
+            return -1;
+        }
+        var eventScope = $scope.$new(true);
+        angular.extend(eventScope, event);
+        eventScope.typeActivite = $rootScope.typeActivite;
+        
+        eventScope.cancel = function (event) {
+            eventScope.error = null;
+            $.extend(eventScope.data, eventScope.savedEvent);
+            $('[rel=popover]').popover('hide');
+        }
+        eventScope.infos = function (data) {
+            if (data.duree == 2) {
+                return "Ap. midi";
+            }
+            if (data.duree == 1) {
+                return "Matin";
+            }
+        }
+        return $compile($.trim($('#eventTmpl').html()))(eventScope)
+        /*element.addClass("jour")*/.attr("rel", "popover").popover({
+            html : true,
+                     
+            content: function (e) {
+                // Jour férié, pas d'édition.
+                if (eventScope.data.type == 'JF') {
+                    return false;
+                }
+                eventScope.savedEvent = angular.copy(eventScope.data);
+                return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
+            }
+        }).click(function(e){
+            var elm = $(this);
+            $(".popover.in").prev().each(function(i){
+                var $this = $(this);
+                if (!$this.is(elm)) {
+                    $this.scope().cancel();
+                    $this.popover('hide');
+                }
+            });
+        });
+    };
+    
+    $scope.uiConfig = {
+        calendar: angular.extend({
+            editable: false,
+            header: {
+                left: '',
+                center: '',
+                right: 'title'
+            },
+            dayClick: $scope.alertEventOnClick,
+            eventClick: $scope.eventOnClick,
+            eventRender: $scope.eventRender,
+            eventAfterAllRender: function () {
+                $timeout(function () {
+                    // Permet la re-génération d'angularjs
+                    $("#activiteCalendar").fullCalendar('gotoDate', $scope.currentActivite.mois);
+                });
+            }
+        }, jQuery.fullCalendar)
     };
 }
 
@@ -1419,9 +1558,9 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
         data: 'activites',
         columnDefs: [
             { field: 'user', displayName: 'Utilisateur', width: 100, cellTemplate: matriculeCellTemplate, resizable: false },
-            { field: 'etat', displayName: 'Etat', width: 60, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'nbJoursTravailles', displayName: 'Nb. jours travaillés', width: 69, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'nbJoursNonTravailles', displayName: 'Nb. jours chômés', width: 69, headerCellTemplate: myHeaderCellTemplate },
+            //{ field: 'etat', displayName: 'Etat', width: 60, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'nbJoursTravailles', displayName: 'Nb. jours travaillés', width: 100, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'nbJoursNonTravailles', displayName: 'Nb. jours chômés', width: 100, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: validationCellTemplate, width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }

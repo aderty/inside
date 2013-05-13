@@ -1,7 +1,10 @@
 ﻿var db = require('./db');
 
 function checkActivite(activite) {
-    return true;
+    if (activite) {
+        return true;
+    }
+    return false;
 }
 
 function cleanActivite(activite) {
@@ -21,14 +24,14 @@ var errors = {
 }
 
 var data = {
-    getActiviteUser: function (id, options, fn) {
-        db.query("CALL GetActivite(?, ?, ?, @etat, @mois)", [id, options.start, options.end], function (err, ret) {
+    getActiviteUser: function(id, options, fn) {
+        db.query("CALL GetActivite(?, ?, ?, @etat, @mois)", [id, options.start, options.end], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération de l'activité de " + id);
             }
             //console.log(ret[0]);
-            db.query("SELECT @etat, CAST(@mois as DATE) as mois", function (err2, ret2) {
+            db.query("SELECT @etat, CAST(@mois as DATE) as mois", function(err2, ret2) {
                 if (err2 || ret2.length == 0) {
                     console.log('ERROR: ' + err2);
                     return fn("Erreur lors de la récupération de l'activité de " + id);
@@ -43,7 +46,7 @@ var data = {
         });
     },
     // Mise à jour via POST
-    addActiviteUser: function (id, activite, forcer, fn) {
+    addActiviteUser: function(id, activite, forcer, fn) {
         if (!id) {
             return fn("Utilisateur inconnu");
         }
@@ -55,7 +58,7 @@ var data = {
             mois: new Date(activite.mois),
             etat: activite.etat
         }
-        db.insert("activite", activ, function (err, ret) {
+        db.insert("activite", activ, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de l'insertion de l'activité.");
@@ -72,16 +75,16 @@ var data = {
                     request += ",";
                 }
             }
-            db.query(request, values, function (err, ret) {
+            db.query(request, values, function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de l'insertion de l'activité.");
                 }
-                return fn(null, {success: true});
+                return fn(null, { success: true });
             });
         });
     },
-    updateActiviteJoursUser: function (id, activite, forcer, fn) {
+    updateActiviteJoursUser: function(id, activite, forcer, fn) {
         if (!id) {
             return fn("Utilisateur inconnu");
         }
@@ -101,7 +104,7 @@ var data = {
                 request += ",";
             }
         }
-        db.query(request, values, function (err, ret) {
+        db.query(request, values, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de l'insertion de l'activité.");
@@ -110,80 +113,62 @@ var data = {
         });
 
         /*for (var i = 0, l = activite.activite.length; i < l; i++) {
-            temp = "CALL SetActiviteJour(?,?,?,?);";//"UPDATE activite_jour SET type = ?, information = ? WHERE user = ? AND jour = ? ;";
-            request += temp;
-            values.push(id);
-            values.push(new Date(activite.activite[i].jour));
-            values.push(activite.activite[i].type);
-            values.push(activite.activite[i].information || "");
+        temp = "CALL SetActiviteJour(?,?,?,?);";//"UPDATE activite_jour SET type = ?, information = ? WHERE user = ? AND jour = ? ;";
+        request += temp;
+        values.push(id);
+        values.push(new Date(activite.activite[i].jour));
+        values.push(activite.activite[i].type);
+        values.push(activite.activite[i].information || "");
         }
         db.query(request, values, function (err, ret) {
-            if (err) {
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de l'insertion de l'activité.");
-            }
-            return fn(null, { success: true });
+        if (err) {
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de l'insertion de l'activité.");
+        }
+        return fn(null, { success: true });
         });*/
     },
     // Mise à jour via POST
-    updateEtatActiviteUser: function (id, etat, fn) {
-        if (!checkConges(conges)) {
-            return fn("Congés invalide");
+    updateEtatActivite: function(activite, fn) {
+        if (!checkActivite(activite)) {
+            return fn("Activité invalide");
         }
-        if (!conges.id) {
-            return fn("Congés inconnu");
+        if (!activite.etat) {
+            return fn("Etat de l'activité inconnu");
         }
-        db.query("CALL UpdateEtatConges(?, ?, @retour)", [conges.id, conges.etat], function (err, ret) {
-            if (err) {
-                console.log('ERROR: ' + err);
-                return fn("Erreur lors de la modification du congés " + conges.id);
+        db.query('UPDATE activite SET etat = ? WHERE user = ? AND YEAR(mois) = YEAR(?) AND MONTH(mois) = MONTH(?)', [activite.etat, activite.user, activite.mois, activite.mois], function (error, ret) {
+            if (error) {
+                console.log('ERROR: ' + error);
+                return fn("Erreur lors de la tentative de modification de l'état de l'activité de l'utilisateur " + activite.user + " pour le mois de " + activite.mois + ".");
             }
-            db.query("select @retour;", function (err2, ret2) {
-                if (err2 || ret2.length == 0) {
-                    console.log('ERROR: ' + err2);
-                    return fn("Erreur lors de la modification du congés " + conges.id);
-                }
-                if (ret2[0]['@retour']) {
-                    var error = ret2[0]['@retour'];
-                    return fn(errors[error] || error);
-                }
-                fn(null, true);
-            });
+            return fn(null, { success: true });
         });
     },
 
-    removeConges: function (id, fn) {
-        if (!id || id == "") {
-            return fn("Id de congés invalide");
+    removeActivite: function(activite, fn) {
+        if (!checkActivite(activite)) {
+            return fn("Activité invalide");
         }
-        db.query("CALL RemoveConges(?, @retour)", [id], function (err, ret) {
+        var request = "DELETE FROM activite WHERE user = ? AND YEAR(mois) = YEAR(?) AND MONTH(mois) = MONTH(?);";
+        request += "DELETE FROM activite_jour WHERE user = ? AND YEAR(jour) = YEAR(?) AND MONTH(jour) = MONTH(?);"
+        db.query(request, [activite.user, activite.mois, activite.mois, activite.user, activite.mois, activite.mois], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
-                return fn("Erreur lors de l'insertion du congés.");
+                return fn("Erreur lors de la suppression de l'activité de l'utilisateur " + activite.user + " pour le mois de " + activite.mois + ".");
             }
-            db.query("select @retour;", function (err2, ret2) {
-                if (err2 || ret2.length == 0) {
-                    console.log('ERROR: ' + err2);
-                    fn("Erreur lors de l'insertion du congés.");
-                }
-                if (ret2[0]['@retour']) {
-                    var error = ret2[0]['@retour'];
-                    return fn(errors[error] || error);
-                }
-                fn(null, {});
-            });
+            return fn(null, { success: true });
         });
     },
-    listActivites: function (options, fn) {
-        var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat, (t1.nb + t2.nb * 0.5) AS nbJoursTravailles, (t3.nb + t4.nb * 0.5) as nbJoursNonTravailles" +
+    listActivites: function(options, fn) {
+    var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat, (IFNULL(t1.nb,0) + IFNULL(t2.nb,0) * 0.5) AS nbJoursTravailles, (IFNULL(t3.nb,0) + IFNULL(t4.nb,0) * 0.5) as nbJoursNonTravailles" +
                     " FROM activite JOIN users on activite.user = users.id " +
-                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t1 on t1.user = activite.user" +
-                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t2 on t2.user = activite.user" +
-                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t3 on t3.user = activite.user" +
-                    " JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t4 on t4.user = activite.user" +
+                    " LEFT JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t1 on t1.user = activite.user" +
+                    " LEFT JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type = 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t2 on t2.user = activite.user" +
+                    " LEFT JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t3 on t3.user = activite.user" +
+                    " LEFT JOIN (SELECT count(*) as nb, user FROM activite_jour WHERE type <> 'JT' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t4 on t4.user = activite.user" +
                     " WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?;",
         values = [options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois];
-        db.query(query, values, function (err, ret) {
+        db.query(query, values, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des activités du mois " + options.mois + "/" + options.annee + ".");
