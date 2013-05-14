@@ -226,6 +226,8 @@ app.post('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.save)
 
 
 app.post('/login', routes.users.login);
+app.put('/passwordLost', routes.users.passwordLost);
+app.post('/passwordLost', routes.users.passwordLostValid);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', [requireLogin], routes.index);

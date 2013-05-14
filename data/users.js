@@ -3,6 +3,8 @@ var crypto = require('crypto');
 var shasum = crypto.createHash('sha1');
 shasum.update("utf8");
 
+var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 function checkUser(user) {
     if (user && user.nom != "" && user.prenom != "" && user.email != "") {
         if (user.creation) {
@@ -124,12 +126,22 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE id = ? AND etat=1', id, function(err, ret) {
+        var request = 'SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE etat=1 AND ';
+        if (!re.test(id)) {
+            request += ' id = ? ';
+        }
+        else {
+            request += ' email = ? ';
+        }
+        db.query(request, id, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération de l'utilisateur " + id);
             }
-            fn(null, cleanUsers(ret)[0]);
+            if (ret && ret.length == 1) {
+                return fn(null, cleanUsers(ret)[0]);
+            }
+            return fn("Pas d'utilisateur trouvé.");
         });
     },
 
@@ -211,15 +223,15 @@ var data = {
         fn("Erreur lors de la récupération de l'utilisateur " + user.id);
         });*/
     },
-    password: function(id, options, fn) {
+    passwordTest: function (id, oldPwd, fn) {
         if (!id || id == "") {
             return fn("Id d'utilisateur invalide");
         }
-        if (!options || options.oldPwd == "" || options.pwd == "") {
+        if (!oldPwd || oldPwd == "") {
             return fn("Mot de passe d'utilisateur invalide");
         }
         // Chiffrage du pass en sha1
-        var hash = crypto.createHash('sha1').update(options.oldPwd).digest("hex");
+        var hash = crypto.createHash('sha1').update(oldPwd).digest("hex");
         // On test l'existance du compte
         db.query('SELECT * FROM users WHERE id = ? AND pwd = ? AND etat=1', [id, hash], function(error, ret) {
             if (error) {
@@ -227,18 +239,26 @@ var data = {
                 return fn("Erreur lors de la tentative de modification du mot de passe.");
             }
             if (ret && ret.length == 1) {
-                // Chiffrage du pass en sha1
-                hash = crypto.createHash('sha1').update(options.pwd).digest("hex");
-                db.query('UPDATE users SET pwd = ? WHERE id = ?', [hash, id], function(error, ret) {
-                    if (error) {
-                        console.log('ERROR: ' + error);
-                        return fn("Erreur lors de la tentative de modification du mot de passe.");
-                    }
-                    return fn(null, { success: true });
-                });
-                return;
+                return fn(null, { success: true });
             }
             return fn("Ancien mot de passe incorrect.");
+        });
+    },
+    passwordUpdate: function (id, pwd, fn) {
+        if (!id || id == "") {
+            return fn("Id d'utilisateur invalide");
+        }
+        if (!pwd || pwd == "") {
+            return fn("Mot de passe d'utilisateur invalide");
+        }
+        // Chiffrage du pass en sha1
+        var hash = crypto.createHash('sha1').update(pwd).digest("hex");
+        db.query('UPDATE users SET pwd = ? WHERE id = ?', [hash, id], function (error, ret) {
+            if (error) {
+                console.log('ERROR: ' + error);
+                return fn("Erreur lors de la tentative de modification du mot de passe.");
+            }
+            return fn(null, { success: true });
         });
     },
     removeUser: function(id, fn) {

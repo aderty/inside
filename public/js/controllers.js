@@ -46,7 +46,13 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
          2: 'accConges',
          3: 'refConges'
     };
-    $rootScope.initConnected = function () {
+    $rootScope.initConnected = function (user) {
+        $rootScope.connected = true;
+        if (user) {
+            $rootScope.username = user.prenom;
+            $rootScope.role = user.role;
+            $rootScope.infos = user.infos;
+        }
         MotifsService.list().then(function (motifs) {
             $rootScope.motifsConges = jQuery.grep(motifs, function (n, i) {
                 return (n.id == 'CP' || n.id == 'RTTE' || n.id == 'RTT' || n.id == 'CP_ANT');
@@ -57,13 +63,9 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
             });
         });
     }
-    $rootScope.connected = window.config.connected ? true : false;
-    $rootScope.role = window.config.role;
-    $rootScope.username = window.config.prenom;
     $rootScope.searcher = false;
-    $rootScope.infos = window.config.infos;
-    if ($rootScope.connected) {
-        $rootScope.initConnected();
+    if (window.config.connected ? true : false) {
+        $rootScope.initConnected(window.config);
     }
 }]);
 
@@ -109,8 +111,10 @@ function NavBar($scope, $rootScope, LoginService, $dialog) {
     }; 
 }
 // Contrôleur de la popup de modification de password
-function DialogPassword($scope, dialog, UsersService){ 
-    $scope.close = function(){ 
+function DialogPassword($scope, $rootScope, dialog, UsersService) {
+    $rootScope.error = "";
+    $scope.close = function() {
+        $rootScope.error = "";
         dialog.close(); 
     }; 
     $scope.save = function (currentUser) {
@@ -126,10 +130,10 @@ function DialogPassword($scope, dialog, UsersService){
 }
 
 // Contrôleur de login
-function LoginController($scope, $rootScope, LoginService) {
+function LoginController($scope, $rootScope, LoginService, $dialog) {
     $scope.user = {};
     $rootScope.error = null;
-    $scope.connect = function (user) {
+    $scope.connect = function(user) {
         var err = false;
         if (!user.email || user.email == "") {
             $scope.login.email.$setViewValue("");
@@ -140,7 +144,7 @@ function LoginController($scope, $rootScope, LoginService) {
         if ($scope.login.$invalid) {
             return;
         }
-        LoginService.login(user.email, user.pwd, { keep: user.keep }, function (response) {
+        LoginService.login(user.email, user.pwd, { keep: user.keep }, function(response) {
             if (!response) {
                 $scope.user = {};
                 $scope.login.$setPristine();
@@ -148,13 +152,48 @@ function LoginController($scope, $rootScope, LoginService) {
                 $rootScope.error = true;
                 return;
             }
-            $rootScope.connected = true;
-            $rootScope.username = response.prenom;
-            $rootScope.role = response.role;
-            $rootScope.infos = response.infos;
-            $rootScope.initConnected();
+            $rootScope.initConnected(response);
         });
-    }
+    };
+    // Inlined template for demo 
+    $scope.opts = {
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        template: $.trim($("#passwordLostTmpl").html()),
+        controller: 'DialogPasswordLost'
+    };
+    $scope.passwordLost = function() {
+        $rootScope.error = "";
+        var d = $dialog.dialog($scope.opts);
+        d.open().then(function(result) {
+            if (result) {
+            }
+        });
+    };
+}
+
+// Contrôleur de la popup de modification de password
+function DialogPasswordLost($scope, $rootScope, dialog, LoginService) {
+    $rootScope.error = "";
+    $scope.password = {
+        etat: 0
+    };
+    $scope.close = function() {
+        $rootScope.error = "";
+        dialog.close();
+    };
+    $scope.save = function(password) {
+        if ($scope.pwdLost.$invalid) {
+            return;
+        }
+        LoginService.passwordLost(password).then(function (response) {
+            if (response && password.etat == 2) {
+                dialog.close();
+                $rootScope.initConnected(response);
+            }
+        });
+    };
 }
 
 // Contrôleur principal de la gestion des utilisateurs

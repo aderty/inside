@@ -6,7 +6,7 @@
 // In this case it is a simple value service.
 angular.module('inside.services', ['ngResource']).
   value('version', '0.1').
-  factory('LoginService', function($resource, $http) {
+  factory('LoginService', function($resource, $http, $q, $rootScope) {
       return {
           login: function(email, pwd, options, callback) {
               $http({
@@ -47,6 +47,32 @@ angular.module('inside.services', ['ngResource']).
                   // or server returns response with an error status.
                   callback(data);
               });
+          },
+          passwordLost: function(password) {
+              var defered = $q.defer();
+              var method = password.etat == 1 ? 'POST' : 'PUT';
+              $http({
+                  method: method,
+                  url: '/passwordLost',
+                  data: password
+              }).then(function(reponse) {
+                  if (reponse.data.error) {
+                      $rootScope.error = reponse.data.error;
+                      defered.reject(reponse.data.error);
+                      return;
+                  }
+                  if(password.etat == 0){
+                    password.etat = 1;
+                  }
+                  else if (password.etat == 1) {
+                      password.etat = 2;
+                  }
+                  defered.resolve(reponse.data);
+              }, function(reponse) {
+                  $rootScope.error = reponse;
+                  defered.reject(reponse);
+              });
+              return defered.promise;
           }
       };
   }).

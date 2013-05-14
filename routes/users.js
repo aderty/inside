@@ -1,5 +1,9 @@
 ﻿var data = require('../data'),
-    mail = require('../mail');
+    mail = require('../mail'),
+    uuid = require('node-uuid');
+
+
+var listLostPasswordKeys = {};
 
 /// Routes
 function dataCallback(res) {
@@ -33,8 +37,8 @@ function removeCookie(res) {
 }
 
 var routes = {
-    login: function (req, res) {
-        data.users.login(req.body.email, req.body.pwd, function (err, user) {
+    login: function(req, res) {
+        data.users.login(req.body.email, req.body.pwd, function(err, user) {
             if (user) {
                 setSession(req, user);
                 if (req.body.options && req.body.options.keep) {
@@ -44,10 +48,10 @@ var routes = {
             dataCallback(res)(err, user);
         });
     },
-    logout: function (req, res) {
+    logout: function(req, res) {
         removeCookie(res);
         if (req && req.session) {
-            req.session.destroy(function (err) {
+            req.session.destroy(function(err) {
                 res.redirect('/index');
             });
             return;
@@ -55,7 +59,7 @@ var routes = {
         res.redirect('/index');
     },
     // Lecture, via GET
-    list: function (req, res) {
+    list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
         if (req.query.search) {
             return data.users.search({ type: req.query.type, search: req.query.search }, dataCallback(res));
@@ -63,33 +67,81 @@ var routes = {
         data.users.listUsers(dataCallback(res));
     },
 
-    get: function (req, res) {
+    get: function(req, res) {
         res.header('Cache-Control', 'no-cache');
         data.users.getUser(req.session.username, dataCallback(res));
     },
 
     // Ajout ou Mise à jour via POST
-    save: function (req, res) {
+    save: function(req, res) {
         var user = req.body;
         var pwd = user.pwd;
-        data.users.saveUser(user, function (err, ret) {
+        data.users.saveUser(user, function(err, ret) {
             if (!err && ret.create) {
-                mail.Mail.ajoutUser(user, pwd, function (err) {
+                mail.Mail.ajoutUser(user, pwd, function(err) {
                 });
             }
             dataCallback(res)(err, ret);
         });
     },
     password: function(req, res) {
-        data.users.password(req.session.username, req.body, dataCallback(res));
+        data.users.passwordTest(req.session.username, req.body.oldPwd, function (err, ret) {
+            if (err) {
+                return dataCallback(res)(err);
+            }
+            data.users.passwordUpdate(req.session.username, req.body.pwd, dataCallback(res));
+        });
     },
     // Ajout via POST
     /*add: function (req, res) {
-        data.users.insertUser(req.body, dataCallback(res));
+    data.users.insertUser(req.body, dataCallback(res));
     },*/
 
-    remove: function (req, res) {
+    remove: function(req, res) {
         data.users.removeUser(req.params.id, dataCallback(res));
+    },
+    passwordLost: function(req, res) {
+        if (!req.body.email) {
+            return dataCallback(res)("Pas d'email renseigné.");
+        }
+        var key = uuid.v4();
+        data.users.getUser(req.body.email, function(err, user) {
+            if (err) {
+                return dataCallback(res)(err);
+            }
+            listLostPasswordKeys[key] = req.body.email;
+            mail.Mail.passwordLost(user, key);
+            dataCallback(res)(null, { success: true });
+        });
+    },
+    passwordLostValid: function(req, res) {
+        if (!req.body.email) {
+            return dataCallback(res)("Pas d'email renseigné.");
+        }
+        if (!req.body.key) {
+            return dataCallback(res)("Pas de code renseigné.");
+        }
+        if (!listLostPasswordKeys[req.body.key] || listLostPasswordKeys[req.body.key] != req.body.email) {
+            return dataCallback(res)("Le code saisi est incorrect.");
+        }
+        data.users.getUser(req.body.email, function (err, user) {
+            if (err) {
+                return dataCallback(res)(err);
+            }
+            delete listLostPasswordKeys[req.body.key];
+            data.users.passwordUpdate(user.id, req.body.pwd, function (err, ret) {
+                if (err) {
+                    return dataCallback(res)(err);
+                }
+                data.users.infos(user.id, user.role, function (err, infos) {
+                    if (err) {
+                        return dataCallback(res)(err);
+                    }
+                    user.infos = infos;
+                    return dataCallback(res)(null, user);
+                });
+            });
+        });
     }
 };
 exports.routes = routes;
