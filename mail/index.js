@@ -136,6 +136,34 @@ var Mail = {
             if (err) { console.log(err); }
             if (fn) fn(err);
         });
+    },
+    recapConges: function (email_admin, conges, fn) {
+        //return fn(null);
+        if (!email_admin) return fn("Pas d'email");
+        if (!conges) return fn("Congés invalide");
+        if (!re.test(email_admin)) {
+            return fn("Email utilisateur invalide");
+        }
+
+        console.log("envois de l'email à : " + email_admin);
+
+        var subject = "[InsideConsulting] Listes des congés à valider.";
+
+        email.send(extend({
+            to: email_admin,
+            subject: subject,
+            //body: "Hello! This is a test of the node_mailer."
+            template: path.join(dirTemplate, 'recapConges.html'),   // path to template name
+            data: {
+                "date": moment(new Date()).format('D MMMM YYYY'),
+                "conges": conges,
+                "nom": ""
+            }
+        }, config),
+        function (err, result) {
+            if (err) { console.log(err); }
+            if (fn) fn(err);
+        });
     }
 }
 

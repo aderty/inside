@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Listes des congés à valider.</title>
+</head>
+<body>
+    <h2>Listes des congés à valider au {{date}}.</h2>
+    <hr />
+    <table>
+        <thead>
+            <tr>
+                <th>Matricule</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Motif</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#conges}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{prenom}}</td>
+                <td>{{nom}}</td>
+                <td>{{debut}}</td>
+                <td>{{fin}}</td>
+                <td>{{motif}}</td>
+            </tr>
+            {{/conges}}
+        </tbody>
+    </table>
+</body>
+</html>

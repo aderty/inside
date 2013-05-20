@@ -10,16 +10,18 @@ var path = require('path')
   , zlib = require('zlib')
   , users = require('./users')
   , conges = require('./conges')
-  , activite = require('./activite');
-  //, db = require('./db');
+  , activite = require('./activite')
+  , db = require('./db');
 
-/*var DAL = {
-    db: function () {
-        return db;
-    }
-}
-exports.DAL = DAL;*/
+  var EventEmitter = require('events').EventEmitter;
+  var events = new EventEmitter();
 
+ db.events.once('connected', function (result) {
+      console.log("connected to MySQL");
+      events.emit('connected', null);
+  });
+
+exports.events = events;
 exports.users = users.data;
 exports.conges = conges.data;
 exports.activite = activite.data;
