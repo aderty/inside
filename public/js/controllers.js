@@ -32,8 +32,9 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
     }
     $rootScope.roles = [
         { id: 1, libelle: 'Consultant' },
-        { id: 2, libelle: 'RH' },
-        { id: 3, libelle: 'Admin' }
+        { id: 2, libelle: 'Structure' },
+        { id: 3, libelle: 'Admin' },
+        { id: 4, libelle: 'Super Admin' }
     ];
 
     $rootScope.etatsConges = [
@@ -55,11 +56,11 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
         }
         MotifsService.list().then(function (motifs) {
             $rootScope.motifsConges = jQuery.grep(motifs, function (n, i) {
-                return (n.id == 'CP' || n.id == 'RTTE' || n.id == 'RTT' || n.id == 'CP_ANT');
+                return (n.id == 'CP' || n.id == 'RCE' || n.id == 'RC' || n.id == 'CP_ANT');
             });
             $rootScope.motifsConges.push({ id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' });
             $rootScope.motifsCongesExcep = jQuery.grep(motifs, function (n, i) {
-                return (n.id != 'CP' && n.id != 'RTTE' && n.id != 'RTT' && n.id != 'CP_ANT');
+                return (n.id != 'CP' && n.id != 'RCE' && n.id != 'RC' && n.id != 'CP_ANT');
             });
         });
     }
@@ -329,9 +330,9 @@ function UsersGrid($scope, $rootScope, UsersService) {
             { field: 'nom', displayName: 'Nom', headerCellTemplate: myHeaderCellTemplate },
             { field: 'prenom', displayName: 'Prénom', headerCellTemplate: myHeaderCellTemplate },
             { field: 'role', displayName: 'Rôle', cellFilter: "role", width: 60, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'cp', displayName: 'CP aquis', width: 69, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'cp', displayName: 'CP disponibles', width: 69, headerCellTemplate: myHeaderCellTemplate },
             { field: 'cp_ant', displayName: 'CP en cours', width: 69, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'rtt', displayName: 'RTT', width: 60, headerCellTemplate: myHeaderCellTemplate },
+            { field: 'rtt', displayName: 'RC', width: 60, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
         ],
@@ -361,7 +362,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
 
     $scope.motifsConges = angular.copy($rootScope.motifsConges);
     for (var i = 0, l = $scope.motifsConges.length; i < l; i++) {
-        if ($scope.motifsConges[i].id == 'RTTE') {
+        if ($scope.motifsConges[i].id == 'RCE') {
             $scope.motifsConges.splice(i, 1);
             break;
         }
@@ -922,7 +923,10 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
     $scope.successOperation = "";
 
     $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travail' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travaillé' , ordre: -2});
+    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation', ordre: -1 });
+    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat', ordre: 0 });
+    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
     $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
 
     $scope.refresh = function () {
@@ -948,7 +952,6 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             function startEventConges(current, skip) {
                 inConges = true;
                 var toDo = true;
-                //cong.type = cong.motif;
                 if (businessDay(current) && !skip) {
                     var data = angular.copy(cong);
                     data.start = true;
@@ -1057,9 +1060,14 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 inConges = false;
             }
             function workEvent(current) {
-                $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT', duree: 0 } });
+                if (businessDay(current)) {
+                    $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT', duree: 0 } });
+                    $scope.nbJourTravailles++;
+                }
+                else {
+                    $scope.events.push({ title: "Weekend", start: new Date(current.toDate()), data: { type: 'WK', duree: 0 } });
+                }
                 $scope.indexEvents[current.date()] = $scope.events.length - 1;
-                $scope.nbJourTravailles++;
             }
             if ($scope.activite.etat > 0 && $scope.activite.activite.length > 0) {
                 for (var i = 0, l = $scope.activite.activite.length; i < l; i++) {
@@ -1121,7 +1129,8 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         // A la fin d'une période de congés.
                         endEventConges(current);
                     }
-                    if (!inConges && businessDay(current) && typeof $scope.indexEvents[current.date()] == "undefined") {
+                    //if (!inConges && businessDay(current) && typeof $scope.indexEvents[current.date()] == "undefined") {
+                    if (typeof $scope.indexEvents[current.date()] == "undefined") {
                         // Journée travaillée.
                         workEvent(current);
                     }
@@ -1180,6 +1189,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         var eventScope = $scope.$new(true);
         angular.extend(eventScope, event);
         eventScope.typeActivite = $rootScope.typeActivite;
+        eventScope.cssConges = $rootScope.cssConges;
         eventScope.valid = function (event) {
             eventScope.error = null;
             $('[rel=popover]').popover('hide');
@@ -1263,9 +1273,9 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                      
             content: function (e) {
                 // Jour férié, pas d'édition.
-                if (eventScope.data.type == 'JF') {
+                /*if (eventScope.data.type == 'JF') {
                     return false;
-                }
+                }*/
                 eventScope.savedEvent = angular.copy(eventScope.data);
                 return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
             }
@@ -1362,7 +1372,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
     };
    
 
-    var lastValidDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    var lastValidDate = new Date(new Date().getFullYear(), new Date().getMonth() + 3, 1),
     viewStartDate;
     /* config object */
     $scope.uiConfig = {
@@ -1413,7 +1423,10 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
     $scope.activiteUser = [];
     
     $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travail' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travaillé' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat' });
+    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
     $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
 
     $scope.selection = {
@@ -1528,9 +1541,9 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
                      
             content: function (e) {
                 // Jour férié, pas d'édition.
-                if (eventScope.data.type == 'JF') {
+                /*if (eventScope.data.type == 'JF') {
                     return false;
-                }
+                }*/
                 eventScope.savedEvent = angular.copy(eventScope.data);
                 return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
             }
@@ -1596,6 +1609,7 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
     $scope.gridOptions = {
         data: 'activites',
         columnDefs: [
+            { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
             { field: 'user', displayName: 'Utilisateur', width: 100, cellTemplate: matriculeCellTemplate, resizable: false },
             //{ field: 'etat', displayName: 'Etat', width: 60, headerCellTemplate: myHeaderCellTemplate },
             { field: 'nbJoursTravailles', displayName: 'Nb. jours travaillés', width: 100, headerCellTemplate: myHeaderCellTemplate },

@@ -47,7 +47,6 @@ var Mail = {
 
         email.send(extend({
             to: user.email,
-            from: "footmap@laposte.net", //"no-reply@insideconsulting.fr",
             subject: "[InsideConsulting] Création de votre compte !",
             //body: "Hello! This is a test of the node_mailer."
             template: path.join(dirTemplate, 'ajoutUser.html'),   // path to template name
@@ -87,7 +86,6 @@ var Mail = {
 
         email.send(extend({
             to: user.email,
-            from: "footmap@laposte.net", //"no-reply@insideconsulting.fr",
             subject: subject,
             //body: "Hello! This is a test of the node_mailer."
             template: path.join(dirTemplate, conges.etat == 2 ? 'validationConges.html' : 'refusConges.html'),   // path to template name
@@ -123,7 +121,6 @@ var Mail = {
         
         email.send(extend({
             to: user.email,
-            from: "footmap@laposte.net", //"no-reply@insideconsulting.fr",
             subject: subject,
             //body: "Hello! This is a test of the node_mailer."
             template: path.join(dirTemplate, 'passwordLost.html'),   // path to template name

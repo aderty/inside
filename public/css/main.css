@@ -52,6 +52,12 @@ html.start .background > span{
   100% { transform: rotate(359deg); }
 }
 
+#logo {
+    float: left; 
+    height: 35px;
+    margin: 4px 20px 0 5px;
+}
+
 #login .control-group {
     margin-bottom: 45px;
 }
@@ -127,7 +133,7 @@ table td.cell > div {
        display: none;
 }
 .light {
-    opacity:0.2;
+    opacity:0.1;
 }
 .well {
     background-color: rgba(245,245,245,0.7);
@@ -476,14 +482,28 @@ input.ng-pristine + .input-help {
 {
     height: auto;
 	background-color: rgb(138, 192, 79);
+    background: -moz-linear-gradient( top, #bcd6ab 0%, #475e3c);
+    background: -webkit-gradient( linear, left top, left bottom, from(#bcd6ab), to(#475e3c));
 }
+.jour.sleeping.valConges {
+    background-color: Orange;
+    background: -moz-linear-gradient(top, rgb(243, 211, 85) 0%,	rgb(187, 114, 20));
+	background: -webkit-gradient(linear, left top, left bottom, from(rgb(243, 211, 85)),to(rgb(187, 114, 20)));
+}
+
 .jour.worked
 {
+    background-color: #3a87ad;
+    background: -moz-linear-gradient( top, rgb(26, 141, 196) 0%, rgb(33, 100, 145));
+    background: -webkit-gradient( linear, left top, left bottom, from(rgb(26, 141, 196)), to(rgb(33, 100, 145)));
 	height: auto;
 }
 
+.jour.WK,
 .jour.JF {
     background-color: rgb(189, 188, 182);
+    background: -moz-linear-gradient( top, rgb(201, 204, 199) 0%, rgb(134, 138, 132));
+    background: -webkit-gradient( linear, left top, left bottom, from(rgb(201, 204, 199)), to(rgb(134, 138, 132)));
 }
 
 .titre {
@@ -502,7 +522,7 @@ input.ng-pristine + .input-help {
 }
 
 
-#adminActivite .cell:nth-child(1) > * {
+#adminActivite .cell:nth-child(2) > * {
     max-width: 100px;
     width: 100px;
 }

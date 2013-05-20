@@ -170,7 +170,7 @@ angular.module('inside.services', ['ngResource']).
                       };
                       //conges[i].debutType = conges[i].debut.getHours() > 14 ? 0 : 1;
                       //conges[i].finType = conges[i].fin.getHours() > 14 ? 1 : 0;
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'RTTE' && conges[i].motif != 'CP_ANT') {
+                      if (conges[i].motif != 'CP' && conges[i].motif != 'RC' && conges[i].motif != 'RCE' && conges[i].motif != 'CP_ANT') {
                           conges[i].motifExcep = conges[i].motif;
                           conges[i].motif = 'AE';
                       }
@@ -266,7 +266,7 @@ angular.module('inside.services', ['ngResource']).
                           date: new Date(conges[i].fin),
                           type: new Date(conges[i].fin).getHours() > 14 ? 1 : 0
                       }
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RTT' && conges[i].motif != 'RTTE' && conges[i].motif != 'CP_ANT') {
+                      if (conges[i].motif != 'CP' && conges[i].motif != 'RC' && conges[i].motif != 'RCE' && conges[i].motif != 'CP_ANT') {
                           conges[i].motifExcep = conges[i].motif;
                           conges[i].motif = 'AE';
                       }
@@ -425,7 +425,7 @@ angular.module('inside.services', ['ngResource']).
                           }
 
                       }
-                      var types = ['JT', 'JF', 'CP', 'CP_ANT', 'RTT', 'RTTE']
+                      var types = ['JT', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RC', 'RCE'];
                       if (types.indexOf(activite.activite[i].type) == -1) {
                           activite.activite[i].type = 'AE';
                       }
@@ -524,7 +524,7 @@ angular.module('inside.services', ['ngResource']).
                              activite.activite[i].duree = 2;
                          }
                      }
-                     var types = ['JT', 'JF', 'CP', 'CP_ANT', 'RTT', 'RTTE']
+                     var types = ['JT', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RC', 'RCE'];
                      if (types.indexOf(activite.activite[i].type) == -1) {
                          activite.activite[i].type = 'AE';
                      }

@@ -5,15 +5,12 @@
             <div class="row-fluid">
                 <div class="span12 well">
                     <!--Sidebar content-->
+                    <div>
                     <span class="titre">Matricule</span> <h4>{{user.id}}</h4>
+                        </div>
+                    <div>
                     <span class="titre">Collaborateur</span> <h4>{{user.nom}} {{user.prenom}}</h4>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span12 well">
-                    <!--Sidebar content-->
-                    <span class="titre">Nb. de jours travaillés dans le mois</span> <h4>{{nbJourTravailles}}</h4>
-                    <span class="titre">Nb. de jours chômés dans le mois</span> <h4>{{nbJourNonTravailles}}</h4>
+                        </div>
                 </div>
             </div>
             <div class="row-fluid">
@@ -24,7 +21,7 @@
                         <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon_upload"></i>Enregistrer mon activité</button>
                     </p>
                     <p>
-                        <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Recharger les données</button>
+                        <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
                     </p>
                 </div>
             </div>
@@ -65,7 +62,7 @@
 <!--<div class="container-fluid">-->
 
 <script type="text/x-handlebars-template" id="eventTmpl">
-  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT']"  rel="popover" data-original-title="" title="">
+  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}} {{cssConges[data.etat]}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT' && data.type != 'FOR' && data.type != 'INT']"  rel="popover" data-original-title="" title="">
        <div class="fc-event-inner">
            <span class="fc-event-title">{{data.type | motifCongesShort : typeActivite}} {{infos(data)}}</span>
        </div>
@@ -76,7 +73,7 @@
   <accordion close-others="true">
     <accordion-group heading="Activité effectuée" is-open="true">
       <p>Choisisez l'activté effectuée cette journée :</p>
-      <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite">
+      <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite | orderBy:-ordre">
       </select>
         <p>Durée :</p>
        <select id="inputDuree" name="inputDuree" required ng-model="data.duree">

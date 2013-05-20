@@ -3,13 +3,12 @@
 /* Filters */
 
 angular.module('inside.filters', []).
-filter('role', function () {
+filter('role', function ($rootScope) {
     return function (role) {
-        if (role == 2) {
-            return "RH";
-        }
-        if (role == 3) {
-            return "Admin";
+        for(var i = 0, l = $rootScope.roles.length;i<l; i++){
+            if ($rootScope.roles[i].id == role) {
+                return $rootScope.roles[i].libelle;
+            }
         }
         return "Consultant";
     };

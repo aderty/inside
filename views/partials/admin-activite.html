@@ -66,7 +66,7 @@
 </script>
 
 <script type="text/x-handlebars-template" id="eventTmpl">
-  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT']"  rel="popover" data-original-title="" title="">
+  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}} {{cssConges[data.etat]}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT' && data.type != 'FOR' && data.type != 'INT']"  rel="popover" data-original-title="" title="">
        <div class="fc-event-inner">
            <span class="fc-event-title">{{data.type | motifCongesShort : typeActivite}} {{infos(data)}}</span>
        </div>

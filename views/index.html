@@ -20,6 +20,7 @@
   <div class="row-fluid">
     <div class="span12">
         <div class="navbar">
+          <img src="img/logo_inside.png" id="logo" />
           <div class="navbar-inner">
                 <div class="container">
                   <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -27,7 +28,6 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </a>
-                  
                   <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
                       <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
@@ -54,10 +54,10 @@
                         <form class="navbar-search pull-left" ng-class="{masquer: !searcher}" action="">
                           <input id="search" name="search" type="text" class="search-query span15" ui-event="{keyup: 'search(search)'}" placeholder="Rechercher...">
                         </form>
-                      <li authenticate><a href="#">Bienvenue {{username}}</a></li>
+                      <!--<li authenticate><a href="#">Bienvenue {{username}}</a></li>-->
                       <li class="divider-vertical"></li>
-                      <li class="dropdown">
-                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Outil <b class="caret"> </b></a>
+                      <li authenticate class="dropdown">
+                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Bienvenue {{username}} <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.index.name]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
                               <li class="divider"></li>

@@ -91,7 +91,7 @@ var data = {
     // Lecture, via GET
     listUsers: function(fn) {
         //db.query('SELECT * FROM users JOIN conges_compteurs ON users.id = conges_compteurs.user WHERE id <> 999999 AND etat=1', function (err, ret) {
-        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE id <> 999999 AND etat=1', function(err, ret) {
+        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RC" ) AS rtt FROM users WHERE id <> 999999 AND etat=1', function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des utilisateurs.");
@@ -126,7 +126,7 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        var request = 'SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RTT" ) AS rtt FROM users WHERE etat=1 AND ';
+        var request = 'SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RC" ) AS rtt FROM users WHERE etat=1 AND ';
         if (!re.test(id)) {
             request += ' id = ? ';
         }
