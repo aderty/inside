@@ -54,6 +54,7 @@ var Mail = {
                 "email": user.email,
                 "prenom": user.prenom,
                 "password": password,
+                "url": "http://176.31.188.68:81/",
                 "color": function() {
                     var arr = ["purple", "red", "green", "yello"];
                     return arr[Math.floor(Math.random() * 3)];
