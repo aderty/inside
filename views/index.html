@@ -20,7 +20,7 @@
   <div class="row-fluid">
     <div class="span12">
         <div class="navbar">
-          <img src="img/logo_inside.png" id="logo" />
+          <a href="/"><img src="img/logo_inside.png" id="logo" /></a>
           <div class="navbar-inner">
                 <div class="container">
                   <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -30,23 +30,17 @@
                   </a>
                   <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
-                      <li authenticate="2" ng-class="{active: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
-                      <li authenticate ng-class="{active: page == pages.activite.name, masquer: role > 1}"><a href="/activite"><i class="icon-tasks"></i> Activité</a></li>
-                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.activite.name || page == pages['admin-activite'].name}">
-                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-tasks"></i> Activité <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span> <b class="caret"> </b></a>
+                      <li authenticate ng-class="{active: page == pages.activite.name}"><a href="/activite"><i class="icon-tasks"></i> Mon activité</a></li>
+                      <li authenticate ng-class="{active: page == pages.conges.name}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
+                      <li class="divider-vertical"></li>
+                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.users.name || page == pages['admin-conges'].name || page == pages['admin-activite'].name}">
+                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Administration <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0 && infos.nbCongesVal == 0}">{{infos.nbActivitesVal + infos.nbCongesVal}}</span> <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
-                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name]"><a href="/activite"><i class="icon-file"></i> Mon activité</a></li>
-                              <li ng-class="{true:'masquer', false:''}[page == pages.activite.name || page == pages['admin-activite'].name]" class="divider"></li>
-                              <li authenticate ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span></a></li>
-                            </ul>
-                      </li>
-                      <li authenticate="1" ng-class="{active: page == pages.conges.name, masquer: role > 1}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
-                      <li authenticate="2" class="dropdown" ng-class="{active: page == pages.conges.name || page == pages['admin-conges'].name}">
-                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-globe"></i> Congés <span class="badge badge-important" ng-class="{masquer: infos.nbMesCongesVal == 0 && infos.nbCongesVal == 0}">{{infos.nbMesCongesVal + infos.nbCongesVal}}</span> <b class="caret"> </b></a>
-                            <ul class="dropdown-menu">
-                              <li ng-class="{true:'masquer', false:''}[page == pages.conges.name]"><a href="/conges"><i class="icon-user"></i> Mes congés <span class="badge badge-important" ng-class="{masquer: infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
-                              <li ng-class="{true:'masquer', false:''}[page == pages.conges.name || page == pages['admin-conges'].name]" class="divider"></li>
-                              <li authenticate ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges"><i class="icon-list"></i> Gestion des demandes <span class="badge badge-important" ng-class="{masquer:infos.nbCongesVal == 0}">{{infos.nbCongesVal}}</span></a></li>
+                              <li authenticate="2" ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span></a></li>
+                              <!--<li ng-class="{true:'masquer', false:''}[page == pages['admin-activite'].name]" class="divider"></li>-->
+                              <li authenticate="2" ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges"><i class="icon-list"></i> Gestion des demandes <span class="badge badge-important" ng-class="{masquer:infos.nbCongesVal == 0}">{{infos.nbCongesVal}}</span></a></li>
+                              <li ng-class="{true:'masquer', false:''}[page == pages.users.name || page == pages['admin-conges'].name]" class="divider"></li>
+                              <li authenticate="2" ng-class="{masquer: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
                             </ul>
                       </li>
                     </ul>
@@ -54,10 +48,9 @@
                         <form class="navbar-search pull-left" ng-class="{masquer: !searcher}" action="">
                           <input id="search" name="search" type="text" class="search-query span15" ui-event="{keyup: 'search(search)'}" placeholder="Rechercher...">
                         </form>
-                      <!--<li authenticate><a href="#">Bienvenue {{username}}</a></li>-->
                       <li class="divider-vertical"></li>
                       <li authenticate class="dropdown">
-                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Bienvenue {{username}} <b class="caret"> </b></a>
+                        <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> Bienvenue {{username}} <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
                               <li ng-class="{true:'masquer', false:''}[page == pages.index.name]"><a href="/"><i class="icon-home"></i> Accueil</a></li>
                               <li class="divider"></li>
