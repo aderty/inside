@@ -2,6 +2,17 @@
 <div class="container-fluid" id="mainConges" ng-controller="CongesMain">
     <div class="row-fluid">
         <div class="span2" ng-controller="CongesGauges">
+            <div class="row-fluid">
+                <div class="span12 well">
+                    <!--Sidebar content-->
+                    <div>
+                        <span class="titre">Matricule</span> <h4>{{user.id}}</h4>
+                    </div>
+                    <div>
+                        <span class="titre">Collaborateur</span> <h4>{{user.nom}} {{user.prenom}}</h4>
+                    </div>
+                </div>
+            </div>
             <!--Sidebar content-->
             <div class="row-fluid">
                 <div class="span12 well gaugesWidget">

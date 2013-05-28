@@ -1,7 +1,7 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="mainActivite" ng-controller="ActiviteMain">
     <div class="row-fluid">
-        <div class="span3">
+        <div class="span2">
             <div class="row-fluid">
                 <div class="span12 well">
                     <!--Sidebar content-->
@@ -17,16 +17,20 @@
                 <div class="span12 well">
                     <!--Sidebar content-->
                     <span class="titre">Actions</span>
-                    <p ui-if="activite.etat <= 1 && !future">
+                    <hr />
+                    <p ng-if="activite.etat <= 1 && !future">
                         <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon_upload"></i>Enregistrer mon activité</button>
                     </p>
-                    <p>
+                    <p ng-if="activite.etat <= 1 && !future">
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
+                    </p>
+                    <p ng-if="activite.etat > 1">
+                        Votre activité a été validée, vous ne pouvez plus modifier ce mois.
                     </p>
                 </div>
             </div>
         </div><!-- <div class="span4">-->
-        <div class="span9">
+        <div class="span10 activiteContent">
             <!--Body content-->
             <div class="row">
                 <div class="span8">
@@ -36,10 +40,10 @@
                     </div>
                     <!--Grilles des congés-->
                     <div class="alert alert-info">
-                        <div ui-if="!eventSelectionne">
-                            <h4>Aucune journée sélectionnée</h4> {{" "}}
+                        <div ng-if="!eventSelectionne">
+                            <h4>Aucune journée sélectionnée</h4> &nbsp;
                         </div>
-                        <div ui-if="eventSelectionne">
+                        <div ng-if="eventSelectionne">
                             <h4>Journée sélectionnée</h4> {{eventSelectionne}}
                         </div>
                     </div>
@@ -73,7 +77,7 @@
   <accordion close-others="true">
     <accordion-group heading="Activité effectuée" is-open="true">
       <p>Choisisez l'activté effectuée cette journée :</p>
-      <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite | orderBy:-ordre">
+      <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActiviteJour | orderBy:-ordre">
       </select>
         <p>Durée :</p>
        <select id="inputDuree" name="inputDuree" required ng-model="data.duree">

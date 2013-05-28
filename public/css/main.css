@@ -295,8 +295,8 @@ input.ng-pristine + .input-help {
     height:160px;
 }
 
-#mainConges .congesSide>*
-{
+#mainConges .congesSide>*,
+#mainActivite .activiteContent > * {
 	margin-left: -5px;
 }
 
@@ -386,6 +386,20 @@ input.ng-pristine + .input-help {
 }
 
 
+/* Message d'erreur popup */
+#popupCalConges
+{
+	overflow: visible;
+}
+#popupCalConges.modal-body {
+	max-height: inherit;
+}
+
+#popupCalConges .fc-content
+{
+	overflow: visible;
+}
+
 #adminConges .gridStyle {
     border: 1px solid rgb(212,212,212);
     width: 100%; 
@@ -417,6 +431,8 @@ input.ng-pristine + .input-help {
 
 #adminConges .btn-group.val {
     margin: 2px 2px 2px 2px;
+    text-align: center;
+    width: 80px;
 }
 /* DDL choix utilisateur */
 #adminConges .select2-container

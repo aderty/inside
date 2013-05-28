@@ -1,7 +1,7 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="adminActivite" ng-controller="ActiviteAdmin">
     <div class="row-fluid">
-        <div class="span5">
+        <div class="span11">
             <div class="row-fluid">
                 <div class="span12">
                     <fieldset id="adminActiviteChoix">
@@ -25,11 +25,24 @@
             </div><!--<div class="row-fluid">-->
         </div>
         <!--<div class="span6">-->
-        <div class="span7">
+        <div class="span1">
             <!--Body content-->
             <div class="row">
                 <div class="span12">
-                    <div ui-if="eventSources" id="activiteCalendar" calendar="activiteCalendar" ui-calendar="uiConfig.calendar" config="uiConfig.calendar" ng-model="eventSources" >
+                    <script type="text/x-handlebars-template" id="showActiviteTmpl">
+                        <div class="modal-header">
+                        <h1>Activité de {{user.prenom}}</h1>
+                        </div>
+                        <div class="modal-body" id="popupCalConges">
+                        <p>Renseigner votre ancien mot de passe ainsi que le nouveau afin de modifier votre mot de passe actuel. 
+                        </p>
+                        <div ui-if="eventSources" id="activiteCalendar" calendar="activiteCalendar" ui-calendar="uiConfig.calendar" config="uiConfig.calendar" ng-model="eventSources" >
+                        </div>
+                        <div class="modal-footer">
+                            <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
+                            <button ng-click="close()" class="btn" >Annuler</button>
+                        </div>
+                    </script>
                 </div><!-- <div class="span12">-->
             </div><!-- <div class="row">-->
         </div>
@@ -37,6 +50,8 @@
     </div>
 </div>
 <!--</div class="container-fluid">-->
+
+
 
 <!--Template de la colonne d'action de la grille-->
 <script type="text/x-handlebars-template" id="headerTmpl">

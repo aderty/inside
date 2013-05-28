@@ -64,6 +64,7 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
             });
         });
     }
+    
     $rootScope.searcher = false;
     if (window.config.connected ? true : false) {
         $rootScope.initConnected(window.config);
@@ -388,10 +389,10 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.dateOptionsFin.minDate = newValue;
     });
 
-    var user = UsersService.get({ id: 0 }, function (retour) {
-        $scope.cp = user.cp;
-        $scope.cp_ant = user.cp_ant;
-        $scope.rtt = user.rtt;
+    $scope.user = UsersService.get({ id: 0 }, function(retour) {
+        $scope.cp = $scope.user.cp;
+        $scope.cp_ant = $scope.user.cp_ant;
+        $scope.rtt = $scope.user.rtt;
     });
 
     $scope.create = function () {
@@ -922,12 +923,26 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
     $scope.events = [];
     $scope.successOperation = "";
 
+    $rootScope.typeActiviteTravaille = [
+        { id: 'JT', libelle: 'En mission', ordre: 0 },
+        { id: 'FOR', libelle: 'Formation', ordre: 1 },
+        { id: 'INT', libelle: 'Intercontrat', ordre: 2 }
+    ];
+
+    $rootScope.typeActiviteWeekend = [
+        { id: 'WK', libelle: 'Weekend', ordre: 0 },
+        { id: 'JT', libelle: 'En mission', ordre: 1 }
+    ];
+
+    $rootScope.typeActiviteFerie = [
+        { id: 'JF', libelle: 'Journée fériée', ordre: 0 },
+        { id: 'JT', libelle: 'En mission', ordre: 1 }
+    ];
+
     $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travaillé' , ordre: -2});
-    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation', ordre: -1 });
-    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat', ordre: 0 });
-    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
-    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
+    $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.typeActiviteWeekend);
+    $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.typeActiviteFerie);
+    $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.typeActiviteTravaille);
 
     $scope.refresh = function () {
         $scope.activiteCalendar.fullCalendar('refetchEvents');
@@ -1172,8 +1187,8 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             });
         }
     };
-    
-    $scope.eventRender = function (event, element) {
+
+    $scope.eventRender = function(event, element) {
         // Si on affiche les mois suivant le mois actuel -> On n'affiche que les congés.
         if (viewStartDate > lastValidDate && event.data.type == "JT") {
             return false;
@@ -1189,8 +1204,20 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         var eventScope = $scope.$new(true);
         angular.extend(eventScope, event);
         eventScope.typeActivite = $rootScope.typeActivite;
+        if (event.data.type == "JF") {
+            // Journée de type fériée
+            eventScope.typeActiviteJour = $rootScope.typeActiviteFerie;
+        }
+        else if (businessDay(moment(event.start))) {
+            // Journée de type semaine
+            eventScope.typeActiviteJour = $rootScope.typeActiviteTravaille;
+        }
+        else {
+            // Journée de type weekend
+            eventScope.typeActiviteJour = $rootScope.typeActiviteWeekend;
+        }
         eventScope.cssConges = $rootScope.cssConges;
-        eventScope.valid = function (event) {
+        eventScope.valid = function(event) {
             eventScope.error = null;
             $('[rel=popover]').popover('hide');
             var lastDuree = eventScope.savedEvent.duree;
@@ -1202,7 +1229,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 this.allDay = false;
                 $scope.isUpdating = true;
                 var index = indexOfEvent(this.start);
-                $scope.events.splice(index + 1, 0, { title: 'Ap. midi', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 2 } });
+                $scope.events.splice(index + 1, 0, { title: 'Ap. midi', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 2} });
                 $scope.activiteCalendar.fullCalendar('refetchEvents');
             }
             else if (this.data.duree == 2) {
@@ -1212,7 +1239,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 this.allDay = false;
                 $scope.isUpdating = true;
                 var index = indexOfEvent(this.start);
-                $scope.events.splice(index, 0, { title: 'Matin', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 1 } });
+                $scope.events.splice(index, 0, { title: 'Matin', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 1} });
                 $scope.activiteCalendar.fullCalendar('refetchEvents');
             }
             else if (this.data.duree == 0 && lastDuree == 1) {
@@ -1232,12 +1259,12 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 $scope.activiteCalendar.fullCalendar('refetchEvents');
             }
         }
-        eventScope.cancel = function (event) {
+        eventScope.cancel = function(event) {
             eventScope.error = null;
             $.extend(eventScope.data, eventScope.savedEvent);
             $('[rel=popover]').popover('hide');
         }
-        eventScope.infos = function (data) {
+        eventScope.infos = function(data) {
             if (data.duree == 2) {
                 return "Ap. midi";
             }
@@ -1245,7 +1272,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 return "Matin";
             }
         }
-        eventScope.$watch('data.type', function (newValue, oldValue) {
+        eventScope.$watch('data.type', function(newValue, oldValue) {
             if (oldValue && newValue == 'JT' && oldValue != 'JT') {
                 if (eventScope.data.duree == 0) {
                     $scope.nbJourTravailles++;
@@ -1269,19 +1296,19 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         });
         return $compile($.trim($('#eventTmpl').html()))(eventScope)
         /*element.addClass("jour")*/.attr("rel", "popover").popover({
-            html : true,
-                     
-            content: function (e) {
+            html: true,
+
+            content: function(e) {
                 // Jour férié, pas d'édition.
-                /*if (eventScope.data.type == 'JF') {
+                if (eventScope.data.type == 'CP' || eventScope.data.type == 'CP_ANT' || eventScope.data.type == 'RC' || eventScope.data.type == 'RCE' || eventScope.data.type == 'AE') {
                     return false;
-                }*/
+                }
                 eventScope.savedEvent = angular.copy(eventScope.data);
                 return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
             }
-        }).click(function(e){
+        }).click(function(e) {
             var elm = $(this);
-            $(".popover.in").prev().each(function(i){
+            $(".popover.in").prev().each(function(i) {
                 var $this = $(this);
                 if (!$this.is(elm)) {
                     $this.scope().cancel();
@@ -1420,15 +1447,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
     var currentYear = new Date().getFullYear();
     $scope.lstAnnees = [currentYear, currentYear - 1, currentYear - 2];
     $scope.lstMois = jQuery.fullCalendar.monthNames;
-    $scope.activiteUser = [];
     
-    $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'Travaillé' });
-    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation' });
-    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat' });
-    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
-    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
-
     $scope.selection = {
         annee: currentYear,
         mois: $scope.lstMois[new Date().getMonth()]
@@ -1463,10 +1482,25 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
             }
         });
     };
-    $scope.visualiser = function (row) {
+
+    // Inlined template for demo 
+    $scope.opts = {
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        template: $.trim($("#showActiviteTmpl").html()),
+        controller: 'DialogShowActivite'
+    };
+
+    $scope.visualiser = function(row) {
+
         $scope.currentActivite = angular.copy(row);
-        $("#activiteCalendar").fullCalendar('gotoDate', $scope.currentActivite.mois);
-        ActiviteAdminService.get($scope.currentActivite).then(function (activites) {
+
+        //$("#activiteCalendar").fullCalendar('gotoDate', $scope.currentActivite.mois);
+        ActiviteAdminService.get($scope.currentActivite).then(function(activites) {
+
+            $rootScope.error = "";
+
             $scope.eventSources = null;
             $scope.activiteUser = [];
             if (activites.activite.length > 0) {
@@ -1474,9 +1508,18 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
                     $scope.activiteUser.push({ title: activites.activite[i].type, start: activites.activite[i].jour.date, data: activites.activite[i] });
                 }
             }
-            if(!$scope.eventSources){
+            if (!$scope.eventSources) {
                 $scope.eventSources = [$scope.activiteUser];
             }
+            $rootScope.currentActivite = $scope.currentActivite;
+            $rootScope.eventSources = $scope.eventSources;
+            var d = $dialog.dialog($scope.opts);
+            d.open().then(function(result) {
+                if (result) {
+                }
+            });
+
+
         });
     };
     $scope['delete'] = function (row) {
@@ -1494,89 +1537,6 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
                 });
             }
         });
-    };
-    
-    /* alert on eventClick */
-    $scope.alertEventOnClick = function (date, allDay, jsEvent, view) {
-        $scope.$apply(function () {
-            $scope.eventSelectionne = new moment(date).format('dddd D MMMM YYYY');
-        });
-    };
-    $scope.eventOnClick = function (calEvent, jsEvent, view) {
-        $scope.$apply(function () {
-            $scope.currentEvent = calEvent.data;
-            $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
-        });
-    };
-    
-    $scope.eventRender = function (event, element) {
-
-        function indexOfEvent(start) {
-            var index = 0, l = $scope.events.length;
-            for (; index < l; index++) {
-                if ($scope.events[index].start == start) return index;
-            }
-            return -1;
-        }
-        var eventScope = $scope.$new(true);
-        angular.extend(eventScope, event);
-        eventScope.typeActivite = $rootScope.typeActivite;
-        
-        eventScope.cancel = function (event) {
-            eventScope.error = null;
-            $.extend(eventScope.data, eventScope.savedEvent);
-            $('[rel=popover]').popover('hide');
-        }
-        eventScope.infos = function (data) {
-            if (data.duree == 2) {
-                return "Ap. midi";
-            }
-            if (data.duree == 1) {
-                return "Matin";
-            }
-        }
-        return $compile($.trim($('#eventTmpl').html()))(eventScope)
-        /*element.addClass("jour")*/.attr("rel", "popover").popover({
-            html : true,
-                     
-            content: function (e) {
-                // Jour férié, pas d'édition.
-                /*if (eventScope.data.type == 'JF') {
-                    return false;
-                }*/
-                eventScope.savedEvent = angular.copy(eventScope.data);
-                return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
-            }
-        }).click(function(e){
-            var elm = $(this);
-            $(".popover.in").prev().each(function(i){
-                var $this = $(this);
-                if (!$this.is(elm)) {
-                    $this.scope().cancel();
-                    $this.popover('hide');
-                }
-            });
-        });
-    };
-    
-    $scope.uiConfig = {
-        calendar: angular.extend({
-            editable: false,
-            header: {
-                left: '',
-                center: '',
-                right: 'title'
-            },
-            dayClick: $scope.alertEventOnClick,
-            eventClick: $scope.eventOnClick,
-            eventRender: $scope.eventRender,
-            eventAfterAllRender: function () {
-                $timeout(function () {
-                    // Permet la re-génération d'angularjs
-                    $("#activiteCalendar").fullCalendar('gotoDate', $scope.currentActivite.mois);
-                });
-            }
-        }, jQuery.fullCalendar)
     };
 }
 
@@ -1626,5 +1586,112 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
         showFilter: false,
         pagingOptions: $scope.pagingOptions,
         filterOptions: $scope.filterOptions
+    };
+}
+
+// Contrôleur de la popup de modification de password
+function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog) {
+    $rootScope.error = "";
+    $scope.user = $scope.$parent.currentActivite.user;
+    $scope.eventSources = $scope.$parent.eventSources;
+    $scope.uiConfig = $scope.$parent.uiConfig;
+    
+    $scope.close = function() {
+        $rootScope.error = "";
+        dialog.close();
+    };
+
+    var currentYear = new Date().getFullYear();
+    $scope.activiteUser = [];
+
+    $rootScope.typeActivite = angular.copy($rootScope.motifsConges);
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'En mission' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat' });
+    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
+    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });
+
+    /* alert on eventClick */
+    $scope.alertEventOnClick = function(date, allDay, jsEvent, view) {
+        $scope.$apply(function() {
+            $scope.eventSelectionne = new moment(date).format('dddd D MMMM YYYY');
+        });
+    };
+    $scope.eventOnClick = function(calEvent, jsEvent, view) {
+        $scope.$apply(function() {
+            $scope.currentEvent = calEvent.data;
+            $scope.eventSelectionne = new moment(calEvent.start).format('dddd D MMMM YYYY');
+        });
+    };
+
+    $scope.eventRender = function(event, element) {
+
+        function indexOfEvent(start) {
+            var index = 0, l = $scope.events.length;
+            for (; index < l; index++) {
+                if ($scope.events[index].start == start) return index;
+            }
+            return -1;
+        }
+        var eventScope = $scope.$new(true);
+        angular.extend(eventScope, event);
+        eventScope.typeActivite = $rootScope.typeActivite;
+
+        eventScope.cancel = function(event) {
+            eventScope.error = null;
+            $.extend(eventScope.data, eventScope.savedEvent);
+            $('[rel=popover]').popover('hide');
+        }
+        eventScope.infos = function(data) {
+            if (data.duree == 2) {
+                return "Ap. midi";
+            }
+            if (data.duree == 1) {
+                return "Matin";
+            }
+        }
+        return $compile($.trim($('#eventTmpl').html()))(eventScope)
+        /*element.addClass("jour")*/.attr("rel", "popover").popover({
+            html: true,
+
+            content: function(e) {
+                // Jour férié, pas d'édition.
+                /*if (eventScope.data.type == 'JF') {
+                return false;
+                }*/
+                eventScope.savedEvent = angular.copy(eventScope.data);
+                return $compile($.trim($('#popoverEventTmpl').html()))(eventScope);
+            }
+        }).click(function(e) {
+            var elm = $(this);
+            $(".popover.in").prev().each(function(i) {
+                var $this = $(this);
+                if (!$this.is(elm)) {
+                    $this.scope().cancel();
+                    $this.popover('hide');
+                }
+            });
+        });
+    };
+
+    $scope.uiConfig = {
+        calendar: angular.extend({
+            editable: false,
+            header: {
+                left: '',
+                center: '',
+                right: 'title'
+            },
+            dayClick: $scope.alertEventOnClick,
+            eventClick: $scope.eventOnClick,
+            eventRender: $scope.eventRender,
+            eventAfterAllRender: function() {
+                $timeout(function() {
+                    // Permet la re-génération d'angularjs
+                    $("#activiteCalendar").fullCalendar('gotoDate', $rootScope.currentActivite.mois);
+                    $("#activiteCalendar").find(".fc-content").css('overflow', 'visible');
+                });
+            }
+        }, jQuery.fullCalendar)
     };
 }
