@@ -1446,7 +1446,9 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
 function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, ActiviteAdminService) {
     var currentYear = new Date().getFullYear();
     $scope.lstAnnees = [currentYear, currentYear - 1, currentYear - 2];
-    $scope.lstMois = jQuery.fullCalendar.monthNames;
+    $scope.lstMois = [];
+    $scope.lstMois.push.apply($scope.lstMois, jQuery.fullCalendar.monthNames);
+    $scope.lstMois.splice(0, 0, "Tous");
     
     $scope.selection = {
         annee: currentYear,
@@ -1455,7 +1457,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, Activite
 
     $scope.$watch('selection', function (selection) {
         var options = angular.copy(selection);
-        options.mois = $scope.lstMois.indexOf(selection.mois) + 1;
+        options.mois = $scope.lstMois.indexOf(selection.mois);
         ActiviteAdminService.list(options).then(function (activites) {
             $scope.eventSources = null;
             $rootScope.activites = activites;
@@ -1565,12 +1567,14 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
     var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
     var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
     var validationCellTemplate = $.trim($('#validationTmpl').html());
+    var moisCellTemplate = $.trim($('#moisTmpl').html());
 
     $scope.gridOptions = {
         data: 'activites',
         columnDefs: [
             { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
-            { field: 'user', displayName: 'Utilisateur', width: 100, cellTemplate: matriculeCellTemplate, resizable: false },
+            { field: 'mois', displayName: 'Mois', width: 70, cellTemplate: moisCellTemplate, resizable: false },
+            { field: 'user', displayName: 'Utilisateur', cellTemplate: matriculeCellTemplate, resizable: false },
             //{ field: 'etat', displayName: 'Etat', width: 60, headerCellTemplate: myHeaderCellTemplate },
             { field: 'nbJoursTravailles', displayName: 'Nb. jours travaillés', width: 100, headerCellTemplate: myHeaderCellTemplate },
             { field: 'nbJoursNonTravailles', displayName: 'Nb. jours chômés', width: 100, headerCellTemplate: myHeaderCellTemplate },

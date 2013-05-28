@@ -61,7 +61,7 @@ var routesAdmin = {
         if (req.query.annee) {
             options.annee = req.query.annee;
         }
-        if (req.query.mois) {
+        if (req.query.mois && req.query.mois > 0) {
             options.mois = req.query.mois;
         }
         data.activite.listActivites(options, dataCallback(res));

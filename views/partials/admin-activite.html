@@ -34,7 +34,7 @@
                         <h1>Activité de {{user.prenom}}</h1>
                         </div>
                         <div class="modal-body" id="popupCalConges">
-                        <p>Renseigner votre ancien mot de passe ainsi que le nouveau afin de modifier votre mot de passe actuel. 
+                        <p> 
                         </p>
                         <div ui-if="eventSources" id="activiteCalendar" calendar="activiteCalendar" ui-calendar="uiConfig.calendar" config="uiConfig.calendar" ng-model="eventSources" >
                         </div>
@@ -62,6 +62,10 @@
         <div class="ngSortPriority">{{col.sortPriority}}</div>
     </div>
     <div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>
+</script>
+
+<script type="text/x-handlebars-template" id="moisTmpl">
+    <div class="ngCellText moisCell">{{row.mois | moment:'MMMM YYYY'}}</div>
 </script>
 <script type="text/x-handlebars-template" id="matriculeTmpl">
     <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{row.user.nom}} {{row.user.prenom}}">{{row.user.nom}} {{row.user.prenom}}</div>

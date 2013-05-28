@@ -149,6 +149,14 @@ var Mail = {
 
         var subject = "[InsideConsulting] Listes des congés à valider.";
 
+        for (var i = 0, l = conges.length; i < l; i++) {
+            conges[i].debutType = conges[i].debut.getHours() >= 8 ? "après-midi" : "matin";
+            conges[i].finType = conges[i].fin.getHours() > 14 ? "soir" : "midi";
+
+            conges[i].debut = moment(conges[i].debut).format('D MMMM YYYY');
+            conges[i].fin = moment(conges[i].fin).format('D MMMM YYYY');
+        }
+
         email.send(extend({
             to: email_admin,
             subject: subject,

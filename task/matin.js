@@ -8,13 +8,17 @@ data.events.once('connected', function (result) {
     data.conges.listCongesEtat(1, false, function (err, conges) {
         if (err) {
             console.log('ERROR: ' + err);
+            process.exit(1);
             return;
         }
         mail.Mail.recapConges(config.admin, conges, function (err, result) {
             if (err) {
-                console.log('ERROR: ' + err); return;
+                console.log('ERROR: ' + err);
+                process.exit(1);
+                return;
             }
             console.log('Envoie terminé avec succés.');
+            process.exit(0);
             return;
         });
     });
