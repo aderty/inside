@@ -64,6 +64,10 @@ var routesAdmin = {
         if (req.query.mois && req.query.mois > 0) {
             options.mois = req.query.mois;
         }
+        if (req.query.sans) {
+            data.activite.listUserSansActivites(options, dataCallback(res));
+            return;
+        }
         data.activite.listActivites(options, dataCallback(res));
     },
     get: function(req, res) {

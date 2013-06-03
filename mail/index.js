@@ -99,6 +99,7 @@ var Mail = {
                 "debutType": conges.debut.type == 1 ? "après-midi" : "matin",
                 "finType": conges.fin.type == 1 ? "soir" : "midi",
                 "motif": conges.libelle,
+                "refus": conges.refus || "Non communiqué",
                 "owner": owner
             }
         }, config),

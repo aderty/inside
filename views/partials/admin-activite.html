@@ -1,7 +1,7 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="adminActivite" ng-controller="ActiviteAdmin">
     <div class="row-fluid">
-        <div class="span11">
+        <div class="span12">
             <div class="row-fluid">
                 <div class="span12">
                     <fieldset id="adminActiviteChoix">
@@ -20,12 +20,19 @@
             <div class="row-fluid">
                 <div class="span12" ng-controller="ActiviteAdminGrid">
                     <!--Grilles des congés-->
-                    <grid id="activiteAdminGrid" ng-options="gridOptions"></grid>
+                    <tabs>
+                        <pane heading="Liste des activités">
+                              <grid id="activiteAdminGrid" ng-options="gridOptions"></grid>
+                        </pane>
+                        <pane heading="Utilisateurs sans activité">
+                              <grid id="sansSctiviteAdminGrid" ng-options="gridOptionsSans"></grid>
+                        </pane>
+                    </tabs>
                 </div>
             </div><!--<div class="row-fluid">-->
         </div>
         <!--<div class="span6">-->
-        <div class="span1">
+        <div class="span0">
             <!--Body content-->
             <div class="row">
                 <div class="span12">
@@ -80,6 +87,9 @@
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
     <a href="#" title="Visualiser" ng-show="isEditable(row)" ng-click="visualiser(row)"><i class="icon-eye-open"></i></a>
 </script>
+<script type="text/x-handlebars-template" id="actionRowTmplCreate">
+    <a href="#" title="Créer le CRA" ng-click="create(row)"><i class="icon-pencil"></i></a>
+</script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
     <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>
@@ -96,20 +106,26 @@
   <accordion close-others="true">
     <accordion-group heading="Activité effectuée" is-open="true">
       <p>Choisisez l'activté effectuée cette journée :</p>
-      <!--<span ng-bind="data.type | motifCongesShort:typeActivite"></span>-->
-      <select id="inputType" ng-disabled="true" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActivite">
+      <select id="inputType" name="inputType" required ng-model="data.type" ng-options="motif.id as motif.libelle for motif in typeActiviteJour | orderBy:-ordre">
       </select>
         <p>Durée :</p>
-       <select id="inputDuree" name="inputDuree" ng-disabled="true" required ng-model="data.duree">
+       <select id="inputDuree" name="inputDuree" required ng-model="data.duree">
            <option value="0">Toute la journée</option>
            <option ng-hide="data.duree == 2" value="1">Matinée</option>
            <option ng-hide="data.duree == 1" value="2">Après-midi</option>
       </select>
-
     </accordion-group>
-    <accordion-group heading="Informations complémentaires">
+    <accordion-group heading="Heures supl./nuit" ng-if="data.type == 'JT'">
+      <p>Nombre d'heures suplémentaires</p>
+      <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
+      <p ng-if="hasHeuresAstreinte(data);">Nombre d'heures d'astreinte</p>
+      <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
+      <p>Nombre de nuit (entre 22h et 6h)</p>
+      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
+    </accordion-group>
+    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT' || data.type == 'FOR' || data.type == 'INT'">
       <p>Remarques...</p>
-        <textarea id="inputInfos" name="inputInfos" ng-model="data.information" ng-disabled="true"></textarea>
+        <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
     </accordion-group>
   </accordion>
   <div class="modal-footer">

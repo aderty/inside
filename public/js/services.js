@@ -467,6 +467,7 @@ angular.module('inside.services', ['ngResource']).
      var resource = $resource('/data-admin-activite/:id',
              { id: '@id' }, {
                  list: { method: 'GET', isArray: true },
+                 listSans: { method: 'GET', params: { sans: true}, isArray: true },
                  removeActivite: { method: 'DELETE' },
                  create: { method: 'POST', params: { create: true} },
                  updateEtat: { method: 'POST', params: { etat: true} }
@@ -492,6 +493,25 @@ angular.module('inside.services', ['ngResource']).
                      }
                  }
                  defered.resolve(activites);
+             });
+             return defered.promise;
+         },
+         listSans: function(options) {
+             var defered = $q.defer();
+             var usersSansActivite = resource.listSans(options, function() {
+                 // GET: /user/123/card
+                 // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                 for (var i = 0, l = usersSansActivite.length; i < l; i++) {
+                     usersSansActivite[i].user = {
+                        id: usersSansActivite[i].id,
+                        nom: usersSansActivite[i].nom,
+                        prenom: usersSansActivite[i].prenom
+                     }
+                     if (usersSansActivite[i].mois) {
+                         usersSansActivite[i].mois = new Date(usersSansActivite[i].mois);
+                     }
+                 }
+                 defered.resolve(usersSansActivite);
              });
              return defered.promise;
          },
@@ -524,6 +544,17 @@ angular.module('inside.services', ['ngResource']).
                              activite.activite[i].duree = 2;
                          }
                      }
+                     else {
+                          activite.activite[i].debut = {
+                              date: new Date(activite.activite[i].debut),
+                              type: new Date(activite.activite[i].debut).getHours() < 8 ? 0 : 1
+                          };
+                          activite.activite[i].fin = {
+                              date: new Date(activite.activite[i].fin),
+                              type: new Date(activite.activite[i].fin).getHours() > 14 ? 1 : 0
+                          }
+
+                      }
                      var types = ['JT', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RC', 'RCE'];
                      if (types.indexOf(activite.activite[i].type) == -1) {
                          activite.activite[i].type = 'AE';

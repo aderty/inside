@@ -88,3 +88,21 @@
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
     <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>
+
+<script type="text/x-handlebars-template" id="refusTmpl">
+    <div class="modal-header">
+        <h1>Refus d'un congé</h1>
+    </div>
+    <div class="modal-body" id="refus">
+    <p>Etes-vous sûr de vouloir refuser la demande de congés ?
+    </p>
+    <form id="refusConges" name="refusConges" class="form-horizontal" ui-keypress="{'enter':'close('yes')'}" novalidate>
+        <!-- Saisie du motif de refus -->
+        <textarea type="text" id="motifRefus" name="motifRefus" ng-model="dialogModel.refus" class="span7" rows="5" placeholder="Motif du refus"></textarea>
+    </form>
+    </div>
+    <div class="modal-footer">
+        <button ng-click="close('yes')" class="btn btn-primary" >Oui</button>
+        <button ng-click="close('no')" class="btn" >Non</button>
+    </div>
+</script>

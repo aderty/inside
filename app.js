@@ -40,6 +40,7 @@ app.configure(function(){
     app.set('views', __dirname + '/views');
     app.engine('.html', require('ejs').__express);
     app.set('view engine', 'html');  
+    app.use(express.compress());
     app.use(stylus.middleware({
         src: path.join(__dirname, 'styles'),
         dest: path.join(__dirname, 'public'),

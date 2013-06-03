@@ -15,6 +15,22 @@
             </div>
             <div class="row-fluid">
                 <div class="span12 well">
+                    <span class="titre">Compteurs</span>
+                    <hr />
+                    <!--Sidebar content-->
+                    <ul class="compteurs">
+                        <li ng-repeat="activite in typeActivitePerso">
+                            <span class="titre">{{activite.libelle}}</span> <h4>{{activite.nb}}</h4>
+                        </li>
+                     </ul>
+                    <hr ng-if="heuresSup + heuresAstreinte + heuresNuit > 0" />
+                    <p ng-if="heuresSup > 0">Heures sup. <strong>{{heuresSup}}</strong></p>
+                    <p ng-if="heuresAstreinte > 0">Heures d'astreinte <strong>{{heuresAstreinte}}</strong></p>
+                    <p ng-if="heuresNuit > 0">Heures de nuit <strong>{{heuresNuit}}</strong></p>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12 well">
                     <!--Sidebar content-->
                     <span class="titre">Actions</span>
                     <hr />
@@ -85,9 +101,16 @@
            <option ng-hide="data.duree == 2" value="1">Matinée</option>
            <option ng-hide="data.duree == 1" value="2">Après-midi</option>
       </select>
-
     </accordion-group>
-    <accordion-group heading="Informations complémentaires">
+    <accordion-group heading="Heures supl./nuit" ng-if="data.type == 'JT'">
+      <p>Nombre d'heures suplémentaires</p>
+      <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
+      <p ng-if="hasHeuresAstreinte(data);">Nombre d'heures d'astreinte</p>
+      <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
+      <p>Nombre de nuit (entre 22h et 6h)</p>
+      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
+    </accordion-group>
+    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT' || data.type == 'FOR' || data.type == 'INT'">
       <p>Remarques...</p>
         <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
     </accordion-group>

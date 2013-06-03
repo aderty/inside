@@ -183,6 +183,8 @@ table td.cell > div {
 #pwd input,
 #login input,
 #editConges input,
+#mainActivite input,
+#activiteCalendar input,
 #editUser input {
     height:inherit;
 }
@@ -478,6 +480,25 @@ input.ng-pristine + .input-help {
 	width: 100px;
 }
 
+
+#mainActivite ul.compteurs
+{
+	list-style: none;
+	margin: 0;
+}
+#mainActivite ul.compteurs li
+{
+	margin-bottom: 5px;
+}
+#mainActivite ul.compteurs span.titre
+{
+	margin: 0;
+	padding: 0;
+}
+#mainActivite ul.compteurs h4
+{
+	margin: 0;
+}
 /* Popover du calendier de l'activité */
 .fc-view {
 	overflow: visible;
@@ -498,8 +519,8 @@ input.ng-pristine + .input-help {
 {
     height: auto;
 	background-color: rgb(138, 192, 79);
-    background: -moz-linear-gradient( top, #bcd6ab 0%, #475e3c);
-    background: -webkit-gradient( linear, left top, left bottom, from(#bcd6ab), to(#475e3c));
+    background: -moz-linear-gradient( top, #bcd6ab 0%, #4f982c);
+    background: -webkit-gradient( linear, left top, left bottom, from(#bcd6ab), to(#4f982c));
 }
 .jour.sleeping.valConges {
     background-color: Orange;
@@ -541,4 +562,23 @@ input.ng-pristine + .input-help {
 #adminActivite .cell:nth-child(3) > * {
     max-width: 100px;
     width: 100px;
+}
+
+#adminActivite .cell.travail {
+    background-color: #f3cea5;
+}
+#adminActivite tr:hover .cell.travail {
+    background-color: #e1cdb6;
+}
+#adminActivite .cell.conges {
+    background-color: #a5e2f3;
+}
+#adminActivite tr:hover .cell.conges {
+    background-color: #9dd0de;
+}
+#adminActivite .cell.heures {
+    background-color: #d1efa9;
+}
+#adminActivite tr:hover .cell.heures {
+    background-color: #bce08d;
 }

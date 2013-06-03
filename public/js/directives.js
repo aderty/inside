@@ -108,7 +108,7 @@ directive('grid', function($compile, $timeout) {
                         '</thead>' +
                         '<tbody>' +
                             '<tr ng-show="filter(row)" ng-repeat="row in data |filter:filterRow | orderBy:sorter:sort.descending">' +
-                                '<td ng-repeat="def in options.columnDefs" class="cell" rowgrid>' +
+                                '<td ng-repeat="def in options.columnDefs" class="cell {{def.cssClass}}" rowgrid>' +
                                 '</td>' +
                             '</tr>' +
                         '</tbody>';
