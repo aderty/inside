@@ -1,4 +1,5 @@
-﻿var db = require('./db');
+﻿var db = require('./db')
+    , moment = require('moment')
 
 function checkActivite(activite) {
     if (activite) {
@@ -73,6 +74,7 @@ var data = {
         if (!checkActivite(activite)) {
             return fn("Activité invalide");
         }
+        
         var request = "DELETE FROM activite_jour WHERE user = ? AND YEAR(jour) = YEAR(?) AND MONTH(jour) = MONTH(?);";
         var values = [id, activite.mois, activite.mois];
         request += "INSERT INTO activite_jour (user, jour, type, information, heuresSup, heuresAstreinte, heuresNuit) VALUES ";
@@ -225,7 +227,7 @@ var data = {
     },
     listUserSansActivites: function(options, fn) {
         var query = "SELECT users.id, users.nom, users.prenom, DATE('" + options.annee + "-" + options.mois + "-1') AS mois FROM users WHERE users.id <> 1 AND users.id <> 999999 AND users.etat = 1 " +
-                    " AND YEAR(users.creation) <= ? AND MONTH(users.creation) <= ? AND "+
+                    " AND YEAR(users.creation) <= ? AND MONTH(users.creation) <= ? AND " +
                     " users.id NOT IN(SELECT activite.user FROM activite WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?);";
         values = [options.annee, options.mois, options.annee, options.mois];
         db.query(query, values, function(err, ret) {

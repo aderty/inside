@@ -47,7 +47,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
-                            <button class="btn btn-success" type="button" ng-click="save(eventSources[0])"><i class="icon_upload"></i>Enregistrer l'activité</button>
+                            <button class="btn btn-success" type="button" ng-click="save(eventSources[0])"><i class="icon_upload"></i> Enregistrer l'activité</button>
                             <button ng-click="close()" class="btn" >Annuler</button>
                         </div>
                     </script>
@@ -83,16 +83,16 @@
     <div class="cellJustification" data-toggle="tooltip" title="{{row.justification}}">{{row.justification}}</div>
 </script>
 <script type="text/x-handlebars-template" id="validationTmpl">
-    <a href="#" title="Valider le CRA" ng-show="row.etat == 1" ng-click="valider(row)"><i class="icon-ok"></i></a>
+    <a href="" title="Valider le CRA" ng-show="row.etat == 1" ng-click="valider(row)"><i class="icon-ok"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
-    <a href="#" title="Visualiser" ng-show="isEditable(row)" ng-click="visualiser(row)"><i class="icon-eye-open"></i></a>
+    <a href="" title="Visualiser" ng-show="isEditable(row)" ng-click="visualiser(row)"><i class="icon-eye-open"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplCreate">
-    <a href="#" title="Créer le CRA" ng-click="create(row)"><i class="icon-pencil"></i></a>
+    <a href="" title="Créer le CRA" ng-click="create(row)"><i class="icon-pencil"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
-    <a href="#" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
+    <a href="" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>
 
 <script type="text/x-handlebars-template" id="eventTmpl">

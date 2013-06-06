@@ -102,6 +102,16 @@
             </div>
         </div>
     </div>
+    <!--Saisie Admin-->
+    <div class="control-group" ng-class="{error: editUser.inputAdmin.$dirty && editUser.inputAdmin.$invalid, success:editUser.inputAdmin.$dirty && !editUser.inputAdmin.$invalid}">
+        <label class="control-label" for="inputAdmin">Administrateur</label>
+        <div class="controls inline">
+            <input type="text" ng-model="currentUser.admin" ng-disabled="currentUser.role > 3" required id="inputAdmin" name="inputAdmin" ui-select2="selectUserOptions" placeholder="">
+            <div class="input-help">
+                <h4>Vous devez renseigner un administrateur.</h4>
+            </div>
+        </div>
+    </div>
     <!--Saisie CP aquis-->
     <div class="control-group" ng-class="{error: editUser.inputCp.$dirty && editUser.inputCp.$invalid, success:editUser.inputCp.$dirty && !editUser.inputCp.$invalid}">
         <label class="control-label" for="inputCp">Congés payés acquis</label>

@@ -559,6 +559,14 @@ angular.module('inside.services', ['ngResource']).
                      if (types.indexOf(activite.activite[i].type) == -1) {
                          activite.activite[i].type = 'AE';
                      }
+                     if (activite.activite[i].type == 'JF' && activite.activite[i].debut && activite.activite[i].fin) {
+                          activite.activite[i].debut.date.setHours(0);
+                          activite.activite[i].debut.date.setMinutes(0);
+                          activite.activite[i].fin.date.setHours(0);
+                          activite.activite[i].fin.date.setMinutes(0);
+                          activite.activite[i].debut.type = 0;
+                          activite.activite[i].fin.type = 1;
+                      }
                  }
                  defered.resolve(activite);
              });

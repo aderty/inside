@@ -91,7 +91,7 @@ var data = {
     // Lecture, via GET
     listUsers: function(fn) {
         //db.query('SELECT * FROM users JOIN conges_compteurs ON users.id = conges_compteurs.user WHERE id <> 999999 AND etat=1', function (err, ret) {
-        db.query('SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RC" ) AS rtt FROM users WHERE id <> 999999 AND etat=1', function(err, ret) {
+        db.query('SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RC" ) AS rtt FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.id <> 999999 AND u1.etat=1', function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des utilisateurs.");
@@ -126,12 +126,12 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        var request = 'SELECT users.*, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = id AND motif= "RC" ) AS rtt FROM users WHERE etat=1 AND ';
+        var request = 'SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ant" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RC" ) AS rtt FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.etat=1 AND ';
         if (!re.test(id)) {
-            request += ' id = ? ';
+            request += ' u1.id = ? ';
         }
         else {
-            request += ' email = ? ';
+            request += ' u1.email = ? ';
         }
         db.query(request, id, function(err, ret) {
             if (err) {
@@ -223,7 +223,7 @@ var data = {
         fn("Erreur lors de la récupération de l'utilisateur " + user.id);
         });*/
     },
-    passwordTest: function (id, oldPwd, fn) {
+    passwordTest: function(id, oldPwd, fn) {
         if (!id || id == "") {
             return fn("Id d'utilisateur invalide");
         }
@@ -244,7 +244,7 @@ var data = {
             return fn("Ancien mot de passe incorrect.");
         });
     },
-    passwordUpdate: function (id, pwd, fn) {
+    passwordUpdate: function(id, pwd, fn) {
         if (!id || id == "") {
             return fn("Id d'utilisateur invalide");
         }
@@ -253,7 +253,7 @@ var data = {
         }
         // Chiffrage du pass en sha1
         var hash = crypto.createHash('sha1').update(pwd).digest("hex");
-        db.query('UPDATE users SET pwd = ? WHERE id = ?', [hash, id], function (error, ret) {
+        db.query('UPDATE users SET pwd = ? WHERE id = ?', [hash, id], function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
                 return fn("Erreur lors de la tentative de modification du mot de passe.");

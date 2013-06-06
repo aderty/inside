@@ -582,3 +582,8 @@ input.ng-pristine + .input-help {
 #adminActivite tr:hover .cell.heures {
     background-color: #bce08d;
 }
+
+#popupCalConges.modal-body .jour > *:nth-child(1)
+{
+	line-height: 13px;
+}
