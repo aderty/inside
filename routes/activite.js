@@ -88,7 +88,14 @@ var routesAdmin = {
             data.activite.updateEtatActivite(activite, dataCallback(res));
             return;
         }
-        data.activite.updateConges(conges, true, dataCallback(res));
+        // Création / modification d'activité
+        activite.etat = 1;
+        if (activite.create) {
+            delete activite.create;
+            data.activite.addActiviteUser(activite.user, activite, false, dataCallback(res));
+            return;
+        }
+        data.activite.updateActiviteJoursUser(activite.user, activite, false, dataCallback(res));
     },
     remove: function(req, res) {
         var activite = req.query;

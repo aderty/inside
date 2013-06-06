@@ -601,6 +601,28 @@ angular.module('inside.services', ['ngResource']).
                  defered.reject(response);
              });
              return defered.promise;
+         },
+         save: function (activite, creation) {
+             var defered = $q.defer();
+             if (creation) {
+                 // Création -> Flag création
+                 activite.create = true;
+             }
+             if (activite.user) {
+                 activite.user = activite.user.id;
+             }
+             resource.save(activite, function (reponse) {
+                 if (reponse.error) {
+                     $rootScope.error = reponse.error;
+                     defered.reject(reponse.error);
+                     return;
+                 }
+                 defered.resolve(reponse);
+             }, function (response) {
+                 $rootScope.error = response;
+                 defered.reject(response);
+             });
+             return defered.promise;
          }
      };
  });

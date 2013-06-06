@@ -1859,7 +1859,7 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
 }
 
 // Contrôleur de la popup de modification de password
-function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog) {
+function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, ActiviteAdminService) {
     $rootScope.error = "";
     $scope.user = $scope.$parent.currentActivite.user;
     $scope.eventSources = $scope.$parent.eventSources;
@@ -1906,7 +1906,48 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog) {
         angular.extend(eventScope, event);
         eventScope.typeActivite = $rootScope.typeActivite;
         eventScope.typeActiviteJour = $rootScope.typeActivite;
-
+        eventScope.valid = function (event) {
+            eventScope.error = null;
+            $('[rel=popover]').popover('hide');
+            var lastDuree = eventScope.savedEvent.duree;
+            if (this.data.duree == lastDuree) return;
+            if (this.data.duree == 1) {
+                var date = new Date(this.start);
+                date.setHours(16);
+                this.start.setHours(8);
+                this.allDay = false;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                $scope.events.splice(index + 1, 0, { title: 'Ap. midi', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 2 } });
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 2) {
+                var date = new Date(this.start);
+                date.setHours(8);
+                this.start.setHours(16);
+                this.allDay = false;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                $scope.events.splice(index, 0, { title: 'Matin', start: date, allDay: false, data: { type: this.data.type, jour: date, duree: 1 } });
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 0 && lastDuree == 1) {
+                this.allDay = true;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                this.start.setHours(0);
+                $scope.events.splice(index + 1, 1);
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+            else if (this.data.duree == 0 && lastDuree == 2) {
+                this.allDay = true;
+                $scope.isUpdating = true;
+                var index = indexOfEvent(this.start);
+                this.start.setHours(0);
+                $scope.events.splice(index - 1, 1);
+                $scope.activiteCalendar.fullCalendar('refetchEvents');
+            }
+        }
         eventScope.cancel = function(event) {
             eventScope.error = null;
             $.extend(eventScope.data, eventScope.savedEvent);
@@ -1971,5 +2012,29 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog) {
                 });
             }
         }, jQuery.fullCalendar)
+    };
+
+    $scope.save = function (events) {
+        var activite = angular.copy($scope.$parent.currentActivite);
+        if (activite.etat > 1) return;
+        var creation = (!activite.etat || activite.etat == -1) ? true : false;
+        activite.activite = $.map(events, function (item, index) {
+            return {
+                jour: item.start,
+                type: item.data.type,
+                information: item.data.information,
+                heuresSup: item.data.heuresSup,
+                heuresAstreinte: item.data.heuresAstreinte,
+                heuresNuit: item.data.heuresNuit
+            };
+        });
+
+        ActiviteAdminService.save(activite, creation).then(function (reponse) {
+            if (reponse.success === true) {
+                $scope.successOperation = "Activité enregistrée";
+                $rootScope.error = "";
+                dialog.close();
+            }
+        });
     };
 }
