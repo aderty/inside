@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h1>Demande de renseignement</h1>
+    </div>
+    <div class="modal-body" id="contact">
+    <p>Renplissez ce formulaire et cliquez sur le bouton "Envoyer" afin que votre message soit envoy&eacute;. 
+    </p>
+    <form id="demandeContact" name="demandeContact" class="form-horizontal" novalidate>
+        <!--Saisie du sujet-->
+        <div class="control-group" ng-class="{error: demandeContact.inputSujet.$dirty && demandeContact.inputSujet.$invalid, success:inputSujet.oldPassword.$dirty && !demandeContact.inputSujet.$invalid}">
+            <label class="control-label" for="sujet">Sujet</label>
+            <div class="controls">
+                <select id="inputSujet" name="inputSujet" required ng-model="demande.sujet" ng-options="sujet.libelle as sujet.libelle for sujet in sujets">
+                    <option value="">-</option>
+                </select>
+                <div class="input-help">
+                    <h4>Vous devez renseigner un sujet</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie du message-->
+        <div class="control-group" ng-class="{error: demandeContact.inputMsg.$dirty && demandeContact.inputMsg.$invalid, success:demandeContact.inputMsg.$dirty && !demandeContact.inputMsg.$invalid}">
+            <label class="control-label" for="inputMsg">Message</label>
+            <div class="controls">
+                <textarea id="inputMsg" name="inputMsg" class="span4" rows="5" required ng-model="demande.message"></textarea>
+                <div class="input-help">
+                    <h4>Vous devez &eacute;crire un message</h4>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+     <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
+     <button ng-disabled="demandeContact.$invalid" ng-click="send(demande)" class="btn btn-primary" >Envoyer</button>
+     <button ng-click="close()" class="btn" >Annuler</button>
+</div>

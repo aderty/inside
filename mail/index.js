@@ -173,6 +173,35 @@ var Mail = {
             if (err) { console.log(err); }
             if (fn) fn(err);
         });
+    },
+    contact: function (email_admin, user, sujet, message, fn) {
+        //return fn(null);
+        if (!email_admin) return fn("Pas d'email");
+        if (!user) return fn("Pas d'utilisateur");
+        if (!re.test(email_admin)) {
+            return fn("Email utilisateur invalide");
+        }
+
+        console.log("envois de l'email Ã  : " + email_admin);
+
+        var subject = "[InsideConsulting] Demande d'information de " + user + " : " + sujet;
+
+        email.send(extend({
+            to: email_admin,
+            subject: subject,
+            //body: "Hello! This is a test of the node_mailer."
+            template: path.join(dirTemplate, 'contact.html'),   // path to template name
+            data: {
+                "user": user,
+                "sujet": sujet,
+                "message": message
+            }
+        }, config),
+        function (err, result) {
+            if (err) { console.log(err); }
+            if (fn) return fn(err);
+            fn(err, true);
+        });
     }
 }
 

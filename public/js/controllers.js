@@ -119,9 +119,9 @@ function NavBar($scope, $rootScope, LoginService, $dialog) {
     // Inlined template for demo 
     $scope.opts = { 
         backdrop: true, 
-        keyboard: true, 
-        backdropClick: true, 
-        template: $.trim($("#passwordTmpl").html()),
+        keyboard: true,
+        backdropClick: true,
+        templateUrl: '/templates/password.html',
         controller: 'DialogPassword'
     }; 
         
@@ -132,8 +132,27 @@ function NavBar($scope, $rootScope, LoginService, $dialog) {
             if(result) {
                 
             } 
-        }); 
-    }; 
+        });
+    };
+
+    // Inlined template for demo 
+    $scope.optsContact = {
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        templateUrl: '/templates/contact.html',
+        controller: 'DialogContact'
+    };
+
+    $scope.contact = function() {
+        $rootScope.error = "";
+        var d = $dialog.dialog($scope.optsContact);
+        d.open().then(function(result) {
+            if (result) {
+
+            }
+        });
+    };
 }
 // Contrôleur de la popup de modification de password
 function DialogPassword($scope, $rootScope, dialog, UsersService) {
@@ -151,8 +170,34 @@ function DialogPassword($scope, $rootScope, dialog, UsersService) {
                 dialog.close(); 
             }
         }); 
-    }; 
+    };
 }
+
+// Contrôleur de la popup de demande d'information
+function DialogContact($scope, $rootScope, dialog, ContactService) {
+    $rootScope.error = "";
+    $scope.sujets = [
+        {libelle: "Congés"},
+        {libelle: "Compte-rendu d'activité"},
+        {libelle: "Mon compte"},
+        { libelle: "Autre" }
+    ];
+    $scope.close = function() {
+        $rootScope.error = "";
+        dialog.close();
+    };
+    $scope.send = function (donnees) {
+        var demande = angular.copy(donnees);
+        //demande.message = demande.message.replace(/\n/g, '<br/>');
+        ContactService.send(demande).then(function(retour) {
+            if (retour) {
+                dialog.close();
+            }
+        });
+    };
+}
+
+
 
 // Contrôleur de login
 function LoginController($scope, $rootScope, LoginService, $dialog) {
@@ -185,7 +230,7 @@ function LoginController($scope, $rootScope, LoginService, $dialog) {
         backdrop: true,
         keyboard: true,
         backdropClick: true,
-        template: $.trim($("#passwordLostTmpl").html()),
+        templateUrl: '/templates/passwordLost.html',
         controller: 'DialogPasswordLost'
     };
     $scope.passwordLost = function() {

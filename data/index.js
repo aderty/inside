@@ -11,6 +11,7 @@ var path = require('path')
   , users = require('./users')
   , conges = require('./conges')
   , activite = require('./activite')
+  , history = require('./history')
   , db = require('./db');
 
   var EventEmitter = require('events').EventEmitter;
@@ -25,3 +26,4 @@ exports.events = events;
 exports.users = users.data;
 exports.conges = conges.data;
 exports.activite = activite.data;
+exports.history = history.data;

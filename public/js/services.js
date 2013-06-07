@@ -97,6 +97,30 @@ angular.module('inside.services', ['ngResource']).
             }
         };
     }).
+    factory('ContactService', function($http, $q, $rootScope) {
+        var motifs = null;
+        return {
+            send: function(demande) {
+                var defered = $q.defer();
+                $http({
+                        method: 'POST',
+                        url: '/contact',
+                        data: demande
+                }).then(function(response) {
+                        if (response && response.data.error) {
+                            $rootScope.error = response.data.error;
+                            defered.reject(response.data.error);
+                              return;
+                         }
+                     defered.resolve(response.data);
+                }, function (response) {
+                        $rootScope.error = response;
+                        defered.reject(response);
+                 });
+                return defered.promise;
+            }
+        };
+    }).
   factory('UsersService', function($resource, $q, $rootScope) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {

@@ -225,6 +225,7 @@ app.get('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.ge
 app.post('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.save);
 app.post('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.save);
 
+app.post('/contact', [dataLogin], routes.users.contact);
 
 app.post('/login', routes.users.login);
 app.put('/passwordLost', routes.users.passwordLost);

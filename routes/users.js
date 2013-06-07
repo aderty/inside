@@ -1,6 +1,7 @@
 ﻿var data = require('../data'),
     mail = require('../mail'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    config = require('../config.json');
 
 
 var listLostPasswordKeys = {};
@@ -140,6 +141,23 @@ var routes = {
                     user.infos = infos;
                     return dataCallback(res)(null, user);
                 });
+            });
+        });
+    },
+    contact: function(req, res) {
+        if (!req.body.sujet) {
+            return dataCallback(res)("Pas de sujet.");
+        }
+        if (!req.body.message) {
+            return dataCallback(res)("Pas de message.");
+        }
+        data.users.getUser(req.session.username, function(err, user) {
+            if (err) {
+                return dataCallback(res)(err);
+            }
+            mail.Mail.contact(config.admin, user.prenom + " " + user.nom, req.body.sujet, req.body.message, function (err, ret) {
+                if (err) return dataCallback(res)(err);
+                dataCallback(res)(null, { success: true });
             });
         });
     }
