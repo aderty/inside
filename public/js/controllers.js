@@ -186,9 +186,7 @@ function DialogContact($scope, $rootScope, dialog, ContactService) {
         $rootScope.error = "";
         dialog.close();
     };
-    $scope.send = function (donnees) {
-        var demande = angular.copy(donnees);
-        //demande.message = demande.message.replace(/\n/g, '<br/>');
+    $scope.send = function (demande) {
         ContactService.send(demande).then(function(retour) {
             if (retour) {
                 dialog.close();
@@ -1092,7 +1090,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             }
         }
         if (toDo) {
-            $scope.typeActivitePerso.push({ type: type, libelle: $filter('motifConges')(type, $rootScope.typeActivite), nb: nb });
+            $scope.typeActivitePerso.push({ type: type, libelle: $filter('motifCongesShort')(type, $rootScope.typeActivite), nb: nb });
         }
     }
 
@@ -1905,15 +1903,14 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
             { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
             { field: 'mois', displayName: 'Mois', width: 70, cellTemplate: moisCellTemplate, resizable: false },
             { field: 'user', displayName: 'Utilisateur', cellTemplate: matriculeCellTemplate, resizable: false },
-            //{ field: 'etat', displayName: 'Etat', width: 60, headerCellTemplate: myHeaderCellTemplate },
             { field: 'JT', displayName: 'En mission', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'FOR', displayName: 'Formation', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'INT', displayName: 'Inter contrat', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'CP', displayName: 'CP', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'CP_ANT', displayName: 'CP anticipés', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'RC', displayName: 'RC', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'RCE', displayName: 'RC employeur', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'AE', displayName: 'Absence exp.', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
+            //{ field: 'RCE', displayName: 'RC employeur', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
+            { field: 'AE', displayName: 'Autre', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'heuresSup', displayName: 'Heures suplémentaires', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
             { field: 'heuresAstreinte', displayName: 'Astreinte', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
             { field: 'heuresNuit', displayName: 'Heures de nuit', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },

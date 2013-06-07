@@ -494,6 +494,9 @@ input.ng-pristine + .input-help {
 {
 	margin: 0;
 	padding: 0;
+    float: left;
+    width: 70%;
+    padding-right: 10px;
 }
 #mainActivite ul.compteurs h4
 {
