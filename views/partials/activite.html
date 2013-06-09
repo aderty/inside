@@ -20,7 +20,7 @@
                     <!--Sidebar content-->
                     <ul class="compteurs">
                         <li ng-repeat="activite in typeActivitePerso">
-                            <span class="titre">{{activite.libelle}}</span> <h4>{{activite.nb}}</h4>
+                            <span ng-if="activite.nb > 0" class="titre">{{activite.libelle}}</span> <h4 ng-if="activite.nb > 0">{{activite.nb}}</h4>
                         </li>
                      </ul>
                     <hr ng-if="heuresSup + heuresAstreinte + heuresNuit > 0" />

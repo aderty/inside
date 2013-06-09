@@ -54,9 +54,10 @@ var data = {
         if (!checkActivite(activite)) {
             return fn("Activité invalide");
         }
+        activite.mois = new Date(activite.mois);
         var activ = {
             user: id,
-            mois: new Date(activite.mois),
+            mois: activite.mois, //new Date(activite.mois),
             etat: activite.etat
         }
         db.insert("activite", activ, function(err, ret) {

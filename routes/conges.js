@@ -1,5 +1,6 @@
 ﻿var data = require('../data'),
-    mail = require('../mail');
+    mail = require('../mail')
+, history = require('../history').history;
 
 /// Routes
 function dataCallback(res) {
@@ -43,9 +44,11 @@ var routes = {
         if (conges.create) {
             delete conges.create;
             data.conges.addConges(conges, dataCallback(res));
+            history.log(req.session.username, "Création d'un congé " + JSON.stringify(conges));
             return;
         }
         data.conges.updateConges(conges, false, dataCallback(res));
+        history.log(req.session.username, "Modification du congé " + JSON.stringify(conges));
     },
 
     // Ajout via POST
@@ -55,6 +58,7 @@ var routes = {
 
     remove: function(req, res) {
         data.conges.removeConges(req.params.id, dataCallback(res));
+        history.log(req.session.username, "Suppression du congé " + JSON.stringify(conges));
     },
 
     motifs: function (req, res) {
@@ -66,11 +70,15 @@ var routesAdmin = {
     // Lecture, via GET
     list: function (req, res) {
         res.header('Cache-Control', 'no-cache');
+        var superAdmin = false;
+        if (req.session.role == 4) {
+            superAdmin = true;
+        }
         if (req.query.etat) {
-            data.conges.listCongesEtat(req.query.etat, false, dataCallback(res));
+            data.conges.listCongesEtat(req.query.etat, superAdmin ? -1 : req.session.username, false, dataCallback(res));
         }
         else {
-            data.conges.listToutConges(false, dataCallback(res));
+            data.conges.listToutConges(superAdmin ? -1 : req.session.username, false, dataCallback(res));
         }
     },
     get: function (req, res) {
@@ -84,6 +92,7 @@ var routesAdmin = {
         if (conges.create) {
             delete conges.create;
             data.conges.addConges(conges, dataCallback(res));
+            history.log(conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
             return;
         }
         if (req.query.etat) {
@@ -95,13 +104,16 @@ var routesAdmin = {
                     });
                 }
                 dataCallback(res)(err, ret);
+                history.log(conges.user, "[Admin " + req.session.username + "] Modification de l'état d'un congé " + JSON.stringify(conges));
             });
             return;
         }
         data.conges.updateConges(conges, true, dataCallback(res));
+        history.log(conges.user, "[Admin " + req.session.username + "] Modification du congé " + JSON.stringify(conges));
     },
     remove: function (req, res) {
         data.conges.removeConges(req.params.id, dataCallback(res));
+        history.log(conges.user, "[Admin " + req.session.username + "] Suppression du congé " + JSON.stringify(conges));
     }
 };
 

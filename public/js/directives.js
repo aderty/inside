@@ -40,11 +40,12 @@ directive('appVersion', ['version', function(version) {
                 var role = parseInt(attrs.authenticate);
             }
             if (!scope.$root.role < role) {
-                elm.addClass("masquer");
+                elm.hide();//addClass("masquer");
             }
 
             scope.$root.$watch('role', function(newValue, oldValue) {
-                elm[newValue >= role ? 'removeClass' : 'addClass']("masquer");
+                //elm[newValue >= role ? 'removeClass' : 'addClass']("masquer");
+                elm[newValue >= role ? 'show' : 'hide']();
             }, true);
         }
     };

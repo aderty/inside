@@ -40,18 +40,19 @@ var errors = {
 
 var data = {
     // Lecture, via GET
-    listToutConges: function(past, fn) {
+    listToutConges: function (admin, past, fn) {
+        var query, values = [];
         if (!past) {
-            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW();', function(err, ret) {
-                if (err) {
-                    console.log('ERROR: ' + err);
-                    return fn("Erreur lors de la récupération des congès.");
-                }
-                fn(null, cleanConges(ret));
-            });
-            return;
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW()';
         }
-        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id;', function(err, ret) {
+        else {
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id';
+        }
+        if (admin > 0) {
+            query += ' AND users.admin = ?';
+            values.push(admin);
+        }
+        db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
@@ -88,18 +89,20 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    listCongesEtat: function(etat, past, fn) {
+    listCongesEtat: function (etat, admin, past, fn) {
+        var query, values = [etat];
         if (!past) {
-            db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW();', [etat], function(err, ret) {
-                if (err) {
-                    console.log('ERROR: ' + err);
-                    return fn("Erreur lors de la récupération des congès.");
-                }
-                fn(null, cleanConges(ret));
-            });
-            return;
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW()';
         }
-        db.query('SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?;', [etat], function(err, ret) {
+        else {
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?';
+        }
+        if (admin > 0) {
+            query += ' AND users.admin = ?';
+            values.push(admin);
+        }
+        
+        db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
@@ -199,7 +202,7 @@ var data = {
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        db.query("CALL UpdateEtatConges(?, ?, @retour)", [conges.id, conges.etat], function(err, ret) {
+        db.query("CALL UpdateEtatConges(?, ?, ?, @retour)", [conges.id, conges.etat, conges.refus || ''], function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification du congés " + conges.id);

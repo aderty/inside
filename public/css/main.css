@@ -292,6 +292,10 @@ input.ng-pristine + .input-help {
     width: 206px;
 }
 
+#historyGrid .cell:nth-child(2) > *{
+      max-width: 380px;
+}
+
 .gauge {
     width:200px; 
     height:160px;

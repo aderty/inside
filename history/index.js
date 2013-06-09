@@ -9,14 +9,14 @@ var data = require('../data');
 var EventEmitter = require('events').EventEmitter;
 var events = new EventEmitter();
 
- db.events.once('connected', function (result) {
+data.events.once('connected', function (result) {
       console.log("connected to MySQL");
       events.emit('connected', null);
   });
 
   /// Routes
   function dataCallback(res) {
-      return function(err, data) {
+      return function (err, data) {
           if (err) {
               res.send({ error: err });
           } else {
@@ -29,16 +29,16 @@ var events = new EventEmitter();
 
 var history = {
     log: function(user, log, fn) {
-        return data.history(user, log, fn);
+        return data.history.log(user, log, fn);
     }
 }
 
 var routes = {
     list: function(req, res) {
-        data.history.list(req.query.user, dataCallback(res)(err, histo));
+        data.history.list(req.body.user, null, dataCallback(res));
     }
 }
 
 exports.events = events;
 exports.history = history;
-exports.routes = history;
+exports.routes = routes;

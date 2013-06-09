@@ -14,19 +14,19 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
             searcher: "users"
         },
         conges: { 
-            name: "Mes congés",
+            name: "Mes demandes de congés",
             searcher: false
         },
         "admin-conges": { 
-            name: "Gestion des congés",
+            name: "Validation des congés",
             searcher: "admin-conges"
         },
         activite: { 
-            name: "Mon activité",
+            name: "Déclarer mon activité",
             searcher: false
         },
         "admin-activite": {
-            name: "Gestion des activités",
+            name: "Rapports d'activité",
             searcher: "admin-activite"
         }
     }
@@ -310,6 +310,24 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
         $scope.mode = "Edition";
         $scope.lblMode = "Modification de ";
     };
+    $scope.histo = function (row) {
+        $scope.error = null;
+        $rootScope.error = "";
+        $rootScope.currentUser = row;
+        // Inlined template for demo 
+        var opts = {
+            backdrop: true,
+            keyboard: true,
+            backdropClick: true,
+            templateUrl: '/templates/history.html',
+            controller: 'DialogHistory'
+        };
+        var d = $dialog.dialog(opts);
+        d.open().then(function (result) {
+            if (result) {
+            }
+        });
+    };
 
     $scope['delete'] = function (row) {
         var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
@@ -444,6 +462,7 @@ function UsersGrid($scope, $rootScope, UsersService) {
             { field: 'cp_ant', displayName: 'CP en cours', width: 69, headerCellTemplate: myHeaderCellTemplate },
             { field: 'rtt', displayName: 'RC', width: 60, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
+            { field: '', cellTemplate: $.trim($('#actionRowTmplHisto').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
         ],
         enablePaging: false,
@@ -462,6 +481,33 @@ function UsersGrid($scope, $rootScope, UsersService) {
         }, 250);
     });
 };
+
+// Contrôleur de la popup de l'historique des actions de l'utilisateur
+function DialogHistory($scope, $rootScope, dialog, HistoryService) {
+    $rootScope.error = "";
+    $rootScope.history = null;
+    HistoryService.list($rootScope.currentUser.id).then(function (histo) {
+        $rootScope.history = histo;
+    });
+    $scope.close = function () {
+        $rootScope.error = "";
+        dialog.close();
+    };
+
+    $scope.gridOptions = {
+        data: 'history',
+        columnDefs: [
+            { field: 'date', displayName: 'Date', width: 105, cellFilter: "moment:'DD/MM/YYYY hh:mm'" },
+            { field: 'log', displayName: 'Action', width: 250, cellTemplate: '<div title="{{row.log}}">{{row.log}}</div>' }
+        ],
+        enablePaging: false,
+        showFooter: false,
+        enableRowSelection: false,
+        enableColumnResize: true,
+        showColumnMenu: false,
+        showFilter: false
+    };
+}
 
 function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.edition = 0;
@@ -1061,7 +1107,11 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             $scope.$apply(function() {
                 var event, hSup = 0, hAst = 0, hNuit = 0;
                 // On ré-init les compteurs;
-                $scope.typeActivitePerso = [];
+                $scope.typeActivitePerso = angular.copy($rootScope.typeActivite);
+                for (var i = 0, l = $scope.typeActivitePerso.length; i < l; i++) {
+                    $scope.typeActivitePerso[i].libelle = $filter('motifCongesShort')($scope.typeActivitePerso[i].id, $rootScope.typeActivite);
+                    $scope.typeActivitePerso[i].nb = 0;
+                }
                 for (var i = 0, l = valeur.length; i < l; i++) {
                     event = valeur[i];
                     // Pas de compteur pas les weekend
@@ -1084,14 +1134,16 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         }
         var toDo = true;
         for (var i = 0, l = $scope.typeActivitePerso.length; i < l; i++) {
-            if ($scope.typeActivitePerso[i].type == type) {
+            if ($scope.typeActivitePerso[i].id == type) {
+                if (!$scope.typeActivitePerso[i].libelle) {
+                    //$scope.typeActivitePerso[i].libelle = $filter('motifCongesShort')(type, $rootScope.typeActivite);
+                    //$scope.typeActivitePerso.push({ id: type, libelle: $filter('motifCongesShort')(type, $rootScope.typeActivite), nb: nb });
+                }
                 toDo = false;
                 $scope.typeActivitePerso[i].nb += nb;
             }
         }
-        if (toDo) {
-            $scope.typeActivitePerso.push({ type: type, libelle: $filter('motifCongesShort')(type, $rootScope.typeActivite), nb: nb });
-        }
+        
     }
 
     $scope.load = function(callback) {
@@ -1542,6 +1594,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                     }
                 }
             },
+            firstDay: 1,
             dayClick: $scope.alertEventOnClick,
             eventDrop: $scope.alertOnDrop,
             eventResize: $scope.alertOnResize,
@@ -1664,6 +1717,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
     $scope.create = function(row) {
 
         $rootScope.currentActivite = angular.copy(row);
+        $rootScope.currentActivite.mois.setHours(12);
         $scope.start = $rootScope.currentActivite.mois;
         // Correction bug "uniquement le matin"
         $scope.start.setHours(0);
@@ -2092,6 +2146,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                 center: '',
                 right: 'title'
             },
+            firstDay: 1,
             dayClick: $scope.alertEventOnClick,
             eventClick: $scope.eventOnClick,
             eventRender: $scope.eventRender,

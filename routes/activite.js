@@ -1,4 +1,5 @@
-﻿var data = require('../data');
+﻿var data = require('../data')
+    , history = require('../history').history;
 
 /// Routes
 function dataCallback(res) {
@@ -34,9 +35,11 @@ var routes = {
         if (activite.create) {
             delete activite.create;
             data.activite.addActiviteUser(req.session.username, activite, false, dataCallback(res));
+            history.log(req.session.username, "Création d'un CRA de "+ activite.mois);
             return;
         }
         data.activite.updateActiviteJoursUser(req.session.username, activite, false, dataCallback(res));
+        history.log(req.session.username, "Modification du CRA de " + activite.mois);
     },
 
     // Ajout via POST
@@ -86,6 +89,7 @@ var routesAdmin = {
         var activite = req.body;
         if (req.query.etat) {
             data.activite.updateEtatActivite(activite, dataCallback(res));
+            history.log(activite.user, "[Admin " + req.session.username + "] Modification de l'état du CRA de " + activite.mois);
             return;
         }
         // Création / modification d'activité
@@ -93,14 +97,17 @@ var routesAdmin = {
         if (activite.create) {
             delete activite.create;
             data.activite.addActiviteUser(activite.user, activite, false, dataCallback(res));
+            history.log(activite.user, "[Admin " + req.session.username + "] Création du CRA de " + activite.mois);
             return;
         }
         data.activite.updateActiviteJoursUser(activite.user, activite, false, dataCallback(res));
+        history.log(activite.user, "[Admin " + req.session.username + "] Modification du CRA de " + activite.mois);
     },
     remove: function(req, res) {
         var activite = req.query;
         activite.mois = new Date(activite.mois);
         data.activite.removeActivite(activite, dataCallback(res));
+        history.log(activite.user, "[Admin " + req.session.username + "] Suppression du CRA de " + activite.mois);
     }
 };
 

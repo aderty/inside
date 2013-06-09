@@ -121,6 +121,32 @@ angular.module('inside.services', ['ngResource']).
             }
         };
     }).
+    factory('HistoryService', function ($http, $q, $rootScope) {
+        var motifs = null;
+        return {
+            list: function (user) {
+                var defered = $q.defer();
+                $http({
+                    method: 'POST',
+                    url: '/data-history',
+                    data: {
+                        user: user
+                    }
+                }).then(function (response) {
+                    if (response && response.data.error) {
+                        $rootScope.error = response.data.error;
+                        defered.reject(response.data.error);
+                        return;
+                    }
+                    defered.resolve(response.data);
+                }, function (response) {
+                    $rootScope.error = response;
+                    defered.reject(response);
+                });
+                return defered.promise;
+            }
+        };
+    }).
   factory('UsersService', function($resource, $q, $rootScope) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {

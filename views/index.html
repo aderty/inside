@@ -28,7 +28,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </a>
-                  <a class="brand" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
+                  <a class="brand span3" href="#">{{page}}</a><div class="nav-collapse collapse navbar-responsive-collapse">
                     <ul class="nav">
                       <li authenticate ng-class="{active: page == pages.activite.name}"><a href="/activite"><i class="icon-tasks"></i> Mon activité</a></li>
                       <li authenticate ng-class="{active: page == pages.conges.name}"><a href="/conges"><i class="icon-globe"></i> Mes congés <span class="badge badge-important" ng-class="{masquer:infos.nbMesCongesVal == 0}">{{infos.nbMesCongesVal}}</span></a></li>
@@ -36,11 +36,11 @@
                       <li authenticate="2" class="dropdown" ng-class="{active: page == pages.users.name || page == pages['admin-conges'].name || page == pages['admin-activite'].name}">
                         <a href="/" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i> Administration <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0 && infos.nbCongesVal == 0}">{{infos.nbActivitesVal + infos.nbCongesVal}}</span> <b class="caret"> </b></a>
                             <ul class="dropdown-menu">
-                              <li authenticate="2" ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activités <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span></a></li>
+                              <li authenticate="4" ng-class="{masquer: page == pages['admin-activite'].name}"><a href="/admin-activite"><i class="icon-folder-open"></i> Rapports d'activité <span class="badge badge-important" ng-class="{masquer: infos.nbActivitesVal == 0}">{{infos.nbActivitesVal}}</span></a></li>
                               <!--<li ng-class="{true:'masquer', false:''}[page == pages['admin-activite'].name]" class="divider"></li>-->
-                              <li authenticate="2" ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges"><i class="icon-list"></i> Gestion des demandes <span class="badge badge-important" ng-class="{masquer:infos.nbCongesVal == 0}">{{infos.nbCongesVal}}</span></a></li>
-                              <li ng-class="{true:'masquer', false:''}[page == pages.users.name || page == pages['admin-conges'].name]" class="divider"></li>
-                              <li authenticate="2" ng-class="{masquer: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
+                              <li authenticate="2" ng-class="{masquer: page == pages['admin-conges'].name}"><a href="/admin-conges"><i class="icon-list"></i> Validation des congés <span class="badge badge-important" ng-class="{masquer:infos.nbCongesVal == 0}">{{infos.nbCongesVal}}</span></a></li>
+                              <li authenticate="4" ng-class="{true:'masquer', false:''}[page == pages.users.name || page == pages['admin-conges'].name]" class="divider"></li>
+                              <li authenticate="4" ng-class="{masquer: page == pages.users.name}"><a href="/users"><i class="icon_users-1"></i> Utilisateurs</a></li>
                             </ul>
                       </li>
                     </ul>

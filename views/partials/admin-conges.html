@@ -32,7 +32,7 @@
             <!--Body content-->
             <div class="row">
                 <div class="span12">
-                    <button type="button" class="btn btn-primary" ng-class="{masquer: edition > 0}" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
+                    <button authenticate="4" type="button" class="btn btn-primary" ng-class="{masquer: edition > 0}" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
                     <div class="alert alert-block alert-info" ng-class="{masquer: edition != 1}">
                         <h4>{{lblMode}}</h4>
                     </div>
@@ -83,10 +83,10 @@
   </div>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplEdit">
-    <a href="" title="Modifier" ng-show="isEditable(row)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
+    <a href="" title="Modifier" authenticate="4" ng-show="isEditable(row)" ng-click="edit(row)"><i class="icon-pencil"></i></a>
 </script>
 <script type="text/x-handlebars-template" id="actionRowTmplDel">
-    <a href="" title="Supprimer" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
+    <a href="" title="Supprimer" authenticate="4" ng-show="isEditable(row)" ng-click="delete(row)"><i class="icon-trash"></i></a>
 </script>
 
 <script type="text/x-handlebars-template" id="refusTmpl">

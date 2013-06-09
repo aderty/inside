@@ -1,6 +1,7 @@
 ﻿var data = require('../data'),
     mail = require('../mail'),
     uuid = require('node-uuid'),
+    history = require('../history').history,
     config = require('../config.json');
 
 
@@ -82,6 +83,12 @@ var routes = {
                 mail.Mail.ajoutUser(user, pwd, function(err) {
                 });
             }
+            if (ret.create) {
+                history.log(user.id, "[Admin " + req.session.username + "] Création de l'utilisateur " + JSON.stringify(user));
+            }
+            else {
+                history.log(user.id, "[Admin " + req.session.username + "] Modification de l'utilisateur " + JSON.stringify(user));
+            }
             dataCallback(res)(err, ret);
         });
     },
@@ -100,6 +107,7 @@ var routes = {
 
     remove: function(req, res) {
         data.users.removeUser(req.params.id, dataCallback(res));
+        history.log(req.params.id, "[Admin " + req.session.username + "] Suppression de l'utilisateur " + req.params.id);
     },
     passwordLost: function(req, res) {
         if (!req.body.email) {
@@ -158,6 +166,7 @@ var routes = {
             mail.Mail.contact(config.admin, user.prenom + " " + user.nom, req.body.sujet, req.body.message, function (err, ret) {
                 if (err) return dataCallback(res)(err);
                 dataCallback(res)(null, { success: true });
+                history.log(req.session.username, "Demande d'information " + req.body.sujet + ", message : " + req.body.message);
             });
         });
     }

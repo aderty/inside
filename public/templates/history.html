@@ -1,0 +1,15 @@
+<div class="modal-header">
+    <h1>Historiques des actions de {{currentUser.prenom}} {{currentUser.nom}}</h1>
+    </div>
+    <div class="modal-body" id="contact">
+    <p>
+    </p>
+        <p><grid id="historyGrid" ng-options="gridOptions"></grid></p>
+</div>
+<div class="modal-footer">
+     <button ng-click="close()" class="btn" >Quitter</button>
+</div>
+
+<script id="logRowTmpl" type="text/x-handlebars-template">
+    <span title="{{row.log}}">{{row.log}}</span>
+</script>

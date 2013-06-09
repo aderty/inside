@@ -10,6 +10,7 @@ var express = require('express')
   , http = require('http')
   , stylus = require('stylus')
   , routes = require('./routes')
+  , history = require('./history')
   , path = require('path')
   , url = require('url')
   , fs = require('fs')
@@ -130,6 +131,16 @@ function dataRh(req, res, next) {
     }
 }
 
+function dataSuperAdmin(req, res, next) {
+    if (req.session.role && req.session.role == 4) {
+        // User is authenticated, let him in
+        next();
+    } else {
+        // Otherwise, we redirect him to login form
+        res.send({error: "Il faut être Super Admin !"});
+    }
+}
+
 function cleanLogin(req, res, next) {
     if (req && req.session) {
         req.session.destroy(function(err){
@@ -217,13 +228,15 @@ app.post('/data-activite/:id', [dataLogin], routes.activite.save);
 app.post('/data-activite', [dataLogin], routes.activite.save);
 
 // Suppression via POST
-app.delete('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.remove);
+app.delete('/data-admin-activite', [dataLogin, dataSuperAdmin], routes.activiteAdmin.remove);
 
-app.get('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.list);
-app.get('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.get);
+app.get('/data-admin-activite', [dataLogin, dataSuperAdmin], routes.activiteAdmin.list);
+app.get('/data-admin-activite/:id', [dataLogin, dataSuperAdmin], routes.activiteAdmin.get);
 // Ajout via POST
-app.post('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.save);
-app.post('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.save);
+app.post('/data-admin-activite/:id', [dataLogin, dataSuperAdmin], routes.activiteAdmin.save);
+app.post('/data-admin-activite', [dataLogin, dataSuperAdmin], routes.activiteAdmin.save);
+
+app.post('/data-history', [dataLogin, dataSuperAdmin], history.routes.list);
 
 app.post('/contact', [dataLogin], routes.users.contact);
 

@@ -14,12 +14,13 @@ var data = {
         db.insert("history", histo, function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
-                return fn("Erreur lors de l'insertion du log " + log);
+                if (fn) fn("Erreur lors de l'insertion du log " + log);
+                return;
             }
-            fn(null, ret);
+            if(fn) fn(null, ret);
         });
     },
-    get: function(user, options, fn) {
+    list: function (user, options, fn) {
         var query, values;
         if (!options) {
             query = "SELECT * FROM history WHERE user = ? ORDER BY date";
