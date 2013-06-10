@@ -1829,6 +1829,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                     data.duree = 0;
                 }
                 if (toDo) {
+                    data.duree = 0;
                     data.heuresSup = 0;
                     data.heuresAstreinte = 0;
                     data.heuresNuit = 0;
@@ -2171,7 +2172,8 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                 information: item.data.information,
                 heuresSup: item.data.heuresSup,
                 heuresAstreinte: item.data.heuresAstreinte,
-                heuresNuit: item.data.heuresNuit
+                heuresNuit: item.data.heuresNuit,
+                duree: item.data.duree
             };
         });
 
