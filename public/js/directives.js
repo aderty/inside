@@ -31,6 +31,30 @@ directive('appVersion', ['version', function(version) {
         }
     };
 })
+.directive('decimal', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+            var value;
+            ctrl.$parsers.unshift(function(viewValue) {
+                try {
+                    value = parseFloat(viewValue);
+                    scope.decimalValid = ((!attrs.min || value >= attrs.min) && (!attrs.max || value <= attrs.max));
+                }
+                catch (e) {
+                    scope.decimalValid = false
+                }
+                if (scope.decimalValid) {
+                    ctrl.$setValidity('decimal', true);
+                    return viewValue;
+                } else {
+                    ctrl.$setValidity('decimal', false);
+                    return undefined;
+                }
+            });
+        }
+    };
+})
 // authenticate
 .directive('authenticate', function() {
     return {
@@ -40,7 +64,7 @@ directive('appVersion', ['version', function(version) {
                 var role = parseInt(attrs.authenticate);
             }
             if (!scope.$root.role < role) {
-                elm.hide();//addClass("masquer");
+                elm.hide(); //addClass("masquer");
             }
 
             scope.$root.$watch('role', function(newValue, oldValue) {
@@ -75,7 +99,7 @@ directive('appVersion', ['version', function(version) {
                 levelColors: ["#ff0000", "#f9c802", "#a9d70b"]
             });
             $scope.$watch("model", function(newValue, oldValue) {
-                gauge.refresh(newValue);
+                gauge.refresh(parseFloat(newValue) || 0);
             }, true);
         }
     };

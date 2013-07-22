@@ -550,6 +550,34 @@ input.ng-pristine + .input-help {
     background: -webkit-gradient( linear, left top, left bottom, from(rgb(201, 204, 199)), to(rgb(134, 138, 132)));
 }
 
+.jour.INT {
+    background-color: rgb(155, 212, 240);
+	background: -moz-linear-gradient( top, rgb(103, 175, 209) 0%, rgb(127, 189, 231));
+	background: -webkit-gradient( linear, left top, left bottom, from(rgb(103, 175, 209)), to(rgb(127, 189, 231)));
+}
+
+.jour.FOR {
+    background-color: rgb(188, 177, 243);
+background: -moz-linear-gradient( top, rgb(179, 165, 255) 0%, rgb(121, 84, 168));
+background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 255)), to(rgb(121, 84, 168)));
+}
+
+.jour span.heures
+{
+	position: absolute;
+	right: 5px;
+	width: 15px;
+	background: rgb(192, 187, 124);
+	height: 15px;
+	border-radius: 15px;
+	top: 2px;
+}
+.admin.jour span.heures{
+	right: 1px;
+	width: 10px;
+	height: 10px;
+}
+
 .titre {
     display: block;
     /*float: left;*/

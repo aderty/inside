@@ -6,10 +6,8 @@
                 <div class="span12 well">
                     <!--Sidebar content-->
                     <div>
-                        <span class="titre">Matricule</span> <h4>{{user.id}}</h4>
-                    </div>
-                    <div>
-                        <span class="titre">Collaborateur</span> <h4>{{user.nom}} {{user.prenom}}</h4>
+                         <h4>{{user.nom}} {{user.prenom}}</h4>
+                         <span class="titre"><h4>{{user.id | matricule}}</h4></span>
                     </div>
                 </div>
             </div>
@@ -62,7 +60,7 @@
                 <div class="span12" ng-controller="CongesGrid">
                     <!--Grilles des congés-->
                         <tabs>
-                            <pane heading="Tous mes congés à venir">
+                            <pane heading="Mes congés à venir">
                             </pane>
                             <pane heading="Congés en attente de validation">
                             </pane>

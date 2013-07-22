@@ -3,9 +3,9 @@
 /* Filters */
 
 angular.module('inside.filters', []).
-filter('role', function ($rootScope) {
-    return function (role) {
-        for(var i = 0, l = $rootScope.roles.length;i<l; i++){
+filter('role', function($rootScope) {
+    return function(role) {
+        for (var i = 0, l = $rootScope.roles.length; i < l; i++) {
             if ($rootScope.roles[i].id == role) {
                 return $rootScope.roles[i].libelle;
             }
@@ -13,8 +13,18 @@ filter('role', function ($rootScope) {
         return "Consultant";
     };
 }).
-filter('motifConges', function ($rootScope) {
-    return function (motif, list) {
+filter('matricule', function() {
+    return function(matricule) {
+        if (!matricule) return "";
+        var mat = matricule.toString();
+        while (mat.length < 3) {
+            mat = "0" + mat;
+        }
+        return mat;
+    };
+}).
+filter('motifConges', function($rootScope) {
+    return function(motif, list) {
         if (!list) list = $rootScope.motifsConges;
         for (var i = 0, l = list.length; i < l; i++) {
             if (list[i].id == motif) return list[i].libelle;
@@ -23,7 +33,7 @@ filter('motifConges', function ($rootScope) {
     };
 }).
 filter('motifCongesShort', function($rootScope) {
-    return function (motif, list) {
+    return function(motif, list) {
         if (!list) list = $rootScope.motifsConges;
         for (var i = 0, l = list.length; i < l; i++) {
             if (list[i].id == motif) return list[i].shortlibelle || list[i].libelle;
@@ -31,21 +41,21 @@ filter('motifCongesShort', function($rootScope) {
         return "";
     };
 }).
-    filter('etatConges', function ($rootScope) {
-        return function (motif) {
+    filter('etatConges', function($rootScope) {
+        return function(motif) {
             for (var i = 0, l = $rootScope.etatsConges.length; i < l; i++) {
                 if ($rootScope.etatsConges[i].id == motif) return $rootScope.etatsConges[i].libelle;
             }
             return "";
         };
     }).
-filter('moment', function () {
-    return function (dateString, format) {
+filter('moment', function() {
+    return function(dateString, format) {
         return moment(dateString).format(format);
     };
 }).
-filter('momentCongesDebut', function () {
-    return function (dateString, format) {
+filter('momentCongesDebut', function() {
+    return function(dateString, format) {
         var d = moment(dateString.date).format(format);
         if (dateString.type == 1) {
             d += " après-midi";
@@ -56,8 +66,8 @@ filter('momentCongesDebut', function () {
         return d;
     };
 }).
-filter('momentCongesFin', function () {
-    return function (dateString, format) {
+filter('momentCongesFin', function() {
+    return function(dateString, format) {
         var d = moment(dateString.date).format(format);
         if (dateString.type == 0) {
             d += " midi";
