@@ -77,4 +77,27 @@ filter('momentCongesFin', function() {
         }
         return d;
     };
+}).   
+filter('detailsAutreActivite', function ($filter) {
+    return function (activites) {
+        if (!activites) return;
+        var details = "", act;
+        for (act in activites) {
+            if ('AU,CS,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT'.split(',').indexOf(act) > -1) {
+                details += $filter('motifConges')(act) + " : " + activites[act] + " jour(s) <br />";
+            }
+        }
+        return details;
+    };
+}).
+filter('detailsHeures', function () {
+    return function (array) {
+        if (!array || array.length == 0) return;
+        var i = 0, l = array.length, details = "";
+        for (; i < l; i++) {
+            details += "Le " + moment(array[i].jour).format("DD/MM/YYYY") + " : " + array[i].nb + " heure(s) <br />";
+        }
+        return details;
+    };
 });
+

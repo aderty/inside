@@ -21,10 +21,10 @@
                 </div>
             </div>
             <!--<div class="row-fluid">-->
-            <div class="row-fluid">
+            <div class="row-fluid" ng-if="user.hasRtt">
                 <div class="span12 well gaugesWidget">
                     <!--Sidebar content-->
-                    <gauge id="gRTT" title="RC restants" label="jours" max="20" ng-model="rtt"></gauge>
+                    <gauge id="gRTT" title="RTT restants" label="jours" max="20" ng-model="rtt"></gauge>
                 </div>
             </div>
             <!--<div class="row-fluid">-->
@@ -59,17 +59,48 @@
             <div class="row">
                 <div class="span12" ng-controller="CongesGrid">
                     <!--Grilles des congés-->
-                        <tabs>
-                            <pane heading="Mes congés à venir">
-                            </pane>
-                            <pane heading="Congés en attente de validation">
-                            </pane>
-                            <pane heading="Congés validés">
-                            </pane>
-                            <pane heading="Congés refusés">
-                            </pane>
-                        </tabs>
-                        <grid id="congesGrid" ng-options="gridOptionsConges"></grid>
+                        <tabset>
+                            <tab heading="Mes absences à venir" select="updateFilter(1)">
+                            </tab>
+                            <tab heading="Historique" select="updateFilter()">
+                            </tab>
+                        </tabset>
+                        
+                        <div loading-container="loading"> 
+                            <table ng-table="tableParamsConges" show-filter="false" class="table table-bordered table-hover"> 
+                                <tr ng-repeat="conge in $data"> 
+                                    <td style="width:22px;" sortable="etat"> 
+                                    <span class="etatConges {{cssConges[conge.etat]}}" title="{{conge.etat|etatConges}}">&nbsp;</span>
+                                    </td> 
+                                    <td data-title="'Date de début'" sortable="debut.date"> 
+                                    {{conge.debut|momentCongesDebut:'DD/MM/YYYY'}} 
+                                    </td> 
+                                    <td data-title="'Date de fin'" sortable="fin.date"> 
+                                    {{conge.fin|momentCongesFin:'DD/MM/YYYY'}} 
+                                    </td>
+                                    <td style="max-width: 35px;width:35px;" data-title="'Durée'" sortable="duree"> 
+                                    {{conge.duree}} 
+                                    </td>
+                                    <td data-title="'Motif'" sortable="motif"> 
+                                    {{conge.motif|motifCongesShort}} 
+                                    </td>
+                                    <td data-title="'Statut'" sortable="etat"> 
+                                    {{conge.etat|etatConges}} 
+                                    </td>
+                                    <td data-title="'Justification'" class="justification"> 
+                                    {{conge.justification}} 
+                                    </td>
+                                    <td style="width:15px;"> 
+                                        <a href="" title="Modifier" ng-show="isEditable(conge)" ng-click="edit(conge)"><i class="icon-pencil"></i></a>
+                                    </td>
+                                    <td style="width:15px;"> 
+                                        <a href="" title="Supprimer" ng-show="isEditable(conge)" ng-click="delete(conge)"><i class="icon-trash"></i></a>
+                                    </td>
+                                </tr> 
+                            </table> 
+                        </div>
+                        
+                        <!--<grid id="congesGrid" ng-options="gridOptionsConges"></grid>-->
                     
                     <!--<div id="congesGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>-->
                 </div>

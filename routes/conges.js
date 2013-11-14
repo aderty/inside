@@ -22,6 +22,9 @@ var routes = {
         var options = {
             past: false
         };
+        if (req.query.past == 'true') {
+            options.past = true;
+        }
         if (req.query.start) {
             options.start = new Date(req.query.start);
         }
@@ -58,7 +61,7 @@ var routes = {
 
     remove: function(req, res) {
         data.conges.removeConges(req.params.id, dataCallback(res));
-        history.log(req.session.username, "Suppression du congé " + JSON.stringify(conges));
+        history.log(req.session.username, "Suppression du congé " + req.params.id);
     },
 
     motifs: function (req, res) {
@@ -74,11 +77,18 @@ var routesAdmin = {
         if (req.session.role == 4) {
             superAdmin = true;
         }
+        var options = {
+            past: false
+        };
+        if (req.query.past == 'true') {
+            options.past = true;
+        }
         if (req.query.etat) {
-            data.conges.listCongesEtat(req.query.etat, superAdmin ? -1 : req.session.username, false, dataCallback(res));
+            data.conges.listCongesEtat(req.query.etat, superAdmin ? -1 : req.session.username, options.past, dataCallback(res));
         }
         else {
-            data.conges.listToutConges(superAdmin ? -1 : req.session.username, false, dataCallback(res));
+            
+            data.conges.listToutConges(superAdmin ? -1 : req.session.username, options.past, dataCallback(res));
         }
     },
     get: function (req, res) {

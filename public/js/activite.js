@@ -1,5 +1,10 @@
 ﻿'use strict';
-
+var isDirty = false;
+window.onbeforeunload = function (e) {
+    if (isDirty) {
+        return "Si vous ne cliquez pas sur le bouton 'Sauvegarder', toutes les modifications effectuées seront perdues.";
+    }
+}
 /* Controllers */
 function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeout, $filter, $compile) {
 
@@ -14,7 +19,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
 
     $scope.user = UsersService.get({ id: 0 }, function (retour) {
     });
-
+    $scope.isDirty = false;
     $scope.eventSelectionne = null;
     $scope.events = [];
     $scope.successOperation = "";
@@ -22,6 +27,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
     $scope.typeActivitePerso = [];
 
     $scope.refresh = function () {
+        $scope.isDirty = false;
         $scope.activiteCalendar.fullCalendar('refetchEvents');
     };
     var lastTimer;
@@ -29,7 +35,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         if (lastTimer) clearTimeout(lastTimer);
         lastTimer = setTimeout(function() {
             $scope.$apply(function() {
-                var event, hSup = 0, hAst = 0, hNuit = 0, joursOuvres = 0, joursTotal = 0;
+                var event, hSup = 0, hAst = 0, hNuit = 0, hInt = 0, joursOuvres = 0, joursTotal = 0;
                 // On ré-init les compteurs;
                 $scope.typeActivitePerso = angular.copy($rootScope.typeActivite);
                 for (var i = 0, l = $scope.typeActivitePerso.length; i < l; i++) {
@@ -44,6 +50,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         hSup += event.data.heuresSup || 0;
                         hAst += event.data.heuresAstreinte || 0;
                         hNuit += event.data.heuresNuit || 0;
+                        hInt += event.data.heuresInt || 0;
                         joursTotal++;
                         if(businessDay(moment(event.start))){
                             joursOuvres++;
@@ -53,6 +60,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 $scope.heuresSup = hSup;
                 $scope.heuresAstreinte = hAst;
                 $scope.heuresNuit = hNuit;
+                $scope.heuresInt = hInt;
                 $scope.joursOuvres = joursOuvres;
                 $scope.joursTotal = joursTotal;
             });
@@ -105,11 +113,11 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         var date = new Date(current.toDate());
                         date.setHours(8);
                         if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                         }
                         date = new Date(current.toDate());
                         date.setHours(12);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         toDo = false;
                     }
@@ -123,11 +131,11 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         data.duree = 1;
                         var date = new Date(current.toDate());
                         date.setHours(8);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                         date = new Date(current.toDate());
                         date.setHours(12);
                         if ($scope.conges.length > 0 && $scope.conges[0].fin.date.getMonth() == current.month() && $scope.conges[0].fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                         }
                         toDo = false;
                     }
@@ -136,11 +144,11 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         var date = new Date(current.toDate());
                         date.setHours(8);
                         if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                         }
                         date = new Date(current.toDate());
                         date.setHours(12);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 , heuresInt: 0});
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         toDo = false;
                     }
@@ -151,6 +159,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                         data.heuresSup = 0;
                         data.heuresAstreinte = 0;
                         data.heuresNuit = 0;
+                        data.heuresInt =  0;
                         $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: new Date(current.toDate()), data: data });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                     }
@@ -174,12 +183,13 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                     data.heuresSup = 0;
                     data.heuresAstreinte = 0;
                     data.heuresNuit = 0;
+                    data.heuresInt = 0;
                     $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data });
                     $scope.indexEvents[current.date()] = $scope.events.length - 1;
                     date = new Date(current.toDate());
                     date.setHours(12);
                     if (cong && cong.fin.date.getMonth() == current.month() && cong.fin.date.getDate() < current.date()) {
-                        $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                        $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                     }
                     toDo = false;
                 }
@@ -190,6 +200,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                     data.heuresSup = 0;
                     data.heuresAstreinte = 0;
                     data.heuresNuit = 0;
+                    data.heuresInt = 0;
                     $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: new Date(current.toDate()), data: data });
                     $scope.indexEvents[current.date()] = $scope.events.length - 1;
                 }
@@ -199,10 +210,10 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             }
             function workEvent(current) {
                 if (businessDay(current)) {
-                    $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                    $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT1', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                 }
                 else {
-                    $scope.events.push({ title: "Weekend", start: new Date(current.toDate()), data: { type: 'WK', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                    $scope.events.push({ title: "Weekend", start: new Date(current.toDate()), data: { type: 'WK', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                 }
                 $scope.indexEvents[current.date()] = $scope.events.length - 1;
             }
@@ -296,7 +307,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
 
     $scope.eventRender = function(event, element) {
         // Si on affiche les mois suivant le mois actuel -> On n'affiche que les congés.
-        if (viewStartDate > lastValidDate && event.data.type == "JT") {
+        if (viewStartDate > lastValidDate && event.data.type == "JT1") {
             return false;
         }
 
@@ -325,6 +336,8 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
         eventScope.cssConges = $rootScope.cssConges;
         eventScope.valid = function(event) {
             eventScope.error = null;
+            isDirty = true;
+            $scope.isDirty = true;
             $('[rel=popover]').popover('hide');
             var lastDuree = eventScope.savedEvent.duree;
             if (this.data.duree == lastDuree) return;
@@ -379,7 +392,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
             }
         };
         eventScope.hasHeuresAstreinte = function (data) {
-            return data.heuresAstreinte > 0 || (!businessDay(moment(start)) && data.type == 'JT') || data.type == 'JF';
+            return data.heuresAstreinte > 0 || (!businessDay(moment(start)) && data.type == 'JT1') || data.type == 'JF';
         };
         return $compile($.trim($('#eventTmpl').html()))(eventScope)
             .attr("rel", "popover").popover({
@@ -387,7 +400,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
 
             content: function(e) {
                 // Jour férié, pas d'édition.
-                if (eventScope.data.type == 'CP' || eventScope.data.type == 'CP_ANT' || eventScope.data.type == 'RC' || eventScope.data.type == 'RCE' || eventScope.data.type == 'AE') {
+                if (eventScope.data.type == 'CP' || eventScope.data.type == 'CP_ANT' || eventScope.data.type == 'RTT' || eventScope.data.type == 'AE') {
                     return false;
                 }
                 eventScope.savedEvent = angular.copy(eventScope.data);
@@ -432,12 +445,15 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 information: item.data.information,
                 heuresSup: item.data.heuresSup,
                 heuresAstreinte: item.data.heuresAstreinte,
-                heuresNuit: item.data.heuresNuit
+                heuresNuit: item.data.heuresNuit,
+                heuresInt: item.data.heuresInt
             };
         });
 
         ActiviteService.save(activite, creation).then(function (reponse) {
             if (reponse.success === true) {
+                isDirty = false;
+                $scope.isDirty = false;
                 $scope.successOperation = "Activité enregistrée";
             }
         });

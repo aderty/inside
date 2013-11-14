@@ -1,10 +1,23 @@
 <div class="modal-header">
     <h1>Historiques des actions de {{currentUser.prenom}} {{currentUser.nom}}</h1>
     </div>
-    <div class="modal-body" id="contact">
+    <div class="modal-body" id="historique">
     <p>
     </p>
-        <p><grid id="historyGrid" ng-options="gridOptions"></grid></p>
+        <p>
+        <div loading-container="loading"> 
+                <table ng-table="tableParams" show-filter="false" class="table table-bordered table-hover"> 
+                    <tr ng-repeat="histo in history"> 
+                        <td data-title="'Date'" style="max-width:105px;" sortable="date"> 
+                            {{histo.date|moment:'DD/MM/YYYY hh:mm'}} 
+                        </td> 
+                        <td data-title="'Action'" style="max-width:250px;"> 
+                            <div title="{{histo.log}}" style="text-overflow: ellipsis;overflow: hidden;">{{histo.log}}</div>
+                        </td> 
+                    </tr> 
+                </table> 
+            </div>
+        </p>
 </div>
 <div class="modal-footer">
      <button ng-click="close()" class="btn" >Quitter</button>

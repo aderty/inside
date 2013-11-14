@@ -39,8 +39,8 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
 
     $rootScope.etatsConges = [
         { id: '1', libelle: 'En attente de validation' , cssClass: 'val'},
-        { id: '2', libelle: 'Validés' , cssClass: 'val'},
-        { id: '3', libelle: 'Refusés' , cssClass: 'val'}
+        { id: '2', libelle: 'Validé' , cssClass: 'val'},
+        { id: '3', libelle: 'Refusé' , cssClass: 'val'}
     ];
     $rootScope.cssConges ={
          1: 'valConges',
@@ -50,40 +50,53 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
     $rootScope.initConnected = function (user) {
         $rootScope.connected = true;
         if (user) {
+            $rootScope.currentUser = user;
             $rootScope.username = user.prenom;
             $rootScope.role = user.role;
             $rootScope.infos = user.infos;
         }
         MotifsService.list().then(function (motifs) {
-            $rootScope.motifsConges = jQuery.grep(motifs, function (n, i) {
+            $rootScope.motifsConges = motifs;/*jQuery.grep(motifs, function (n, i) {
                 return (n.id == 'CP' || n.id == 'RCE' || n.id == 'RC' || n.id == 'CP_ANT');
-            });
-            $rootScope.motifsConges.push({ id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' });
+            });*/
+            /*$rootScope.motifsConges.push({ id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' });
             $rootScope.motifsCongesExcep = jQuery.grep(motifs, function (n, i) {
                 return (n.id != 'CP' && n.id != 'RCE' && n.id != 'RC' && n.id != 'CP_ANT');
-            });
+            });*/
 
             $rootScope.typeActiviteTravaille = [
-                { id: 'JT', libelle: 'En mission', ordre: 0 },
-                { id: 'FOR', libelle: 'Formation', ordre: 1 },
-                { id: 'INT', libelle: 'Intercontrat', ordre: 2 }
+                { id: 'JT1', libelle: 'En mission 1', ordre: 0 },
+                { id: 'JT2', libelle: 'En mission 2', ordre: 1 },
+                { id: 'JT3', libelle: 'En mission 3', ordre: 2 },
+                { id: 'FOR', libelle: 'Formation', ordre: 3 },
+                { id: 'INT', libelle: 'Intercontrat', ordre: 4 }
             ];
 
             $rootScope.typeActiviteWeekend = [
                 { id: 'WK', libelle: 'Weekend', ordre: 0 },
-                { id: 'JT', libelle: 'En mission', ordre: 1 }
+                { id: 'JT1', libelle: 'En mission 1', ordre: 1 },
+                { id: 'JT2', libelle: 'En mission 2', ordre: 2 },
+                { id: 'JT3', libelle: 'En mission 3', ordre: 3 }
             ];
 
             $rootScope.typeActiviteAstreinte = [
                 { id: 'JF', libelle: 'Journée fériée', ordre: 0 },
-                { id: 'JT', libelle: 'En mission', ordre: 1 }
+                { id: 'JT1', libelle: 'En mission 1', ordre: 1 },
+                { id: 'JT2', libelle: 'En mission 2', ordre: 2 },
+                { id: 'JT3', libelle: 'En mission 3', ordre: 3 }
             ];
 
             $rootScope.typeActivite = angular.copy($rootScope.typeActiviteTravaille);
             $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.motifsConges);
             $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.typeActiviteWeekend);
+            // Suppression de mission 1 / 2 / 3
+            $rootScope.typeActivite.pop();
+            $rootScope.typeActivite.pop();
             $rootScope.typeActivite.pop();
             $rootScope.typeActivite.push.apply($rootScope.typeActivite, $rootScope.typeActiviteAstreinte);
+            // Suppression de mission 1 / 2 / 3
+            $rootScope.typeActivite.pop();
+            $rootScope.typeActivite.pop();
             $rootScope.typeActivite.pop();
         });
     }
@@ -98,6 +111,7 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
 function appController($scope, $routeParams, $rootScope) {
     var id = location.pathname;
     if ($rootScope.pages[id.substring(1)]) {
+        $rootScope.idpage = id.substring(1);
         $rootScope.page = $rootScope.pages[id.substring(1)].name;
         $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
     }
@@ -180,7 +194,7 @@ function DialogContact($scope, $rootScope, dialog, ContactService) {
         {libelle: "Congés"},
         {libelle: "Compte-rendu d'activité"},
         {libelle: "Mon compte"},
-        { libelle: "Autre" }
+        {libelle: "Poser une question..."}
     ];
     $scope.close = function() {
         $rootScope.error = "";

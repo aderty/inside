@@ -27,15 +27,11 @@
             <select id="inputMotif" name="inputMotif" required ng-model="currentConges.motif" ng-options="motif.id as motif.libelle for motif in motifsConges">
                 <option value="">-</option>
             </select>
+            <a title="Aide" class="icon-question-sign" href="" ng-click="showAide()"></a>
             <div class="input-help">
                 <h4>Vous devez renseigner un motif de congés.</h4>
             </div>
-            <select ng-show="currentConges.motif == 'AE'" id="inputMotifExcep" class="motifexp" ng-required="currentConges.motif == 'AE'" name="inputMotifExcep" ng-model="currentConges.motifExcep" ng-options="motif.id as motif.libelle for motif in motifsCongesExcep">
-                <option value="">-</option>
-            </select>
-            <div class="input-help motifexp">
-                <h4>Vous devez renseigner un motif exceptionnel de congés.</h4>
-            </div>
+           
         </div>
     </div>
     <!--Saisie date de début de congés-->

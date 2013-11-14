@@ -98,6 +98,10 @@ table th > i
     margin-top: -10px;
 }
 
+.table th, .table td {
+    text-align: center;
+}
+
 table td.cell {
         overflow: hidden;
           text-overflow: ellipsis;
@@ -148,6 +152,9 @@ table td.cell > div {
 .masquer {
     display: none;
 }
+.nav > li {
+    cursor: hand;
+}
 .nav>li.masquer,
 .nav>li>a.masquer {
     display: none;
@@ -175,6 +182,7 @@ table td.cell > div {
     margin-left: -20px;
 }
 /* Message d'erreur popup */
+#contact,
 #pwd
 {
 	overflow: visible;
@@ -188,11 +196,17 @@ table td.cell > div {
 #editUser input {
     height:inherit;
 }
+#demandeContact .controls,
 #pwd .controls,
 #login .controls,
 #editConges .controls,
 #editUser .controls {
     position: absolute;
+}
+
+#demandeContact .area
+{
+	position:relative;
 }
 #login .controls.check,
 #editConges .controls.check,
@@ -306,6 +320,11 @@ input.ng-pristine + .input-help {
 	margin-left: -5px;
 }
 
+#aide-conges.modal-body {
+    max-height: initial;
+    padding-bottom: 0;
+}
+
 #mainConges .gridStyle {
     border: 1px solid rgb(212,212,212);
     width: 100%; 
@@ -331,6 +350,13 @@ input.ng-pristine + .input-help {
     margin-right: 4px;
     float: left;
 }
+
+#mainConges .justification {
+    max-width: 28rem;
+    min-width: 15rem;
+    text-align: left;
+}
+
 .etatConges
 {
 	width: 20px;
@@ -484,6 +510,10 @@ input.ng-pristine + .input-help {
 	width: 100px;
 }
 
+#adminConges .validation {
+    width: 5rem;
+}
+
 
 #mainActivite ul.compteurs
 {
@@ -513,6 +543,10 @@ input.ng-pristine + .input-help {
 /* Popover du calendrier : la flèche reste statique avec l'agrandissement de l'accordion */
 .popover.in .arrow{
         top: 85px;
+}
+/* Cas normal */
+.tooltip.bottom {
+    margin-top: -12px;
 }
 
 /* Event de base */
@@ -567,21 +601,42 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
 	position: absolute;
 	right: 5px;
 	width: 15px;
-	background: rgb(192, 187, 124);
+	background: rgb(199, 123, 99);
 	height: 15px;
 	border-radius: 15px;
-	top: 2px;
+	top: 1px;
+    border: solid 1px Green;
+}
+.jour span.rem
+{
+	/*position: absolute;
+	right: 9px;
+	width: 7px;
+	background: rgb(111, 160, 84);
+	height: 7px;
+	border-radius: 7px;
+	top: 6px;
+	border: solid 1px black;*/
+    color: red;
+    font-weight: bold;
+}
+.admin.jour span.rem{
+	right: 2px;
+	width: 6px;
+	height: 6px;
+	top: 3px;
 }
 .admin.jour span.heures{
-	right: 1px;
-	width: 10px;
-	height: 10px;
+	right: 0px;
+	width: 12px;
+	height: 12px;
+	top: 1px;
 }
 
 .titre {
     display: block;
     /*float: left;*/
-    padding: 10px 0px 0px 20px;
+    padding: 0px 0px 0px 20px;
     margin-left: -20px;
     font-size: 17px;
     font-weight: 200;
@@ -594,10 +649,30 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
 }
 
 
+#adminActivite td:nth-child(1) {
+    width: 1rem;
+}
+
+#adminActivite td:nth-child(3),
+#adminActivite td:nth-child(3) > * {
+    width: 5rem;
+}
+
 #adminActivite .cell:nth-child(3) > * {
     max-width: 100px;
     width: 100px;
 }
+
+#sansSctiviteAdminGrid td:nth-child(2),
+#sansSctiviteAdminGrid td:nth-child(2) > * {
+    width: 7rem;
+}
+
+#sansSctiviteAdminGrid td:nth-child(3),
+#sansSctiviteAdminGrid td:nth-child(3) > * {
+    width: 5rem;
+}
+
 
 #adminActivite .cell.travail {
     background-color: #f3cea5;
@@ -621,4 +696,58 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
 #popupCalConges.modal-body .jour > *:nth-child(1)
 {
 	line-height: 13px;
+}
+.admin-activite .modal {
+    top: 5%;
+	width: 700px;
+    margin-left: -350px;
+    position: absolute;
+}
+/* Correction bug visibilité boutons popup */
+body.admin-activite.modal-open div.modal{
+	position: absolute;
+}
+
+
+/*.modal-body {
+	max-height: 500px;
+}*/
+#historique.modal-body {
+	height: 510px;
+	max-height: 510px;
+}
+
+.pagination {
+display: inline-block;
+padding-left: 0;
+margin: 20px 0;
+border-radius: 4px;
+}
+.pagination>li {
+display: inline;
+}
+.pagination>li:first-child>a, .pagination>li:first-child>span {
+margin-left: 0;
+border-bottom-left-radius: 4px;
+border-top-left-radius: 4px;
+}
+.pagination>li:last-child>a, .pagination>li:last-child>span {
+border-top-right-radius: 4px;
+border-bottom-right-radius: 4px;
+}
+.pagination>.disabled>span, .pagination>.disabled>a, .pagination>.disabled>a:hover, .pagination>.disabled>a:focus {
+color: #999;
+cursor: not-allowed;
+background-color: #fff;
+border-color: #ddd;
+}
+.pagination>li>a, .pagination>li>span {
+position: relative;
+float: left;
+padding: 6px 12px;
+margin-left: -1px;
+line-height: 1.428571429;
+text-decoration: none;
+background-color: #fff;
+border: 1px solid #ddd;
 }

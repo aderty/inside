@@ -36,10 +36,21 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     });
 
     $scope.user = UsersService.get({ id: 0 }, function(retour) {
-        $scope.cp = $scope.user.cp;
-        $scope.cp_ant = $scope.user.cp_ant;
-        $scope.rtt = $scope.user.rtt;
+        $scope.cp = retour.cp;
+        $scope.cp_ant = retour.cp_ant;
+        $scope.rtt = retour.rtt;
     });
+
+    $scope.showAide = function () {
+        var d = $dialog.dialog({
+            backdrop: true,
+            keyboard: true,
+            backdropClick: true,
+            templateUrl: '/templates/aide-conges.html',
+            controller: 'DialogAideConges'
+        });
+        d.open();
+    }
 
     $scope.create = function () {
         $rootScope.error = null;
@@ -126,10 +137,10 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             if (index == -1) {
                 $rootScope.conges.push(currentConges);
             }
-            user = UsersService.get({ id: 0 }, function (retour) {
-                $scope.cp = user.cp;
-                $scope.cp_ant = user.cp_ant;
-                $scope.rtt = user.rtt;
+            $scope.user = UsersService.get({ id: 0 }, function (retour) {
+                $scope.cp = retour.cp;
+                $scope.cp_ant = retour.cp_ant;
+                $scope.rtt = retour.rtt;
             });
         });
     }
@@ -147,6 +158,13 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     };
 }
 
+// Contrôleur de la popup de modification de password
+function DialogAideConges($scope, dialog) {
+    $scope.close = function () {
+        dialog.close();
+    };
+}
+
 function CongesGauges($scope, $rootScope) {
     /*$scope.cp = 22;
     $scope.cpacc = 7.25;  
@@ -154,12 +172,12 @@ function CongesGauges($scope, $rootScope) {
 }
 
 // Contrôleur de la grille des congés
-function CongesGrid($scope, $rootScope, CongesService, $timeout) {
+function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, CongesService, $timeout) {
 
     $scope.filterOptions = {
         filterText: "",
         useExternalFilter: false,
-        filterRow: null
+        filterRow: { etat: 2 }
     };
 
     $scope.pagingOptions = {
@@ -168,45 +186,77 @@ function CongesGrid($scope, $rootScope, CongesService, $timeout) {
         totalServerItems: 0,
         currentPage: 1
     };
-
+    var dataCong;
+    var past = true;
     $rootScope.conges = [];
 
-    CongesService.list().then(function (conges) {
-        $rootScope.conges = conges;
-    });
+    /*CongesService.list().then(function (conges) {
+        $rootScope.tableParamsCongesData = conges;
+        //$scope.tableParamsConges.total = dataCong.length;
+    });*/
     
-    setTimeout(function () {
+    /*setTimeout(function () {
         $(".tabbable").each(function () {
             $(this).scope().select = (function (select) {
                 return function (e) {
                     select.apply(this, arguments);
-                    if(e.heading == "Tous mes congés à venir"){
+                    if(e.heading == "Historique"){
                         updateFilter(null);
                     }
-                    else if (e.heading == "Congés en attente de validation") {
+                    else if (e.heading == "Mes absences à venir") {
                         updateFilter(1);
-                    }
-                    else if (e.heading == "Congés validés") {
-                        updateFilter(2);
-                    }
-                    else {
-                        updateFilter(3);
                     }
                 };
             })($(this).scope().select)
         });
-    }, 250);
+    }, 250);*/
     
-    function updateFilter(etat){
-        $timeout(function(){
-            if(etat){
-                $scope.gridOptionsConges.filterOptions.filterRow = {etat: etat};
+    $scope.updateFilter = function(etat){
+        $timeout(function() {
+            /*if (etat) {
+                $scope.gridOptionsConges.filterOptions.filterRow = { etat: etat };
+                $rootScope.tableParamsConges.filter = { etat: etat };
             }
-            else{
+            else {
                 $scope.gridOptionsConges.filterOptions.filterRow = null;
-            }
-        },0);
+                $rootScope.tableParamsConges.filter = {};
+            }*/
+        }, 0);
+        past = !past;
+        $rootScope.tableParamsConges.reload();
+        $rootScope.tableParamsConges.page(1);
     }
+
+    $rootScope.tableParamsConges = new ngTableParams({
+        page: 1,            // show first page
+        //total: 0, // length of data
+        count: 10,
+        sorting: {
+            debut: 'asc'     // initial sorting
+        },
+        /*filter: { 
+            etat: 2 
+        }*/
+    },
+        {
+            getData: function ($defer, params) {
+                CongesService.list({ past: past }).then(function (conges) {
+                    $rootScope.conges = ngTableFilter(conges, params);
+                    $defer.resolve($rootScope.conges);
+                });
+            }
+        });
+
+    //ngTableFilter.call($scope, 'tableParamsCongesData', 'tableParamsConges', 'conges');
+
+    $scope.$watch('conges', function(conges) {
+        $rootScope.conges = conges;
+    }, true);
+    
+    $scope.$watch('tableParamsConges', function(params) {
+        // use build-in angular filter
+            $rootScope.tableParamsConges = params;
+    }, true);
 
     var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
     var justificationCellTemplate = $.trim($('#justificationTmpl').html());
@@ -218,8 +268,8 @@ function CongesGrid($scope, $rootScope, CongesService, $timeout) {
             { field: 'debut', displayName: 'Date de début', width: 160, cellFilter: "momentCongesDebut:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'debut.date' },
             { field: 'fin', displayName: 'Date de fin', width: 160, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
             { field: 'duree', displayName: 'Durée', width: 35, headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'motif', displayName: 'Modif', width: 65, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'etat', displayName: 'Etat', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'motif', displayName: 'Motif', width: 65, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
+            { field: 'etat', displayName: 'Statut', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
             { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
             { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }

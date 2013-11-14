@@ -20,7 +20,7 @@
         <!--Saisie du message-->
         <div class="control-group" ng-class="{error: demandeContact.inputMsg.$dirty && demandeContact.inputMsg.$invalid, success:demandeContact.inputMsg.$dirty && !demandeContact.inputMsg.$invalid}">
             <label class="control-label" for="inputMsg">Message</label>
-            <div class="controls">
+            <div class="controls area">
                 <textarea id="inputMsg" name="inputMsg" class="span4" rows="5" required ng-model="demande.message"></textarea>
                 <div class="input-help">
                     <h4>Vous devez &eacute;crire un message</h4>

@@ -220,10 +220,10 @@ angular.module('inside.services', ['ngResource']).
                       };
                       //conges[i].debutType = conges[i].debut.getHours() > 14 ? 0 : 1;
                       //conges[i].finType = conges[i].fin.getHours() > 14 ? 1 : 0;
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RC' && conges[i].motif != 'RCE' && conges[i].motif != 'CP_ANT') {
+                      /*if (conges[i].motif != 'CP' && conges[i].motif != 'RC' && conges[i].motif != 'RCE' && conges[i].motif != 'CP_ANT') {
                           conges[i].motifExcep = conges[i].motif;
                           conges[i].motif = 'AE';
-                      }
+                      }*/
                       if (conges[i].user) {
                           conges[i].user = {
                               nom: conges[i].nom,
@@ -244,9 +244,9 @@ angular.module('inside.services', ['ngResource']).
                   // Création -> Flag création
                   conges.create = true;
               }
-              if (conges.motifExcep) {
+              /*if (conges.motifExcep) {
                   conges.motif = conges.motifExcep;
-              }
+              }*/
               conges.debut.date.setHours(0);
               if (conges.debut.type == 1) {
                   conges.debut.date.setHours(12);
@@ -475,10 +475,10 @@ angular.module('inside.services', ['ngResource']).
                           }
 
                       }
-                      var types = ['JT', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RC', 'RCE'];
-                      if (types.indexOf(activite.activite[i].type) == -1) {
+                      var types = ['JT1', 'JT2', 'JT3', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RTT'];
+                      /*if (types.indexOf(activite.activite[i].type) == -1) {
                           activite.activite[i].type = 'AE';
-                      }
+                      }*/
                       if (activite.activite[i].type == 'JF' && activite.activite[i].debut && activite.activite[i].fin) {
                           activite.activite[i].debut.date.setHours(0);
                           activite.activite[i].debut.date.setMinutes(0);
@@ -605,10 +605,10 @@ angular.module('inside.services', ['ngResource']).
                           }
 
                       }
-                     var types = ['JT', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RC', 'RCE'];
-                     if (types.indexOf(activite.activite[i].type) == -1) {
+                     var types = ['JT1', 'JT2', 'JT3', 'FOR', 'INT', 'WK', 'JF', 'CP', 'CP_ANT', 'RTT'];
+                     /*if (types.indexOf(activite.activite[i].type) == -1) {
                          activite.activite[i].type = 'AE';
-                     }
+                     }*/
                      if (activite.activite[i].type == 'JF' && activite.activite[i].debut && activite.activite[i].fin) {
                           activite.activite[i].debut.date.setHours(0);
                           activite.activite[i].debut.date.setMinutes(0);

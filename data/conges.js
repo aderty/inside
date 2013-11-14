@@ -43,10 +43,10 @@ var data = {
     listToutConges: function (admin, past, fn) {
         var query, values = [];
         if (!past) {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW()';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE fin > NOW() ORDER BY conges.debut DESC';
         }
         else {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id ORDER BY conges.debut DESC';
         }
         if (admin > 0) {
             query += ' AND users.admin = ?';
@@ -60,10 +60,10 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
-    listConges: function(matricule, options, fn) {
-        if (!options.past) {
+    listConges: function (matricule, options, fn) {
+        if (!options.past) {          
             if (options.start && options.end) {
-                db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND debut >= ? AND fin <= ? ORDER BY debut;', [matricule, options.start, options.end], function(err, ret) {
+                db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND debut >= ? AND fin <= ? ORDER BY debut DESC;', [matricule, options.start, options.end], function(err, ret) {
                     if (err) {
                         console.log('ERROR: ' + err);
                         return fn("Erreur lors de la récupération des congès.");
@@ -72,7 +72,7 @@ var data = {
                 });
                 return;
             }
-            db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin > NOW() ORDER BY debut;', [matricule], function(err, ret) {
+            db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin > NOW() ORDER BY debut DESC;', [matricule], function(err, ret) {
                 if (err) {
                     console.log('ERROR: ' + err);
                     return fn("Erreur lors de la récupération des congès.");
@@ -81,21 +81,28 @@ var data = {
             });
             return;
         }
-        db.read("conges", { user: matricule }, null, function(err, ret) {
+        db.query('SELECT * FROM conges WHERE (user = 999999 OR user = ?) AND fin <= NOW() ORDER BY debut DESC;', [matricule], function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des congès.");
             }
             fn(null, cleanConges(ret));
         });
+        /*db.read("conges", { user: matricule }, null, function(err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des congès.");
+            }
+            fn(null, cleanConges(ret));
+        });*/
     },
     listCongesEtat: function (etat, admin, past, fn) {
         var query, values = [etat];
         if (!past) {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW()';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW() ORDER BY conges.debut DESC';
         }
         else {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ?';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? ORDER BY conges.debut DESC';
         }
         if (admin > 0) {
             query += ' AND users.admin = ?';

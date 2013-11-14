@@ -21,10 +21,11 @@
                             <span ng-if="activite.nb > 0" class="titre">{{activite.libelle}}</span> <h4 ng-if="activite.nb > 0">{{activite.nb}}</h4>
                         </li>
                      </ul>
-                    <hr ng-if="heuresSup + heuresAstreinte + heuresNuit > 0" />
+                    <hr ng-if="heuresSup + heuresAstreinte + heuresNuit + heuresInt > 0" />
                     <p ng-if="heuresSup > 0">Heures sup. <strong>{{heuresSup}}</strong></p>
-                    <p ng-if="heuresAstreinte > 0">Heures d'astreinte <strong>{{heuresAstreinte}}</strong></p>
                     <p ng-if="heuresNuit > 0">Heures de nuit <strong>{{heuresNuit}}</strong></p>
+                    <p ng-if="heuresAstreinte > 0">Heures d'astreinte <strong>{{heuresAstreinte}}</strong></p>
+                    <p ng-if="heuresInt > 0">Heures d'intervention <strong>{{heuresInt}}</strong></p>
                 </div>
             </div>
         </div><!-- <div class="span2">-->
@@ -69,7 +70,7 @@
                     <p ng-if="activite.etat <= 1 && !future">
                         <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon_upload"></i>Enregistrer mon activité</button>
                     </p>
-                    <p ng-if="activite.etat <= 1 && !future">
+                    <p ng-if="activite.etat <= 1 && !future && isDirty">
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
                     </p>
                     <p ng-if="activite.etat > 1">
@@ -82,9 +83,13 @@
 <!--<div class="container-fluid">-->
 
 <script type="text/x-handlebars-template" id="eventTmpl">
-  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}} {{cssConges[data.etat]}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT' && data.type != 'FOR' && data.type != 'INT']"  rel="popover" data-original-title="" title="">
+  <div class="fc-event fc-event-hori fc-event-start fc-event-end jour {{data.type}} {{cssConges[data.etat]}}" ng-class="{true : 'sleeping', false : 'worked'}[data.type != 'JT1' && data.type != 'JT2' && data.type != 'JT3' && data.type != 'FOR' && data.type != 'INT']"  rel="popover" data-original-title="" title="">
        <div class="fc-event-inner">
-           <span class="fc-event-title">{{data.type | motifCongesShort : typeActivite}} {{infos(data)}}<span ng-if="data.heuresSup + data.heuresAstreinte + data.heuresNuit > 0" class="heures"></span></span>
+           <span class="fc-event-title">
+                {{data.type | motifCongesShort : typeActivite}} {{infos(data)}}
+                <span ng-if="data.heuresSup + data.heuresAstreinte + data.heuresNuit > 0" class="heures"></span>
+                <span ng-if="data.information && data.information != ''" class="rem">!</span>
+           </span>
        </div>
   </div>
 </script>
@@ -102,15 +107,17 @@
            <option ng-hide="data.duree == 1" value="2">Après-midi</option>
       </select>
     </accordion-group>
-    <accordion-group heading="Heures supl./nuit" ng-if="data.type == 'JT'">
+    <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3'">
       <p>Nombre d'heures suplémentaires</p>
       <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
+      <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
+      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
       <p>Nombre d'heures d'astreinte</p>
       <input id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
-      <p>Nombre de nuit (entre 22h et 6h)</p>
-      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
+      <p>Nombre d'heures d'intervention</p>
+      <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
     </accordion-group>
-    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT' || data.type == 'FOR' || data.type == 'INT'">
+    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT'">
       <p>Remarques...</p>
         <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
     </accordion-group>

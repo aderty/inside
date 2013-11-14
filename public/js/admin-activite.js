@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 /* Controllers */
-function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter, ActiviteAdminService) {
+function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter, ngTableParams, ngTableFilter, ActiviteAdminService) {
     var currentYear = new Date().getFullYear();
     $scope.lstAnnees = [currentYear, currentYear - 1, currentYear - 2];
     $scope.lstMois = [];
@@ -13,16 +13,57 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
         mois: $scope.lstMois[new Date().getMonth() + 1] // Mois courant
     };
 
-    $scope.$watch('selection', function (selection) {
+    $rootScope.tableParamsActivite = new ngTableParams({
+        page: 1,            // show first page
+        count: 10,
+        sorting: {
+            mois: 'asc'     // initial sorting
+        }
+    },
+    {
+        getData: function ($defer, params) {
+            var options = angular.copy($scope.selection);
+            options.mois = $scope.lstMois.indexOf(options.mois);
+            ActiviteAdminService.list(options).then(function (result) {
+                $rootScope.activites = ngTableFilter(result, params);
+                $defer.resolve($rootScope.activites);
+            });
+        }
+    });
+    $rootScope.tableParamsSansActivite = new ngTableParams({
+        page: 1,            // show first page
+        count: 10,
+        sorting: {
+            mois: 'asc'     // initial sorting
+        }
+    },
+    {
+        getData: function ($defer, params) {
+            var options = angular.copy($scope.selection);
+            options.mois = $scope.lstMois.indexOf(options.mois);
+            ActiviteAdminService.listSans(options).then(function (result) {
+                $rootScope.sansActivites = ngTableFilter(result, params);
+                $defer.resolve($rootScope.sansActivites);
+            });
+        }
+    });
+
+    $scope.$watch('selection', function(selection) {
         var options = angular.copy(selection);
         options.mois = $scope.lstMois.indexOf(selection.mois);
-        ActiviteAdminService.list(options).then(function(result) {
+        $rootScope.tableParamsActivite.reload();
+        $rootScope.tableParamsSansActivite.reload();
+        /*ActiviteAdminService.list(options).then(function(result) {
             $scope.eventSources = null;
             $rootScope.activites = result;
+            $rootScope.tableParamsActiviteData = result;
+            $rootScope.tableParamsActivite.total = result.length;
         });
         ActiviteAdminService.listSans(options).then(function(result) {
             $rootScope.sansActivites = result;
-        });
+            $rootScope.tableParamsSansActiviteData = result;
+            $rootScope.tableParamsSansActivite.total = result.length;
+        });*/
     }, true);
 
     $scope.isEditable = function(row){
@@ -139,11 +180,11 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                         var date = new Date(current.toDate());
                         date.setHours(8);
                         if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                         }
                         date = new Date(current.toDate());
                         date.setHours(12);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         toDo = false;
                     }
@@ -157,11 +198,11 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                         data.duree = 1;
                         var date = new Date(current.toDate());
                         date.setHours(8);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                         date = new Date(current.toDate());
                         date.setHours(12);
                         if ($scope.conges.length > 0 && $scope.conges[0].fin.date.getMonth() == current.month() && $scope.conges[0].fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                         }
                         toDo = false;
                     }
@@ -170,11 +211,11 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                         var date = new Date(current.toDate());
                         date.setHours(8);
                         if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
-                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                         }
                         date = new Date(current.toDate());
                         date.setHours(12);
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0 });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         toDo = false;
                     }
@@ -185,6 +226,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                         data.heuresSup = 0;
                         data.heuresAstreinte = 0;
                         data.heuresNuit = 0;
+                        data.heuresInt = 0;
                         $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: new Date(current.toDate()), data: data });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                     }
@@ -208,12 +250,13 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                     data.heuresSup = 0;
                     data.heuresAstreinte = 0;
                     data.heuresNuit = 0;
+                    data.heuresInt = 0;
                     $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data });
                     $scope.indexEvents[current.date()] = $scope.events.length - 1;
                     date = new Date(current.toDate());
                     date.setHours(12);
                     if (cong && cong.fin.date.getMonth() == current.month() && cong.fin.date.getDate() < current.date()) {
-                        $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                        $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                     }
                     toDo = false;
                 }
@@ -225,6 +268,7 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                     data.heuresSup = 0;
                     data.heuresAstreinte = 0;
                     data.heuresNuit = 0;
+                    data.heuresInt = 0;
                     $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: new Date(current.toDate()), data: data });
                     $scope.indexEvents[current.date()] = $scope.events.length - 1;
                 }
@@ -234,10 +278,10 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
             }
             function workEvent(current) {
                 if (businessDay(current)) {
-                    $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                    $scope.events.push({ title: "Journée travaillée", start: new Date(current.toDate()), data: { type: 'JT1', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                 }
                 else {
-                    $scope.events.push({ title: "Weekend", start: new Date(current.toDate()), data: { type: 'WK', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0} });
+                    $scope.events.push({ title: "Weekend", start: new Date(current.toDate()), data: { type: 'WK', duree: 0, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 } });
                 }
                 $scope.indexEvents[current.date()] = $scope.events.length - 1;
             }
@@ -314,11 +358,13 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
     };
 }
 
-function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
+function ActiviteAdminGrid($scope, $rootScope, $filter, ngTableParams, ActiviteAdminService) {
     $scope.filterOptions = {
         filterText: "",
         useExternalFilter: false
     };
+
+    var dataActivite, dataSansActivite;
 
     $scope.$on('search', function (event, data) {
         if (data.searcher == "admin-activite") {
@@ -328,6 +374,73 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
             };
         }
     });
+    /*$rootScope.tableParamsActivite = new ngTableParams({
+        page: 1,            // show first page
+        total: 0, // length of data
+        count: 10,
+        sorting: {
+            mois: 'asc'     // initial sorting
+        }
+    },
+    {
+        getData: function ($defer, params) {
+            ActiviteAdminService.list(options).then(function (result) {
+                $rootScope.activites = result;
+                $defer.resolve($rootScope.activites);
+            });
+        }
+    });
+    $rootScope.tableParamsSansActivite = new ngTableParams({
+        page: 1,            // show first page
+        total: 0, // length of data
+        count: 10,
+        sorting: {
+            mois: 'asc'     // initial sorting
+        }
+    },
+    {
+        getData: function ($defer, params) {
+            ActiviteAdminService.listSans(options).then(function (result) {
+                $rootScope.sansActivites = result;
+                $defer.resolve($rootScope.sansActivites);
+            });
+        }
+    });*/
+    $scope.$watch('tableParamsActivite', function(params) {
+        // use build-in angular filter
+        $rootScope.tableParamsActivite = params;
+    }, true);
+    $scope.$watch('tableParamsSansActivite', function(params) {
+        // use build-in angular filter
+        $rootScope.tableParamsSansActivite = params;
+    }, true);
+    /*$rootScope.$watch('tableParamsActivite', function(params) {
+        // use build-in angular filter
+        var orderedData = params.sorting ?
+                                $filter('orderBy')($rootScope.tableParamsActiviteData, params.orderBy()) :
+                                $rootScope.tableParamsActiviteData;
+        orderedData = orderedData || [];
+        orderedData = params.filter ?
+                                $filter('filter')(orderedData, params.filter) :
+                                orderedData;
+
+        params.total = orderedData.length; // set total for recalc pagination
+        $rootScope.activites = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
+    }, true);
+    $rootScope.$watch('tableParamsSansActivite', function(params) {
+        // use build-in angular filter
+        var orderedData = params.sorting ?
+                                $filter('orderBy')($rootScope.tableParamsSansActiviteData, params.orderBy()) :
+                                $rootScope.tableParamsSansActiviteData;
+        orderedData = orderedData || [];
+        orderedData = params.filter ?
+                                $filter('filter')(orderedData, params.filter) :
+                                orderedData;
+
+        params.total = orderedData.length; // set total for recalc pagination
+        $rootScope.sansActivites = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
+    }, true);*/
+    
 
     $scope.pagingOptions = {
         pageSizes: [25, 50, 100],
@@ -335,6 +448,7 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
         totalServerItems: 0,
         currentPage: 1
     };
+    
 
     var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
     var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
@@ -350,16 +464,16 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
             { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
             { field: 'mois', displayName: 'Mois', width: 70, cellTemplate: moisCellTemplate, resizable: false },
             { field: 'user', displayName: 'Utilisateur', cellTemplate: matriculeCellTemplate, resizable: false },
-            { field: 'JT', displayName: 'En mission', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
+            { field: 'JT1', displayName: 'En mission', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'FOR', displayName: 'Formation', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'INT', displayName: 'Inter contrat', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
             { field: 'CP', displayName: 'CP', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'CP_ANT', displayName: 'CP anticipés', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'RC', displayName: 'RC', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
+            { field: 'RTT', displayName: 'RTT', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             //{ field: 'RCE', displayName: 'RC employeur', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'AE', displayName: 'Autre', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
             { field: 'heuresSup', displayName: 'Heures suplémentaires', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
-            { field: 'heuresAstreinte', displayName: 'Astreinte', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
+            { field: 'heuresAstreinte', displayName: 'Astreintes', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
             { field: 'heuresNuit', displayName: 'Heures de nuit', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
             { field: '', cellTemplate: validationCellTemplate, width: 15, headerCellTemplate: myHeaderCellTemplate },
             { field: '', cellTemplate: actionEdit, width: 15, headerCellTemplate: myHeaderCellTemplate },
@@ -394,6 +508,10 @@ function ActiviteAdminGrid($scope, $rootScope, ActiviteAdminService) {
         pagingOptions: $scope.pagingOptions,
         filterOptions: $scope.filterOptions
     };
+
+    setTimeout(function() {
+        $('.motif-autre').tooltip({ html: true, container: 'body' });
+    }, 250);
 }
 
 // Contrôleur de la popup de modification de password
@@ -412,7 +530,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
     $scope.activiteUser = [];
 
     /*$rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT', libelle: 'En mission' });
+    $rootScope.typeActivite.splice(0, 0, { id: 'JT1', libelle: 'En mission' });
     $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation' });
     $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat' });
     $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
@@ -503,14 +621,13 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
             return true;
         };
         eventScope.$watch('data.type', function (newValue, oldValue) {
-            if (oldValue && newValue == 'JT' && (oldValue == 'WK' || oldValue == 'JF')) {
+            if (oldValue && newValue == 'JT1' && (oldValue == 'WK' || oldValue == 'JF')) {
                 eventScope.data.heuresAstreinte = 7.5;
             }
         });
         return $compile($.trim($('#eventTmpl').html()))(eventScope)
         /*element.addClass("jour")*/.attr("rel", "popover").popover({
             html: true,
-
             content: function(e) {
                 // Jour férié, pas d'édition.
                 /*if (eventScope.data.type == 'JF') {
@@ -565,6 +682,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                 heuresSup: item.data.heuresSup,
                 heuresAstreinte: item.data.heuresAstreinte,
                 heuresNuit: item.data.heuresNuit,
+                heuresInt: item.data.heuresInt,
                 duree: item.data.duree
             };
         });
@@ -594,7 +712,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                 activite.etat = 1;
                 activite.user = $scope.$parent.currentActivite.user;
 
-                var event, hSup = 0, hAst = 0, hNuit = 0;
+                var event, hSup = 0, hAst = 0, hNuit = 0, hInt = 0;
                 
                 for (var i = 0, l = activite.activite.length; i < l; i++) {
                     event = activite.activite[i];
@@ -604,6 +722,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                         hSup += event.heuresSup;
                         hAst += event.heuresAstreinte;
                         hNuit += event.heuresNuit;
+                        hInt += event.heuresInt;
                     }
                 }
                 
@@ -616,6 +735,7 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
                 activite.heuresSup = hSup;
                 activite.heuresAstreinte = hAst;
                 activite.heuresNuit = hNuit;
+                activite.heuresInt = hInt;
                 dialog.close(activite);
             }
         });

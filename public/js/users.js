@@ -21,9 +21,10 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
             id: $rootScope.nextId,
             role: 1,
             admin: {
-                id: 1,
+                id: 0,
                 nom: 'Admin'
             },
+            hasRtt: true,
             cp: 0,
             cp_ant: 0,
             rtt: 0
@@ -148,7 +149,7 @@ function UsersMain($scope, $rootScope, $dialog, UsersService) {
 }
 
 // Contrôleur de la grille des utilisateurs
-function UsersGrid($scope, $rootScope, UsersService) {
+function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, UsersService) {
     $scope.filterOptions = {
         filterText: "",
         useExternalFilter: false
@@ -160,6 +161,7 @@ function UsersGrid($scope, $rootScope, UsersService) {
                 filterText: data.search,
                 useExternalFilter: false
             };
+            $scope.tableParamsUser.filterText = data.search
         }
     });
 
@@ -170,79 +172,118 @@ function UsersGrid($scope, $rootScope, UsersService) {
         currentPage: 1
     };
 
-    $rootScope.users = UsersService.query(function() {
-        // GET: /user/123/card
-        // server returns: [ {id:456, number:'1234', name:'Smith'} ];
-        for (var i = 0, l = $rootScope.users.length; i < l; i++) {
-            $rootScope.users[i].dateNaissance = new Date($rootScope.users[i].dateNaissance);
-            if ($rootScope.users[i].admin) {
-                $rootScope.users[i].admin = {
-                    id: $rootScope.users[i].admin,
-                    nom: $rootScope.users[i].adminNom,
-                    prenom: $rootScope.users[i].adminPrenom
-                };
-                delete $rootScope.users[i].adminNom;
-                delete $rootScope.users[i].adminPrenom;
-            }
+    $scope.tableParamsUser = new ngTableParams({
+        page: 1,            // show first page
+        //total: 0, // length of data
+        count: 10,           // count per page
+        sorting: {
+            nom: 'asc'     // initial sorting
         }
-    });
+    },
+        {
+            getData: function ($defer, params) {
+                // use build-in angular filter
+                $rootScope.users = UsersService.query(function () {
+                    // GET: /user/123/card
+                    // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                    for (var i = 0, l = $rootScope.users.length; i < l; i++) {
+                        $rootScope.users[i].dateNaissance = new Date($rootScope.users[i].dateNaissance);
+                        if (typeof $rootScope.users[i].admin != "undefined") {
+                            $rootScope.users[i].admin = {
+                                id: $rootScope.users[i].admin,
+                                nom: $rootScope.users[i].adminNom,
+                                prenom: $rootScope.users[i].adminPrenom
+                            };
+                            delete $rootScope.users[i].adminNom;
+                            delete $rootScope.users[i].adminPrenom;
+                        }
+                    }
+                    $rootScope.users = ngTableFilter($rootScope.users, params);
+                    // $scope.tableParamsUserData = $rootScope.usersData;
+                    // use build-in angular filter
+                    $defer.resolve($rootScope.users);
+                });
+                
+            }
+        });
 
-    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
+    //ngTableFilter.call($scope, 'tableParamsUserData', 'tableParamsUser', 'users');
+    
+    $scope.$watch('users', function(users) {
+        $rootScope.users = users;
+    }, true);
 
-    $scope.gridOptions = {
-        data: 'users',
-        columnDefs: [
-            { field: 'id', displayName: 'Matricule', width: 55, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'nom', displayName: 'Nom', headerCellTemplate: myHeaderCellTemplate },
-            { field: 'prenom', displayName: 'Prénom', headerCellTemplate: myHeaderCellTemplate },
-            { field: 'role', displayName: 'Rôle', cellFilter: "role", width: 60, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'cp', displayName: 'CP disponibles', width: 69, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'cp_ant', displayName: 'CP en cours', width: 69, headerCellTemplate: myHeaderCellTemplate },
-            { field: 'rtt', displayName: 'RC', width: 60, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplHisto').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false,
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
+    /*function filter(data, params) {
+        // use build-in angular filter
+        var orderedData = params.sorting ?
+                                $filter('orderBy')(data, params.orderBy()) :
+                                data;
+        orderedData = orderedData || [];
+        orderedData = params.filter ?
+                                $filter('filter')(orderedData, params.filter) :
+                                orderedData;
+        if (params.filterText && params.filterText != "") {
+            var result = [], found = false;
 
-    $scope.$on('ngGridEventColumns', function (e) {
-        setTimeout(function () {
-            $('.ngHeaderText').tooltip({ container: 'body' });
-        }, 250);
-    });
+            angular.forEach(orderedData, function(datarow) {
+                found = false;
+                angular.forEach(datarow, function(col) {
+                    if (found) return;
+                    if (typeof col == "string" && col.toLowerCase().indexOf(params.filterText.toLowerCase()) > -1) {
+                        found = true;
+                        result.push(datarow);
+                        return;
+                    }
+                    if (typeof col == "number" && col.toString().indexOf(params.filterText.toLowerCase()) > -1) {
+                        found = true;
+                        result.push(datarow);
+                        return;
+                    }
+                });
+            });
+            orderedData = result;
+        }
+
+        params.total = orderedData.length; // set total for recalc pagination
+        $rootScope.users = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
+    }*/
 };
 
 // Contrôleur de la popup de l'historique des actions de l'utilisateur
-function DialogHistory($scope, $rootScope, dialog, HistoryService) {
+function DialogHistory($scope, $rootScope, $filter, ngTableParams, dialog, HistoryService) {
     $rootScope.error = "";
     $rootScope.history = null;
+    var data;
     HistoryService.list($rootScope.currentUser.id).then(function (histo) {
         $rootScope.history = histo;
+        data = histo;
+        $scope.tableParams.total = data.length;
     });
     $scope.close = function () {
         $rootScope.error = "";
         dialog.close();
     };
 
-    $scope.gridOptions = {
-        data: 'history',
-        columnDefs: [
-            { field: 'date', displayName: 'Date', width: 105, cellFilter: "moment:'DD/MM/YYYY hh:mm'" },
-            { field: 'log', displayName: 'Action', width: 250, cellTemplate: '<div title="{{row.log}}">{{row.log}}</div>' }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false
-    };
+    $scope.tableParams = new ngTableParams({
+        page: 1,            // show first page
+        total: 0, // length of data
+        count: 5,
+        counts: null,           // count per page
+        sorting: {
+            date: 'asc'     // initial sorting
+        }
+    });
+    $scope.$watch('tableParams', function(params) {
+        // use build-in angular filter
+        var orderedData = params.sorting ?
+                                $filter('orderBy')(data, params.orderBy()) :
+                                data;
+        orderedData = orderedData || [];
+        orderedData = params.filter ?
+                                $filter('filter')(orderedData, params.filter) :
+                                orderedData;
+
+        params.total = orderedData.length; // set total for recalc pagination
+        $rootScope.history = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
+    }, true);
 }

@@ -7,20 +7,122 @@
                 <div class="span12">
                     <!--Grilles des congés-->
                     <div class="bs-docs-example">
-                        <tabs>
-                            <pane heading="Congés en attente de validation">
-                                 <grid id="congesAdminGrid" ng-options="gridOptionsConges"></grid>
-                                 <!--<div id="congesAdminGrid" class="gridStyle" ng-grid="gridOptionsConges"></div>-->
-                            </pane>
-                            <pane heading="Congés validés">
-                                 <grid id="congesAdminGridVal" ng-options="gridOptionsCongesVal"></grid>
-                                 <!--<div id="congesAdminGridVal" class="gridStyle" ng-grid="gridOptionsCongesVal"></div>-->
-                            </pane>
-                            <pane heading="Congés refusés">
-                                 <grid id="congesAdminGridRef" ng-options="gridOptionsCongesRef"></grid>
-                                 <!--<div id="congesAdminGridRef" class="gridStyle" ng-grid="gridOptionsCongesRef"></div>-->
-                            </pane>
-                        </tabs>
+                        <tabset>
+                            <tab heading="Congés en attente de validation">
+                                 <div loading-container="loading"> 
+                                    <table id="congesAdminGrid" ng-table="tableParamsCongesAValider" show-filter="false" class="table table-bordered table-hover"> 
+                                        <tr ng-repeat="conge in congesAvalider"> 
+                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                                <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
+                                            </td> 
+                                            <td data-title="'Date de début'" sortable="debut.date"> 
+                                            {{conge.debut|momentCongesDebut:'DD/MM/YYYY'}} 
+                                            </td> 
+                                            <td data-title="'Date de fin'" sortable="fin.date"> 
+                                            {{conge.fin|momentCongesFin:'DD/MM/YYYY'}} 
+                                            </td>
+                                            <td style="max-width: 35px;width:35px;" data-title="'Durée'" sortable="duree"> 
+                                            {{conge.duree}} 
+                                            </td>
+                                            <td data-title="'Motif'" sortable="motif"> 
+                                            {{conge.motif|motifCongesShort}} 
+                                            </td>
+                                            <td data-title="'Justification'"> 
+                                                <div class="cellJustification" data-toggle="tooltip" title="{{conge.justification}}">{{conge.justification}}</div>
+                                            </td>
+                                            <td data-title="'Validation'" class="validation"> 
+                                              <div class="btn-group val">
+                                                <a class="btn btn-success" href="" title="Accepter la demande" ng-if="conge.etat == 1" ng-click="accepter(conge)"><i class="icon-ok"></i></a>
+                                                <a class="btn btn-danger" href="" title="Refuser la demande" ng-if="conge.etat != 3" ng-click="refuser(conge)"><i class="icon-ban-circle"></i></a>
+                                              </div>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Modifier" authenticate="4" ng-show="isEditable(conge)" ng-click="edit(conge)"><i class="icon-pencil"></i></a>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Supprimer" authenticate="4" ng-show="isEditable(conge)" ng-click="delete(conge)"><i class="icon-trash"></i></a>
+                                            </td>
+                                        </tr> 
+                                    </table> 
+                                </div>
+                            </tab>
+                            <tab heading="Congés validés">
+                                <div loading-container="loading"> 
+                                    <table id="congesAdminGridVal" ng-table="tableParamsValider" show-filter="false" class="table table-bordered table-hover"> 
+                                        <tr ng-repeat="conge in congesValider"> 
+                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                                <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
+                                            </td> 
+                                            <td data-title="'Date de début'" sortable="debut.date"> 
+                                            {{conge.debut|momentCongesDebut:'DD/MM/YYYY'}} 
+                                            </td> 
+                                            <td data-title="'Date de fin'" sortable="fin.date"> 
+                                            {{conge.fin|momentCongesFin:'DD/MM/YYYY'}} 
+                                            </td>
+                                            <td style="max-width: 35px;width:35px;" data-title="'Durée'" sortable="duree"> 
+                                            {{conge.duree}} 
+                                            </td>
+                                            <td data-title="'Motif'" sortable="motif"> 
+                                            {{conge.motif|motifCongesShort}} 
+                                            </td>
+                                            <td data-title="'Justification'"> 
+                                                <div class="cellJustification" data-toggle="tooltip" title="{{conge.justification}}">{{conge.justification}}</div>
+                                            </td>
+                                            <td data-title="'Validation'" class="validation"> 
+                                              <div class="btn-group val">
+                                                <a class="btn btn-success" href="" title="Accepter la demande" ng-if="conge.etat == 1" ng-click="accepter(conge)"><i class="icon-ok"></i></a>
+                                                <a class="btn btn-danger" href="" title="Refuser la demande" ng-if="conge.etat != 3" ng-click="refuser(conge)"><i class="icon-ban-circle"></i></a>
+                                              </div>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Modifier" authenticate="4" ng-show="isEditable(conge)" ng-click="edit(conge)"><i class="icon-pencil"></i></a>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Supprimer" authenticate="4" ng-show="isEditable(conge)" ng-click="delete(conge)"><i class="icon-trash"></i></a>
+                                            </td>
+                                        </tr> 
+                                    </table> 
+                                </div>
+                            </tab>
+                            <tab heading="Congés refusés">
+                                    <div loading-container="loading"> 
+                                    <table id="congesAdminGridRef" ng-table="tableParamsRefuser" show-filter="false" class="table table-bordered table-hover"> 
+                                        <tr ng-repeat="conge in congesRefuser"> 
+                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                                <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
+                                            </td> 
+                                            <td data-title="'Date de début'" sortable="debut.date"> 
+                                            {{conge.debut|momentCongesDebut:'DD/MM/YYYY'}} 
+                                            </td> 
+                                            <td data-title="'Date de fin'" sortable="fin.date"> 
+                                            {{conge.fin|momentCongesFin:'DD/MM/YYYY'}} 
+                                            </td>
+                                            <td style="max-width: 35px;width:35px;" data-title="'Durée'" sortable="duree"> 
+                                            {{conge.duree}} 
+                                            </td>
+                                            <td data-title="'Motif'" sortable="motif"> 
+                                            {{conge.motif|motifCongesShort}} 
+                                            </td>
+                                            <td data-title="'Justification'"> 
+                                                <div class="cellJustification" data-toggle="tooltip" title="{{conge.justification}}">{{conge.justification}}</div>
+                                            </td>
+                                            <td data-title="'Validation'" class="validation"> 
+                                              <div class="btn-group val">
+                                                <a class="btn btn-success" href="" title="Accepter la demande" ng-if="conge.etat == 1" ng-click="accepter(conge)"><i class="icon-ok"></i></a>
+                                                <a class="btn btn-danger" href="" title="Refuser la demande" ng-if="conge.etat != 3" ng-click="refuser(conge)"><i class="icon-ban-circle"></i></a>
+                                              </div>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Modifier" authenticate="4" ng-show="isEditable(conge)" ng-click="edit(conge)"><i class="icon-pencil"></i></a>
+                                            </td>
+                                            <td style="width:15px;"> 
+                                                <a href="" title="Supprimer" authenticate="4" ng-show="isEditable(conge)" ng-click="delete(conge)"><i class="icon-trash"></i></a>
+                                            </td>
+                                        </tr> 
+                                    </table> 
+                                </div>
+                            </tab>
+                        </tabset>
                     </div>
 
                 </div>
@@ -32,11 +134,11 @@
             <!--Body content-->
             <div class="row">
                 <div class="span12">
-                    <button authenticate="4" type="button" class="btn btn-primary" ng-class="{masquer: edition > 0}" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
-                    <div class="alert alert-block alert-info" ng-class="{masquer: edition != 1}">
+                    <button authenticate="4" type="button" class="btn btn-primary" ng-if="edition == 0" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
+                    <div class="alert alert-block alert-info" ng-if="edition == 1">
                         <h4>{{lblMode}}</h4>
                     </div>
-                    <div class="alert alert-block alert-warning" ng-class="{masquer: edition != 2}">
+                    <div class="alert alert-block alert-warning" ng-if="edition == 2">
                         <h4>{{lblMode}}</h4>
                     </div>
                 </div>
@@ -96,7 +198,8 @@
     <div class="modal-body" id="refus">
     <p>Etes-vous sûr de vouloir refuser la demande de congés ?
     </p>
-    <form id="refusConges" name="refusConges" class="form-horizontal" ui-keypress="{'enter':'close('yes')'}" novalidate>
+    <!--<form id="refusConges" name="refusConges" class="form-horizontal" ui-keypress="{'enter':'close('yes')'}" novalidate>-->
+    <form id="refusConges" name="refusConges" class="form-horizontal" novalidate>
         <!-- Saisie du motif de refus -->
         <textarea type="text" id="motifRefus" name="motifRefus" ng-model="dialogModel.refus" class="span7" rows="5" placeholder="Motif du refus"></textarea>
     </form>

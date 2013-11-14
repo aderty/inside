@@ -60,7 +60,12 @@ var routesAdmin = {
     // Lecture, via GET
     list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
+        var superAdmin = false;
+        if (req.session.role == 4) {
+            superAdmin = true;
+        }
         var options = {};
+        options.admin = superAdmin ? -1 : req.session.username;
         if (req.query.annee) {
             options.annee = req.query.annee;
         }
