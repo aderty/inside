@@ -302,7 +302,11 @@ input.ng-pristine + .input-help {
 
 /* Civilité*/
 
-#inputCivilite {
+#inputCivilite, #inputRole {
+    width: 206px;
+}
+
+.select2-container {
     width: 206px;
 }
 

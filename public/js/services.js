@@ -202,6 +202,24 @@ angular.module('inside.services', ['ngResource']).
              { id: '@id' }, {
                  create: { method: 'POST', params: { creation: true} }
              });
+      function beforeSendConges(conges) {
+          conges.debut.date.setHours(0);
+          if (conges.debut.type == 1) {
+              conges.debut.date.setHours(12);
+          }
+          conges.fin.date.setHours(22);
+          if (conges.fin.type == 0) {
+              conges.fin.date.setHours(12);
+          }
+          conges.debut = conges.debut.date;
+          conges.fin = conges.fin.date;
+          if (conges.user && conges.user.id) {
+              conges.nom = conges.user.nom;
+              conges.prenom = conges.user.prenom;
+              conges.user = conges.user.id;
+          }
+          return conges;
+      }
       return {
           list: function(options) {
               var defered = $q.defer();
@@ -244,20 +262,7 @@ angular.module('inside.services', ['ngResource']).
                   // Création -> Flag création
                   conges.create = true;
               }
-              /*if (conges.motifExcep) {
-                  conges.motif = conges.motifExcep;
-              }*/
-              conges.debut.date.setHours(0);
-              if (conges.debut.type == 1) {
-                  conges.debut.date.setHours(12);
-              }
-              conges.fin.date.setHours(22);
-              if (conges.fin.type == 0) {
-                  conges.fin.date.setHours(12);
-              }
-              conges.debut = conges.debut.date;
-              conges.fin = conges.fin.date;
-              resource.save(conges, function(reponse) {
+              resource.save(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
@@ -277,7 +282,7 @@ angular.module('inside.services', ['ngResource']).
           },
           remove: function(conges) {
               var defered = $q.defer();
-              resource.remove(conges, function(reponse) {
+              resource.remove(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
@@ -300,6 +305,33 @@ angular.module('inside.services', ['ngResource']).
                  create: { method: 'POST', params: { create: true} },
                  updateEtat: { method: 'POST', params: { etat: true} }
              });
+
+      function beforeSendConges(conges) {
+          if (conges.typeuser == 2) {
+              conges.user = {
+                  id: 999999,
+                  nom: 'Tous',
+                  prenom: ''
+              };
+          }
+          delete conges.typeuser;
+          conges.debut.date.setHours(0);
+          if (conges.debut.type == 1) {
+              conges.debut.date.setHours(12);
+          }
+          conges.fin.date.setHours(22);
+          if (conges.fin.type == 0) {
+              conges.fin.date.setHours(12);
+          }
+          conges.debut = conges.debut.date;
+          conges.fin = conges.fin.date;
+          if (conges.user && conges.user.id) {
+              conges.nom = conges.user.nom;
+              conges.prenom = conges.user.prenom;
+              conges.user = conges.user.id;
+          }
+          return conges;
+      }
       return {
           list: function(options) {
               var defered = $q.defer();
@@ -315,10 +347,6 @@ angular.module('inside.services', ['ngResource']).
                       conges[i].fin = conges[i].fin = {
                           date: new Date(conges[i].fin),
                           type: new Date(conges[i].fin).getHours() > 14 ? 1 : 0
-                      }
-                      if (conges[i].motif != 'CP' && conges[i].motif != 'RC' && conges[i].motif != 'RCE' && conges[i].motif != 'CP_ANT') {
-                          conges[i].motifExcep = conges[i].motif;
-                          conges[i].motif = 'AE';
                       }
                       if (conges[i].user) {
                           conges[i].user = {
@@ -341,33 +369,7 @@ angular.module('inside.services', ['ngResource']).
                   // Création -> Flag création
                   conges.create = true;
               }
-              if (conges.motifExcep) {
-                  conges.motif = conges.motifExcep;
-              }
-              if (conges.typeuser == 2) {
-                  conges.user = {
-                      id: 999999,
-                      nom: 'Tous',
-                      prenom: ''
-                  };
-              }
-              delete conges.typeuser;
-              conges.debut.date.setHours(0);
-              if (conges.debut.type == 1) {
-                  conges.debut.date.setHours(12);
-              }
-              conges.fin.date.setHours(22);
-              if (conges.fin.type == 0) {
-                  conges.fin.date.setHours(12);
-              }
-              conges.debut = conges.debut.date;
-              conges.fin = conges.fin.date;
-              if (conges.user && conges.user.id) {
-                  conges.nom = conges.user.nom;
-                  conges.prenom = conges.user.prenom;
-                  conges.user = conges.user.id;
-              }
-              resource.save(conges, function(reponse) {
+              resource.save(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
@@ -387,7 +389,7 @@ angular.module('inside.services', ['ngResource']).
           },
           remove: function(conges) {
               var defered = $q.defer();
-              resource.remove(conges, function(reponse) {
+              resource.remove(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
@@ -403,7 +405,7 @@ angular.module('inside.services', ['ngResource']).
           updateEtat: function(conges) {
               var defered = $q.defer();
               conges.libelle = $filter('motifConges')(conges.motif);
-              resource.updateEtat(conges, function(reponse) {
+              resource.updateEtat(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);

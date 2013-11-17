@@ -8,6 +8,7 @@ var config = require('./config.json');
 
 var express = require('express')
   , http = require('http')
+  , https = require('https')
   , stylus = require('stylus')
   , routes = require('./routes')
   , history = require('./history')
@@ -15,11 +16,21 @@ var express = require('express')
   , url = require('url')
   , fs = require('fs')
   //, assetManager = require('connect-assetmanager')
-  , PORT = process.env.PORT || config.env.PORT;
+  , PORT = process.env.PORT || config.env.PORT
+  , SECURE_PORT = config.env.SECURE_PORT;
 
 const parseCookie = require('connect').utils.parseSignedCookies;
 
+var options = {
+    key: fs.readFileSync('../key/inside-groupe.com.pem'),
+    cert: fs.readFileSync('../key/inside-groupe.com.crt'),
+    //ca: fs.readFileSync('../key/inside-groupe.com.csr'),
+    requestCert: true
+};
+
 var app = module.exports = express();
+
+
 
 //DAL.init(config.getConnectionString());
 
@@ -248,8 +259,19 @@ app.post('/passwordLost', routes.users.passwordLostValid);
 app.get('*', [requireLogin], routes.index);
 
 if (!module.parent) {
-    app.listen(PORT);
+    // set up plain http server
+    var currentHttp = express();
+    // set up a route to redirect http to https
+    currentHttp.get('*',function(req,res){  
+        res.redirect('https://'+ config.env.URL + ':' + SECURE_PORT);
+    })
+    // have it listen on 8080
+    currentHttp.listen(PORT);
+
+    var server = https.createServer(options, app);
+    server.listen(SECURE_PORT);
     console.log('Server running at http://127.0.0.1:' + PORT);
+    console.log('Server running at https://127.0.0.1:' + SECURE_PORT);
 }
 
 process.on('uncaughtException', function (exception) {

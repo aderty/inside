@@ -3,6 +3,11 @@
 /* Controllers */
 
 // Contrôleur principal de la gestion des utilisateurs
+
+app.controller('UsersMain', ['$scope', '$rootScope', '$dialog', 'UsersService', UsersMain]);
+app.controller('UsersGrid', ['$scope', '$rootScope', 'ngTableParams', 'ngTableFilter', 'UsersService', UsersGrid]);
+app.controller('DialogHistory', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'dialog', 'HistoryService', DialogHistory]);
+
 function UsersMain($scope, $rootScope, $dialog, UsersService) {
     if (!$rootScope.nextId) {
         $rootScope.nextId = max;
@@ -154,14 +159,14 @@ function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, Us
         filterText: "",
         useExternalFilter: false
     };
-
+    var filterTimer;
     $scope.$on('search', function (event, data) {
         if (data.searcher == "users") {
             $scope.filterOptions = {
                 filterText: data.search,
                 useExternalFilter: false
             };
-            $scope.tableParamsUser.filterText = data.search
+            $scope.tableParamsUser.$params.filter = data.search;
         }
     });
 
@@ -177,7 +182,7 @@ function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, Us
         //total: 0, // length of data
         count: 10,           // count per page
         sorting: {
-            nom: 'asc'     // initial sorting
+            id: 'asc'     // initial sorting
         }
     },
         {
@@ -199,54 +204,16 @@ function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, Us
                         }
                     }
                     $rootScope.users = ngTableFilter($rootScope.users, params);
-                    // $scope.tableParamsUserData = $rootScope.usersData;
                     // use build-in angular filter
                     $defer.resolve($rootScope.users);
                 });
                 
             }
         });
-
-    //ngTableFilter.call($scope, 'tableParamsUserData', 'tableParamsUser', 'users');
     
     $scope.$watch('users', function(users) {
         $rootScope.users = users;
     }, true);
-
-    /*function filter(data, params) {
-        // use build-in angular filter
-        var orderedData = params.sorting ?
-                                $filter('orderBy')(data, params.orderBy()) :
-                                data;
-        orderedData = orderedData || [];
-        orderedData = params.filter ?
-                                $filter('filter')(orderedData, params.filter) :
-                                orderedData;
-        if (params.filterText && params.filterText != "") {
-            var result = [], found = false;
-
-            angular.forEach(orderedData, function(datarow) {
-                found = false;
-                angular.forEach(datarow, function(col) {
-                    if (found) return;
-                    if (typeof col == "string" && col.toLowerCase().indexOf(params.filterText.toLowerCase()) > -1) {
-                        found = true;
-                        result.push(datarow);
-                        return;
-                    }
-                    if (typeof col == "number" && col.toString().indexOf(params.filterText.toLowerCase()) > -1) {
-                        found = true;
-                        result.push(datarow);
-                        return;
-                    }
-                });
-            });
-            orderedData = result;
-        }
-
-        params.total = orderedData.length; // set total for recalc pagination
-        $rootScope.users = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
-    }*/
 };
 
 // Contrôleur de la popup de l'historique des actions de l'utilisateur
@@ -254,11 +221,7 @@ function DialogHistory($scope, $rootScope, $filter, ngTableParams, dialog, Histo
     $rootScope.error = "";
     $rootScope.history = null;
     var data;
-    HistoryService.list($rootScope.currentUser.id).then(function (histo) {
-        $rootScope.history = histo;
-        data = histo;
-        $scope.tableParams.total = data.length;
-    });
+    
     $scope.close = function () {
         $rootScope.error = "";
         dialog.close();
@@ -266,24 +229,21 @@ function DialogHistory($scope, $rootScope, $filter, ngTableParams, dialog, Histo
 
     $scope.tableParams = new ngTableParams({
         page: 1,            // show first page
-        total: 0, // length of data
-        count: 5,
-        counts: null,           // count per page
+        //total: 0, // length of data
+        count: 5,           // count per page
         sorting: {
-            date: 'asc'     // initial sorting
+            date: 'desc'     // initial sorting
         }
-    });
-    $scope.$watch('tableParams', function(params) {
-        // use build-in angular filter
-        var orderedData = params.sorting ?
-                                $filter('orderBy')(data, params.orderBy()) :
-                                data;
-        orderedData = orderedData || [];
-        orderedData = params.filter ?
-                                $filter('filter')(orderedData, params.filter) :
-                                orderedData;
-
-        params.total = orderedData.length; // set total for recalc pagination
-        $rootScope.history = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
-    }, true);
+    },
+        {
+            counts: [5, 10, 25, 50, 100],
+            getData: function ($defer, params) {
+                HistoryService.list($rootScope.currentUser.id).then(function (histo) {
+                    $rootScope.history = ngTableFilter(histo, params);
+                    // $scope.tableParamsUserData = $rootScope.usersData;
+                    // use build-in angular filter
+                    $defer.resolve($rootScope.history);
+                });
+            }
+        });
 }

@@ -1,11 +1,16 @@
 ﻿var path = require('path')
-    , email = require("mailer")
+    , fs = require('fs')
+    //, email = require("mailer")
+    , nodemailer = require('nodemailer')
+    ,_ = require('underscore')
     , moment = require('moment')
     , dirTemplate = path.join(__dirname, 'templates')
     , config = require('../config.json').mail;
     //, Constantes = require('../constantes.js').Constantes;
 
 moment.lang('fr');
+
+var email = nodemailer.createTransport("SMTP", config);
 
 /*var config = {
             host: config.host,              // smtp server hostname
@@ -33,6 +38,13 @@ function extend(dest, from) {
     });
     return dest;
 }
+var templates = {};
+function generateFormTemplate(path, data) {
+    if(!templates[path]){
+        templates[path] = fs.readFileSync(path, "utf8");
+    }
+    return _.template(templates[path], data);
+}
 
 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -45,25 +57,33 @@ var Mail = {
         }
         console.log("envois de l'email à : " + user.email);
 
-        email.send(extend({
-            to: user.email,
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            to: user.email, // list of receivers
             subject: "[InsideConsulting] Création de votre compte !",
-            //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, 'ajoutUser.html'),   // path to template name
-            data: {
+            html: generateFormTemplate(path.join(dirTemplate, 'ajoutUser.html'),{
                 "email": user.email,
                 "prenom": user.prenom,
                 "password": password,
                 "url": "http://176.31.188.68:81/",
-                "color": function() {
+                "color": function () {
                     var arr = ["purple", "red", "green", "yello"];
                     return arr[Math.floor(Math.random() * 3)];
                 }
+            })
+
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
             }
-        }, config),
-        function(err, result) {
-            if (err) { console.log(err); }
-            if (fn) fn(err);
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
         });
     },
     validationConges: function(user, conges, owner, fn) {
@@ -85,12 +105,12 @@ var Mail = {
             subject += moment(conges.debut.date).format('D MMMM YYYY') + " !";
         }
 
-        email.send(extend({
-            to: user.email,
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            to: user.email, // list of receivers
             subject: subject,
-            //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, conges.etat == 2 ? 'validationConges.html' : 'refusConges.html'),   // path to template name
-            data: {
+            html: generateFormTemplate(path.join(dirTemplate, conges.etat == 2 ? 'validationConges.html' : 'refusConges.html'), {
                 "email": user.email,
                 "prenom": user.prenom,
                 "nom": user.nom,
@@ -101,11 +121,18 @@ var Mail = {
                 "motif": conges.libelle,
                 "refus": conges.refus || "Non communiqué",
                 "owner": owner
+            })
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
             }
-        }, config),
-        function(err, result) {
-            if (err) { console.log(err); }
-            if (fn) fn(err);
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
         });
     },
     passwordLost: function(user, key, fn) {
@@ -120,22 +147,29 @@ var Mail = {
         console.log("envois de l'email à : " + user.email);
 
         var subject = "[InsideConsulting] Récupération de compte après la perte de votre mot de passe";
-        
-        email.send(extend({
-            to: user.email,
+
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            to: user.email, // list of receivers
             subject: subject,
-            //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, 'passwordLost.html'),   // path to template name
-            data: {
+            html: generateFormTemplate(path.join(dirTemplate, 'passwordLost.html'), {
                 "email": user.email,
                 "prenom": user.prenom,
                 "nom": user.nom,
                 "code": key
+            })
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
             }
-        }, config),
-        function(err, result) {
-            if (err) { console.log(err); }
-            if (fn) fn(err);
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
         });
     },
     recapConges: function (email_admin, conges, fn) {
@@ -158,20 +192,27 @@ var Mail = {
             conges[i].fin = moment(conges[i].fin).format('D MMMM YYYY');
         }
 
-        email.send(extend({
-            to: email_admin,
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            to: email_admin, // list of receivers
             subject: subject,
-            //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, 'recapConges.html'),   // path to template name
-            data: {
+            html: generateFormTemplate(path.join(dirTemplate, 'recapConges.html'), {
                 "date": moment(new Date()).format('D MMMM YYYY'),
                 "conges": conges,
                 "nom": ""
+            })
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
             }
-        }, config),
-        function (err, result) {
-            if (err) { console.log(err); }
-            if (fn) fn(err);
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
         });
     },
     contact: function (email_admin, user, sujet, message, fn) {
@@ -186,21 +227,27 @@ var Mail = {
 
         var subject = "[InsideConsulting] Demande d'information de " + user + " : " + sujet;
 
-        email.send(extend({
-            to: email_admin,
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            to: email_admin, // list of receivers
             subject: subject,
-            //body: "Hello! This is a test of the node_mailer."
-            template: path.join(dirTemplate, 'contact.html'),   // path to template name
-            data: {
+            html: generateFormTemplate(path.join(dirTemplate, 'contact.html'), {
                 "user": user,
                 "sujet": sujet,
                 "message": message
+            })
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
             }
-        }, config),
-        function (err, result) {
-            if (err) { console.log(err); }
-            if (fn) return fn(err);
-            fn(err, true);
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
         });
     }
 }

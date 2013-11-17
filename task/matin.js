@@ -4,8 +4,8 @@
 
 
 data.events.once('connected', function (result) {
-    console.log("connected to MySQL");
-    data.conges.listCongesEtat(1, false, function (err, conges) {
+    console.log("Début envois des congès à valider");
+    data.conges.listCongesEtat(1, -1, false, function (err, conges) {
         if (err) {
             console.log('ERROR: ' + err);
             process.exit(1);

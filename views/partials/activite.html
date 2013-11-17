@@ -18,7 +18,7 @@
                     <!--Sidebar content-->
                     <ul class="compteurs">
                         <li ng-repeat="activite in typeActivitePerso">
-                            <span ng-if="activite.nb > 0" class="titre">{{activite.libelle}}</span> <h4 ng-if="activite.nb > 0">{{activite.nb}}</h4>
+                            <span ng-if="activite.nb > 0 && activite.id != 'JF'" class="titre">{{activite.libelle}}</span> <h4 ng-if="activite.nb > 0 && activite.id != 'JF'">{{activite.nb}}</h4>
                         </li>
                      </ul>
                     <hr ng-if="heuresSup + heuresAstreinte + heuresNuit + heuresInt > 0" />
@@ -73,7 +73,7 @@
                     <p ng-if="activite.etat <= 1 && !future && isDirty">
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
                     </p>
-                    <p ng-if="activite.etat > 1">
+                    <p ng-if="activite.etat > 1" class="alert alert-warning">
                         Votre activité a été validée, vous ne pouvez plus modifier ce mois.
                     </p>
                 </div>

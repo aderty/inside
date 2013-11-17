@@ -26,26 +26,6 @@ function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersServi
     $scope.$watch('currentConges.debut.date', function(newValue){
         $scope.dateOptionsFin.minDate = newValue;
     });
-    
-    /*setTimeout(function () {
-        $(".tabbable").each(function () {
-            $(this).scope().select = (function (select) {
-                return function (e) {
-                    select.apply(this, arguments);
-                    if (e.heading == "Congés en attente de validation") {
-                        $timeout(layoutPlugin1.updateGridLayout, 0);
-                    }
-                    else if (e.heading == "Congés validés") {
-                        $timeout(layoutPlugin2.updateGridLayout, 0);
-                    }
-                    else {
-                        $timeout(layoutPlugin3.updateGridLayout, 0);
-                    }
-                };
-            })($(this).scope().select)
-        });
-        updateLayout();
-    }, 250);*/
 
     $scope.accepter = function (row) {
         $scope.currentConges = row;
@@ -272,9 +252,9 @@ function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, n
 
     $scope.$on('search', function (event, data) {
         if (data.searcher == "admin-conges") {
-            $scope.gridOptionsConges.filterOptions.filterText = data.search;
-            $scope.gridOptionsCongesVal.filterOptions.filterText = data.search;
-            $scope.gridOptionsCongesRef.filterOptions.filterText = data.search;
+            $scope.tableParamsCongesAValider.$params.filter = data.search;
+            $scope.tableParamsValider.$params.filter = data.search;
+            $scope.tableParamsRefuser.$params.filter = data.search;
         }
     });
 
@@ -285,51 +265,22 @@ function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, n
         currentPage: 1
     };
 
-    /*CongesAdminService.list({etat: 1}).then(function (conges) {
-        //$rootScope.congesAvalider = conges;
-        //dataConges = conges;
-        $scope.tableParamsCongesAValiderData = conges;
-        filter.call(scope, $scope.tableParamsCongesAValiderData, $scope.tableParamsCongesAValider, 'congesAvalider');
-    });
-
-    CongesAdminService.list({ etat: 2 }).then(function (conges) {
-        //$rootScope.congesValider = conges;
-        //dataValider = conges;
-        $scope.tableParamsValiderData = conges;
-    });
-
-    CongesAdminService.list({etat: 3}).then(function (conges) {
-        //$rootScope.congesRefuser = conges;
-        //dataRefuser = conges;
-        $scope.tableParamsRefuserData = conges;
-    });  */
-
     $scope.etatOptions = {
         type: 1
     };
     var scope = $scope;
-    /*scope.$watch('tableParamsCongesAValiderData', function(donnees) {
-        filter.call(scope, donnees, $scope.tableParamsCongesAValider, 'congesAvalider');
-    }, true);*/
-    
-    /*scope.$watch('tableParamsCongesAValider', function(args) {
-        filter.call(scope, $scope.tableParamsCongesAValiderData, args, 'congesAvalider');
-    }, true);*/
    
     
     $rootScope.tableParamsCongesAValider = new ngTableParams({
         page: 1,            // show first page
-        //total: 0, // length of data
-        count: 10/*,
+        count: 10,
         sorting: {
-            debut: 'asc'     // initial sorting
-        }*/
+            'debut.date': 'asc'     // initial sorting
+        }
     },
     {
         getData: function ($defer, params) {
             CongesAdminService.list({ etat: 1 }).then(function (conges) {
-                /*$rootScope.congesAvalider = conges;
-                dataConges = conges;*/
                 $rootScope.congesAvalider = ngTableFilter(conges, params);
                 $defer.resolve($rootScope.congesAvalider);
             });
@@ -337,17 +288,14 @@ function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, n
     });
     $rootScope.tableParamsValider = new ngTableParams({
         page: 1,            // show first page
-        //total: 0, // length of data
-        count: 10/*,
+        count: 10,
         sorting: {
-            debut: 'asc'     // initial sorting
-        }*/
+            'debut.date': 'asc'     // initial sorting
+        }
     },
     {
         getData: function ($defer, params) {
             CongesAdminService.list({ etat: 2 }).then(function (conges) {
-                /*$rootScope.congesAvalider = conges;
-                dataConges = conges;*/
                 $rootScope.congesValider = ngTableFilter(conges, params);
                 $defer.resolve($rootScope.congesValider);
             });
@@ -355,127 +303,23 @@ function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, n
     });
     $rootScope.tableParamsRefuser = new ngTableParams({
         page: 1,            // show first page
-        //total: 0, // length of data
-        count: 10/*,
+        count: 10,
         sorting: {
-            debut: 'asc'     // initial sorting
-        }*/
+            'debut.date': 'asc'     // initial sorting
+        }
     },
     {
         getData: function ($defer, params) {
             CongesAdminService.list({ etat: 3 }).then(function (conges) {
-                /*$rootScope.congesAvalider = conges;
-                dataConges = conges;*/
                 $rootScope.congesRefuser = ngTableFilter(conges, params);
                 $defer.resolve($rootScope.congesRefuser);
             });
         }
     });
-
-    /*$scope.$watch('congesAvalider', function(conges) {
-        $rootScope.congesAvalider = conges;
-    }, true);
-
-    $scope.$watch('congesValider', function(conges) {
-        $rootScope.congesValider = conges;
-    }, true);
-
-    $scope.$watch('congesRefuser', function(conges) {
-        $rootScope.congesRefuser = conges;
-    }, true);
-
-    $scope.$watch('tableParamsCongesAValider', function(params) {
-        // use build-in angular filter
-        $rootScope.tableParamsCongesAValider = params;
-    }, true);
-    $scope.$watch('tableParamsValider', function(params) {
-        // use build-in angular filter
-        $rootScope.tableParamsValider = params;
-    }, true);
-    $scope.$watch('tableParamsRefuser', function(params) {
-        // use build-in angular filter
-        $rootScope.tableParamsRefuser = params;
-    }, true);*/
-
-    //ngTableFilter.call($scope, 'tableParamsCongesAValiderData', 'tableParamsCongesAValider', 'congesAvalider');
-    //ngTableFilter.call($scope, 'tableParamsValiderData', 'tableParamsValider', 'congesValider');
-    //ngTableFilter.call($scope, 'tableParamsRefuserData', 'tableParamsRefuser', 'congesRefuser');
-
-    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
-    var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
-    var justificationCellTemplate = $.trim($('#justificationTmpl').html());
-    var validationCellTemplate = $.trim($('#validationTmpl').html());
-
-    /*var defauts = {
-        columnDefs: [
-            { field: 'user', displayName: 'Utilisateur', width: 85, cellTemplate: matriculeCellTemplate, resizable: false },
-            { field: 'debut', displayName: 'Date de début', width: 130, cellFilter: "momentCongesDebut:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'debut.date' },
-            { field: 'fin', displayName: 'Date de fin', width: 130, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
-            { field: 'duree', displayName: 'Duree', width: 60, headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'motif', displayName: 'Modif', width: 60, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
-            { field: '', displayName: 'Validation', width: 85, headerCellTemplate: myHeaderCellTemplate, cellTemplate: validationCellTemplate, resizable: false },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false,
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
-    $scope.gridOptionsConges = angular.extend({
-        data: "congesAvalider"
-    }, defauts);
-    $scope.gridOptionsCongesVal = angular.extend({
-        data: "congesValider"
-    }, defauts);
-    $scope.gridOptionsCongesRef = angular.extend({
-        data: "congesRefuser"
-    }, defauts);*/
-    
     
     $scope.$on('ngGridEventColumns', function (e) {
         setTimeout(function () {
             $('.matriculeCell>span').tooltip({ container: 'body' });
         }, 250);
     });
-
-    function filter(data, params, out) {
-        // use build-in angular filter
-        var orderedData = params.sorting ?
-                                    $filter('orderBy')(data, params.orderBy()) :
-                                    data;
-        orderedData = orderedData || [];
-        orderedData = params.filter ?
-                                    $filter('filter')(orderedData, params.filter) :
-                                    orderedData;
-        if (params.filterText && params.filterText != "") {
-            var result = [], found = false;
-
-            angular.forEach(orderedData, function(datarow) {
-                found = false;
-                angular.forEach(datarow, function(col) {
-                    if (found) return;
-                    if (typeof col == "string" && col.toLowerCase().indexOf(params.filterText.toLowerCase()) > -1) {
-                        found = true;
-                        result.push(datarow);
-                        return;
-                    }
-                    if (typeof col == "number" && col.toString().indexOf(params.filterText.toLowerCase()) > -1) {
-                        found = true;
-                        result.push(datarow);
-                        return;
-                    }
-                });
-            });
-            orderedData = result;
-        }
-
-        params.total = orderedData.length; // set total for recalc pagination
-        this[out] = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
-    }
 };

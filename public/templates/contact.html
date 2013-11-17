@@ -31,6 +31,6 @@
 </div>
 <div class="modal-footer">
      <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
-     <button ng-disabled="demandeContact.$invalid" ng-click="send(demande)" class="btn btn-primary" >Envoyer</button>
+     <button ng-disabled="demandeContact.$invalid || !enable" ng-click="send(demande)" class="btn btn-primary" >Envoyer</button>
      <button ng-click="close()" class="btn" >Annuler</button>
 </div>

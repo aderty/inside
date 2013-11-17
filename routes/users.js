@@ -164,10 +164,10 @@ var routes = {
                 return dataCallback(res)(err);
             }
             mail.Mail.contact(config.admin, user.prenom + " " + user.nom, req.body.sujet, req.body.message, function (err, ret) {
-                if (err) return dataCallback(res)(err);
-                dataCallback(res)(null, { success: true });
+                if (err) return console.log(err);
                 history.log(req.session.username, "Demande d'information " + req.body.sujet + ", message : " + req.body.message);
             });
+            dataCallback(res)(null, { success: true });
         });
     }
 };

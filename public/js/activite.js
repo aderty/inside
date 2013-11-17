@@ -45,7 +45,7 @@ function ActiviteMain($scope, $rootScope, UsersService, ActiviteService, $timeou
                 for (var i = 0, l = valeur.length; i < l; i++) {
                     event = valeur[i];
                     // Pas de compteur pas les weekend
-                    if (event.data.type != 'WK') {
+                    if (event.data.type != 'WK' && event.data.type != 'JF') {
                         eventActivite(event.data.type, event.data.duree == 0 ? 1 : 0.5);
                         hSup += event.data.heuresSup || 0;
                         hAst += event.data.heuresAstreinte || 0;

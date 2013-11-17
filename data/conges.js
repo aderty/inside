@@ -108,7 +108,6 @@ var data = {
             query += ' AND users.admin = ?';
             values.push(admin);
         }
-        
         db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
@@ -209,22 +208,16 @@ var data = {
         if (!conges.id) {
             return fn("Congés inconnu");
         }
-        db.query("CALL UpdateEtatConges(?, ?, ?, @retour)", [conges.id, conges.etat, conges.refus || ''], function(err, ret) {
-            if (err) {
+        db.query("CALL UpdateEtatConges(?, ?, ?, @retour);select @retour;", [conges.id, conges.etat, conges.refus || ''], function (err, ret) {
+            if (err || ret.length == 0) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la modification du congés " + conges.id);
             }
-            db.query("select @retour;", function(err2, ret2) {
-                if (err2 || ret2.length == 0) {
-                    console.log('ERROR: ' + err2);
-                    return fn("Erreur lors de la modification du congés " + conges.id);
-                }
-                if (ret2[0]['@retour']) {
-                    var error = ret2[0]['@retour'];
-                    return fn(errors[error] || error);
-                }
-                fn(null, true);
-            });
+            if (ret[1]['@retour']) {
+                var error = ret[1]['@retour'];
+                return fn(errors[error] || error);
+            }
+            fn(null, true);
         });
 
         /*db.updateById("conges", conges.id, {etat: conges.etat}, function(err, ret) {

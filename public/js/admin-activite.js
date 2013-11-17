@@ -13,6 +13,13 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
         mois: $scope.lstMois[new Date().getMonth() + 1] // Mois courant
     };
 
+    $scope.$on('search', function (event, data) {
+        if (data.searcher == "admin-activite") {
+            $scope.tableParamsActivite.$params.filter = data.search;
+            $scope.tableParamsSansActivite.$params.filter = data.search;
+        }
+    });
+
     $rootScope.tableParamsActivite = new ngTableParams({
         page: 1,            // show first page
         count: 10,
@@ -53,17 +60,6 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
         options.mois = $scope.lstMois.indexOf(selection.mois);
         $rootScope.tableParamsActivite.reload();
         $rootScope.tableParamsSansActivite.reload();
-        /*ActiviteAdminService.list(options).then(function(result) {
-            $scope.eventSources = null;
-            $rootScope.activites = result;
-            $rootScope.tableParamsActiviteData = result;
-            $rootScope.tableParamsActivite.total = result.length;
-        });
-        ActiviteAdminService.listSans(options).then(function(result) {
-            $rootScope.sansActivites = result;
-            $rootScope.tableParamsSansActiviteData = result;
-            $rootScope.tableParamsSansActivite.total = result.length;
-        });*/
     }, true);
 
     $scope.isEditable = function(row){
@@ -188,12 +184,6 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         toDo = false;
                     }
-                    /*if (data.debut.type == 0 && !data.end) {
-                    data.duree = 0;
-                    }*/
-                    /*if (data.debut.type == 1 && !data.end) {
-                    data.duree = 2;
-                    }*/
                     else if (data.debut.type == 0 && data.end && data.fin.type == 0) {
                         data.duree = 1;
                         var date = new Date(current.toDate());
@@ -358,162 +348,6 @@ function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter,
     };
 }
 
-function ActiviteAdminGrid($scope, $rootScope, $filter, ngTableParams, ActiviteAdminService) {
-    $scope.filterOptions = {
-        filterText: "",
-        useExternalFilter: false
-    };
-
-    var dataActivite, dataSansActivite;
-
-    $scope.$on('search', function (event, data) {
-        if (data.searcher == "admin-activite") {
-            $scope.filterOptions = {
-                filterText: data.search,
-                useExternalFilter: false
-            };
-        }
-    });
-    /*$rootScope.tableParamsActivite = new ngTableParams({
-        page: 1,            // show first page
-        total: 0, // length of data
-        count: 10,
-        sorting: {
-            mois: 'asc'     // initial sorting
-        }
-    },
-    {
-        getData: function ($defer, params) {
-            ActiviteAdminService.list(options).then(function (result) {
-                $rootScope.activites = result;
-                $defer.resolve($rootScope.activites);
-            });
-        }
-    });
-    $rootScope.tableParamsSansActivite = new ngTableParams({
-        page: 1,            // show first page
-        total: 0, // length of data
-        count: 10,
-        sorting: {
-            mois: 'asc'     // initial sorting
-        }
-    },
-    {
-        getData: function ($defer, params) {
-            ActiviteAdminService.listSans(options).then(function (result) {
-                $rootScope.sansActivites = result;
-                $defer.resolve($rootScope.sansActivites);
-            });
-        }
-    });*/
-    $scope.$watch('tableParamsActivite', function(params) {
-        // use build-in angular filter
-        $rootScope.tableParamsActivite = params;
-    }, true);
-    $scope.$watch('tableParamsSansActivite', function(params) {
-        // use build-in angular filter
-        $rootScope.tableParamsSansActivite = params;
-    }, true);
-    /*$rootScope.$watch('tableParamsActivite', function(params) {
-        // use build-in angular filter
-        var orderedData = params.sorting ?
-                                $filter('orderBy')($rootScope.tableParamsActiviteData, params.orderBy()) :
-                                $rootScope.tableParamsActiviteData;
-        orderedData = orderedData || [];
-        orderedData = params.filter ?
-                                $filter('filter')(orderedData, params.filter) :
-                                orderedData;
-
-        params.total = orderedData.length; // set total for recalc pagination
-        $rootScope.activites = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
-    }, true);
-    $rootScope.$watch('tableParamsSansActivite', function(params) {
-        // use build-in angular filter
-        var orderedData = params.sorting ?
-                                $filter('orderBy')($rootScope.tableParamsSansActiviteData, params.orderBy()) :
-                                $rootScope.tableParamsSansActiviteData;
-        orderedData = orderedData || [];
-        orderedData = params.filter ?
-                                $filter('filter')(orderedData, params.filter) :
-                                orderedData;
-
-        params.total = orderedData.length; // set total for recalc pagination
-        $rootScope.sansActivites = orderedData.slice((params.page - 1) * params.count, params.page * params.count);
-    }, true);*/
-    
-
-    $scope.pagingOptions = {
-        pageSizes: [25, 50, 100],
-        pageSize: 50,
-        totalServerItems: 0,
-        currentPage: 1
-    };
-    
-
-    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
-    var matriculeCellTemplate = $.trim($('#matriculeTmpl').html());
-    var validationCellTemplate = $.trim($('#validationTmpl').html());
-    var moisCellTemplate = $.trim($('#moisTmpl').html());
-    var actionEdit = $.trim($('#actionRowTmplEdit').html());
-    var actionCreate = $.trim($('#actionRowTmplCreate').html());
-    var actionDelete = $.trim($('#actionRowTmplDel').html());
-
-    $scope.gridOptions = {
-        data: 'activites',
-        columnDefs: [
-            { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
-            { field: 'mois', displayName: 'Mois', width: 70, cellTemplate: moisCellTemplate, resizable: false },
-            { field: 'user', displayName: 'Utilisateur', cellTemplate: matriculeCellTemplate, resizable: false },
-            { field: 'JT1', displayName: 'En mission', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
-            { field: 'FOR', displayName: 'Formation', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
-            { field: 'INT', displayName: 'Inter contrat', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "travail" },
-            { field: 'CP', displayName: 'CP', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'CP_ANT', displayName: 'CP anticipés', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'RTT', displayName: 'RTT', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            //{ field: 'RCE', displayName: 'RC employeur', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'AE', displayName: 'Autre', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "conges" },
-            { field: 'heuresSup', displayName: 'Heures suplémentaires', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
-            { field: 'heuresAstreinte', displayName: 'Astreintes', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
-            { field: 'heuresNuit', displayName: 'Heures de nuit', width: 100, headerCellTemplate: myHeaderCellTemplate, cssClass: "heures" },
-            { field: '', cellTemplate: validationCellTemplate, width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: actionEdit, width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: actionDelete, width: 15, headerCellTemplate: myHeaderCellTemplate }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false,
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
-
-    $scope.gridOptionsSans = {
-        data: 'sansActivites',
-        columnDefs: [
-            { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges refConges">&nbsp;</span>', resizable: false },
-            { field: 'mois', displayName: 'Mois', width: 70, cellTemplate: moisCellTemplate, resizable: false },
-            { field: 'id', displayName: 'Matricule', width: 100, resizable: false },
-            { field: 'nom', displayName: 'Nom', headerCellTemplate: myHeaderCellTemplate },
-            { field: 'prenom', displayName: 'Prénom', headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: actionCreate, width: 15, headerCellTemplate: myHeaderCellTemplate }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false,
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
-
-    setTimeout(function() {
-        $('.motif-autre').tooltip({ html: true, container: 'body' });
-    }, 250);
-}
-
 // Contrôleur de la popup de modification de password
 function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, ActiviteAdminService) {
     $rootScope.error = "";
@@ -528,13 +362,6 @@ function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, Acti
 
     var currentYear = new Date().getFullYear();
     $scope.activiteUser = [];
-
-    /*$rootScope.typeActivite = angular.copy($rootScope.motifsConges);
-    $rootScope.typeActivite.splice(0, 0, { id: 'JT1', libelle: 'En mission' });
-    $rootScope.typeActivite.splice(0, 0, { id: 'FOR', libelle: 'Formation' });
-    $rootScope.typeActivite.splice(0, 0, { id: 'INT', libelle: 'Intercontrat' });
-    $rootScope.typeActivite.push({ id: 'WK', libelle: 'Weekend' });
-    $rootScope.typeActivite.push({ id: 'JF', libelle: 'Journée fériée' });*/
 
     /* alert on eventClick */
     $scope.alertEventOnClick = function(date, allDay, jsEvent, view) {

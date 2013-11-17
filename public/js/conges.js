@@ -94,10 +94,10 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
                     $rootScope.error = null;
                     var index = $rootScope.conges.indexOf(row);
                     $rootScope.conges.splice(index, 1);
-                    user = UsersService.get({ id: 0 }, function (retour) {
-                        $scope.cp = user.cp;
-                        $scope.cp_ant = user.cp_ant;
-                        $scope.rtt = user.rtt;
+                    $scope.user = UsersService.get({ id: 0 }, function (retour) {
+                        $scope.cp = retour.cp;
+                        $scope.cp_ant = retour.cp_ant;
+                        $scope.rtt = retour.rtt;
                     });
                 });
             }
@@ -189,39 +189,8 @@ function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, C
     var dataCong;
     var past = true;
     $rootScope.conges = [];
-
-    /*CongesService.list().then(function (conges) {
-        $rootScope.tableParamsCongesData = conges;
-        //$scope.tableParamsConges.total = dataCong.length;
-    });*/
-    
-    /*setTimeout(function () {
-        $(".tabbable").each(function () {
-            $(this).scope().select = (function (select) {
-                return function (e) {
-                    select.apply(this, arguments);
-                    if(e.heading == "Historique"){
-                        updateFilter(null);
-                    }
-                    else if (e.heading == "Mes absences à venir") {
-                        updateFilter(1);
-                    }
-                };
-            })($(this).scope().select)
-        });
-    }, 250);*/
     
     $scope.updateFilter = function(etat){
-        $timeout(function() {
-            /*if (etat) {
-                $scope.gridOptionsConges.filterOptions.filterRow = { etat: etat };
-                $rootScope.tableParamsConges.filter = { etat: etat };
-            }
-            else {
-                $scope.gridOptionsConges.filterOptions.filterRow = null;
-                $rootScope.tableParamsConges.filter = {};
-            }*/
-        }, 0);
         past = !past;
         $rootScope.tableParamsConges.reload();
         $rootScope.tableParamsConges.page(1);
@@ -229,14 +198,10 @@ function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, C
 
     $rootScope.tableParamsConges = new ngTableParams({
         page: 1,            // show first page
-        //total: 0, // length of data
         count: 10,
         sorting: {
-            debut: 'asc'     // initial sorting
+            'debut.date': 'asc'     // initial sorting
         },
-        /*filter: { 
-            etat: 2 
-        }*/
     },
         {
             getData: function ($defer, params) {
@@ -247,46 +212,4 @@ function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, C
             }
         });
 
-    //ngTableFilter.call($scope, 'tableParamsCongesData', 'tableParamsConges', 'conges');
-
-    $scope.$watch('conges', function(conges) {
-        $rootScope.conges = conges;
-    }, true);
-    
-    $scope.$watch('tableParamsConges', function(params) {
-        // use build-in angular filter
-            $rootScope.tableParamsConges = params;
-    }, true);
-
-    var myHeaderCellTemplate = $.trim($('#headerTmpl').html());
-    var justificationCellTemplate = $.trim($('#justificationTmpl').html());
-
-    $scope.gridOptionsConges = {
-        data: 'conges',
-        columnDefs: [
-            { field: '', displayName: '', width: 22, cellTemplate: '<span class="etatConges {{cssConges[row.etat]}}">&nbsp;</span>', resizable: false },
-            { field: 'debut', displayName: 'Date de début', width: 160, cellFilter: "momentCongesDebut:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'debut.date' },
-            { field: 'fin', displayName: 'Date de fin', width: 160, cellFilter: "momentCongesFin:'DD/MM/YYYY'", headerCellTemplate: myHeaderCellTemplate, resizable: false, sort: 'fin.date' },
-            { field: 'duree', displayName: 'Durée', width: 35, headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'motif', displayName: 'Motif', width: 65, cellFilter: "motifCongesShort", headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'etat', displayName: 'Statut', width: 165, cellFilter: "etatConges", headerCellTemplate: myHeaderCellTemplate, resizable: false },
-            { field: 'justification', displayName: 'Justification', headerCellTemplate: myHeaderCellTemplate, cellTemplate: justificationCellTemplate, resizable: false },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplEdit').html()), width: 15, headerCellTemplate: myHeaderCellTemplate },
-            { field: '', cellTemplate: $.trim($('#actionRowTmplDel').html()), width: 15, headerCellTemplate: myHeaderCellTemplate }
-        ],
-        enablePaging: false,
-        showFooter: false,
-        enableRowSelection: false,
-        enableColumnResize: true,
-        showColumnMenu: false,
-        showFilter: false,
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
-
-    $scope.$on('ngGridEventColumns', function (e) {
-        setTimeout(function () {
-            $('.ngHeaderText').tooltip({ container: 'body' });
-        }, 250);
-    });
 };

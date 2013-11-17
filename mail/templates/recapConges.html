@@ -5,7 +5,7 @@
     <title>Listes des congés à valider.</title>
 </head>
 <body>
-    <h2>Listes des congés à valider au {{date}}.</h2>
+    <h2>Listes des congés à valider au <%=date%>.</h2>
     <hr />
     <table>
         <thead>
@@ -19,16 +19,16 @@
             </tr>
         </thead>
         <tbody>
-            {{#conges}}
+            <% _.each(conges, function( conge ){ %>
             <tr>
-                <td>{{id}}</td>
-                <td>{{prenom}}</td>
-                <td>{{nom}}</td>
-                <td>{{debut}} {{debutType}}</td>
-                <td>{{fin}} {{finType}}</td>
-                <td>{{motif}}</td>
+                <td><%=conge.id%></td>
+                <td><%=conge.prenom%></td>
+                <td><%=conge.nom%></td>
+                <td><%=conge.debut%> <%=conge.debutType%></td>
+                <td><%=conge.fin%> <%=conge.finType%></td>
+                <td><%=conge.motif%></td>
             </tr>
-            {{/conges}}
+            <% }); %>
         </tbody>
     </table>
 </body>

@@ -57,7 +57,7 @@
     <div class="control-group" ng-class="{error: editUser.inputEmail.$dirty && editUser.inputEmail.$invalid, success:editUser.inputEmail.$dirty && !editUser.inputEmail.$invalid}">
         <label class="control-label" for="inputEmail">Email</label>
         <div class="controls">
-            <input type="email" id="inputEmail" name="inputEmail" ng-model="currentUser.email" required placeholder="user@insideconsulting.fr">
+            <input type="email" id="inputEmail" name="inputEmail" ng-model="currentUser.email" required placeholder="son@email.fr">
             <div class="input-help">
                 <h4>Vous devez renseigner un email.</h4>
             </div>
@@ -65,9 +65,9 @@
     </div>
     <!--Saisie password-->
     <div class="control-group" ng-class="{error: editUser.password.$dirty && editUser.password.$invalid, success:editUser.password.$dirty && !editUser.password.$invalid}">
-        <label class="control-label" for="password">Password</label>
+        <label class="control-label" for="password">Mot de passe</label>
         <div class="controls password">
-            <input type="password" id="password" name="password" ng-model="currentUser.pwd" password-validate ng-required='edition == 1' placeholder="Password">
+            <input type="password" id="password" name="password" ng-model="currentUser.pwd" password-validate ng-required='edition == 1' placeholder="Mot de passe">
             <div class="input-help">
                 <h4>Le mot de passe doit avoir au minimum :</h4>
                 <ul>
@@ -80,9 +80,9 @@
     </div>
     <!--Saisie confirmation du password-->
     <div class="control-group" ng-class="{error: editUser.confirm_password.$dirty && editUser.confirm_password.$invalid, success:editUser.confirm_password.$dirty && !editUser.confirm_password.$invalid}">
-        <label class="control-label" for="confirm_password">Retapez le password</label>
+        <label class="control-label" for="confirm_password">Retapez le mot de passe</label>
         <div class="controls">
-            <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Password" ng-required='edition == 1' ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
+            <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Mot de passe" ng-required='edition == 1' ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
             <div class="input-help">
                 <h4>Vous devez saisir le même mot de passe.</h4>
             </div>

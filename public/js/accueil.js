@@ -48,6 +48,7 @@ function LoginController($scope, $rootScope, LoginService, $dialog) {
 // Contrôleur de la popup de modification de password
 function DialogPasswordLost($scope, $rootScope, dialog, LoginService) {
     $rootScope.error = "";
+    $scope.enable = true;
     $scope.password = {
         etat: 0
     };
@@ -59,11 +60,16 @@ function DialogPasswordLost($scope, $rootScope, dialog, LoginService) {
         if ($scope.pwdLost.$invalid) {
             return;
         }
+        $rootScope.error = "";
+        $scope.enable = false;
         LoginService.passwordLost(password).then(function (response) {
+            $scope.enable = true;
             if (response && password.etat == 2) {
                 dialog.close();
                 $rootScope.initConnected(response);
             }
+        }, function (response) {
+            $scope.enable = true;
         });
     };
 }

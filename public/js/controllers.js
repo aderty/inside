@@ -171,6 +171,7 @@ function NavBar($scope, $rootScope, LoginService, $dialog) {
 // Contrôleur de la popup de modification de password
 function DialogPassword($scope, $rootScope, dialog, UsersService) {
     $rootScope.error = "";
+    $scope.enable = true;
     $scope.close = function() {
         $rootScope.error = "";
         dialog.close(); 
@@ -179,17 +180,23 @@ function DialogPassword($scope, $rootScope, dialog, UsersService) {
         if ($scope.pwdUser.$invalid) {
             return;
         }
-        UsersService.password(currentUser).then(function(retour){
-            if(retour){
-                dialog.close(); 
+        $rootScope.error = "";
+        $scope.enable = false;
+        UsersService.password(currentUser).then(function (retour) {
+            $scope.enable = true;
+            if (retour) {
+                dialog.close();
             }
-        }); 
+        }, function (response) {
+            $scope.enable = true;
+        });
     };
 }
 
 // Contrôleur de la popup de demande d'information
 function DialogContact($scope, $rootScope, dialog, ContactService) {
     $rootScope.error = "";
+    $scope.enable = true;
     $scope.sujets = [
         {libelle: "Congés"},
         {libelle: "Compte-rendu d'activité"},
@@ -201,10 +208,14 @@ function DialogContact($scope, $rootScope, dialog, ContactService) {
         dialog.close();
     };
     $scope.send = function (demande) {
-        ContactService.send(demande).then(function(retour) {
-            if (retour) {
-                dialog.close();
+        $scope.enable = false;
+        ContactService.send(demande).then(function (retour) {
+            $scope.enable = true;
+            if (retour) { 
             }
+        }, function (response) {
+            $scope.enable = true;
         });
+        dialog.close();
     };
 }
