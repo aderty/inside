@@ -3,25 +3,25 @@
 /* Controllers */
 
 // Config par défaut
-app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
+app.run(["$rootScope", "MotifsService", function($rootScope, MotifsService) {
     $rootScope.pages = {
-        index: { 
+        index: {
             name: "Accueil",
             searcher: false
         },
-        users: { 
+        users: {
             name: "Gestion des utilisateurs",
             searcher: "users"
         },
-        conges: { 
+        conges: {
             name: "Mes demandes de congés",
             searcher: false
         },
-        "admin-conges": { 
+        "admin-conges": {
             name: "Validation des congés",
             searcher: "admin-conges"
         },
-        activite: { 
+        activite: {
             name: "Déclarer mon activité",
             searcher: false
         },
@@ -38,16 +38,16 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
     ];
 
     $rootScope.etatsConges = [
-        { id: '1', libelle: 'En attente de validation' , cssClass: 'val'},
-        { id: '2', libelle: 'Validé' , cssClass: 'val'},
-        { id: '3', libelle: 'Refusé' , cssClass: 'val'}
+        { id: '1', libelle: 'En attente de validation', cssClass: 'val' },
+        { id: '2', libelle: 'Validé', cssClass: 'val' },
+        { id: '3', libelle: 'Refusé', cssClass: 'val' }
     ];
-    $rootScope.cssConges ={
-         1: 'valConges',
-         2: 'accConges',
-         3: 'refConges'
+    $rootScope.cssConges = {
+        1: 'valConges',
+        2: 'accConges',
+        3: 'refConges'
     };
-    $rootScope.initConnected = function (user) {
+    $rootScope.initConnected = function(user) {
         $rootScope.connected = true;
         if (user) {
             $rootScope.currentUser = user;
@@ -55,13 +55,13 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
             $rootScope.role = user.role;
             $rootScope.infos = user.infos;
         }
-        MotifsService.list().then(function (motifs) {
-            $rootScope.motifsConges = motifs;/*jQuery.grep(motifs, function (n, i) {
+        MotifsService.list().then(function(motifs) {
+            $rootScope.motifsConges = motifs; /*jQuery.grep(motifs, function (n, i) {
                 return (n.id == 'CP' || n.id == 'RCE' || n.id == 'RC' || n.id == 'CP_ANT');
             });*/
             /*$rootScope.motifsConges.push({ id: 'AE', libelle: 'Absence exceptionnelle', shortlibelle: 'Abs. exp.' });
             $rootScope.motifsCongesExcep = jQuery.grep(motifs, function (n, i) {
-                return (n.id != 'CP' && n.id != 'RCE' && n.id != 'RC' && n.id != 'CP_ANT');
+            return (n.id != 'CP' && n.id != 'RCE' && n.id != 'RC' && n.id != 'CP_ANT');
             });*/
 
             $rootScope.typeActiviteTravaille = [
@@ -100,15 +100,14 @@ app.run(["$rootScope", "MotifsService", function ($rootScope, MotifsService) {
             $rootScope.typeActivite.pop();
         });
     }
-    
+
     $rootScope.searcher = false;
     if (window.config.connected ? true : false) {
         $rootScope.initConnected(window.config);
     }
-}]);
-
-// Contrôleur de la navigation de l'application
-function appController($scope, $routeParams, $rootScope) {
+} ]);
+app.controller('appController', ['$scope', '$routeParams', '$rootScope', function($scope, $routeParams, $rootScope) {
+    // Contrôleur de la navigation de l'application
     var id = location.pathname;
     if ($rootScope.pages[id.substring(1)]) {
         $rootScope.idpage = id.substring(1);
@@ -116,36 +115,36 @@ function appController($scope, $routeParams, $rootScope) {
         $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
     }
 }
-
-// Contrôleur de la barre de navigation
-function NavBar($scope, $rootScope, LoginService, $dialog) {
-    $scope.logout = function (user) {
-        LoginService.logout(function (err, ret) {
+]).
+controller('NavBar', ['$scope', '$rootScope', 'LoginService', '$dialog', function($scope, $rootScope, LoginService, $dialog) {
+    // Contrôleur de la barre de navigation
+    $scope.logout = function(user) {
+        LoginService.logout(function(err, ret) {
             $rootScope.connected = false;
         });
     }
-    $scope.search = function () {
+    $scope.search = function() {
         $rootScope.$broadcast("search", {
             searcher: $rootScope.searcher,
             search: search.value
         });
     }
     // Inlined template for demo 
-    $scope.opts = { 
-        backdrop: true, 
+    $scope.opts = {
+        backdrop: true,
         keyboard: true,
         backdropClick: true,
         templateUrl: '/templates/password.html',
         controller: 'DialogPassword'
-    }; 
-        
-    $scope.changePassword = function(){ 
+    };
+
+    $scope.changePassword = function() {
         $rootScope.error = "";
-        var d = $dialog.dialog($scope.opts); 
-        d.open().then(function(result){ 
-            if(result) {
-                
-            } 
+        var d = $dialog.dialog($scope.opts);
+        d.open().then(function(result) {
+            if (result) {
+
+            }
         });
     };
 
@@ -167,55 +166,54 @@ function NavBar($scope, $rootScope, LoginService, $dialog) {
             }
         });
     };
-}
-// Contrôleur de la popup de modification de password
-function DialogPassword($scope, $rootScope, dialog, UsersService) {
+} ]).
+controller('DialogPassword', ['$scope', '$rootScope', 'dialog', 'UsersService', function($scope, $rootScope, dialog, UsersService) {
+    // Contrôleur de la popup de modification de password
     $rootScope.error = "";
     $scope.enable = true;
     $scope.close = function() {
         $rootScope.error = "";
-        dialog.close(); 
-    }; 
-    $scope.save = function (currentUser) {
+        dialog.close();
+    };
+    $scope.save = function(currentUser) {
         if ($scope.pwdUser.$invalid) {
             return;
         }
         $rootScope.error = "";
         $scope.enable = false;
-        UsersService.password(currentUser).then(function (retour) {
+        UsersService.password(currentUser).then(function(retour) {
             $scope.enable = true;
             if (retour) {
                 dialog.close();
             }
-        }, function (response) {
+        }, function(response) {
             $scope.enable = true;
         });
     };
-}
-
-// Contrôleur de la popup de demande d'information
-function DialogContact($scope, $rootScope, dialog, ContactService) {
+} ]).
+controller('DialogContact', ['$scope', '$rootScope', 'dialog', 'ContactService', function($scope, $rootScope, dialog, ContactService) {
+    // Contrôleur de la popup de demande d'information
     $rootScope.error = "";
     $scope.enable = true;
     $scope.sujets = [
-        {libelle: "Congés"},
-        {libelle: "Compte-rendu d'activité"},
-        {libelle: "Mon compte"},
-        {libelle: "Poser une question..."}
+        { libelle: "Congés" },
+        { libelle: "Compte-rendu d'activité" },
+        { libelle: "Mon compte" },
+        { libelle: "Poser une question..." }
     ];
     $scope.close = function() {
         $rootScope.error = "";
         dialog.close();
     };
-    $scope.send = function (demande) {
+    $scope.send = function(demande) {
         $scope.enable = false;
-        ContactService.send(demande).then(function (retour) {
+        ContactService.send(demande).then(function(retour) {
             $scope.enable = true;
-            if (retour) { 
+            if (retour) {
             }
-        }, function (response) {
+        }, function(response) {
             $scope.enable = true;
         });
         dialog.close();
     };
-}
+} ]);

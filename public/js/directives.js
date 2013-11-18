@@ -139,7 +139,7 @@ directive('appVersion', ['version', function(version) {
         }
     };
 } ]).
-directive('grid', function($compile, $timeout) {
+directive('grid', ['$compile', '$timeout', function($compile, $timeout) {
     var template = '<thead>' +
                             '<tr>' +
                                 '<th ng-repeat="(i,th) in options.columnDefs" ng-class="selectedCls(th)" style="width: {{width(th)}};" ng-click="changeSorting(th)">{{th.displayName}}</th>' +
@@ -232,8 +232,8 @@ directive('grid', function($compile, $timeout) {
             }
         }
     };
-}).
-directive('rowgrid', function($compile) {
+}]).
+directive('rowgrid', ['$compile', function($compile) {
     var template = '<div>{{row[def.field]',
     templateFin = '}}</div>';
     return {
@@ -265,4 +265,4 @@ directive('rowgrid', function($compile) {
             }
         }
     };
-});
+}]);

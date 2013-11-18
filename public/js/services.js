@@ -6,7 +6,7 @@
 // In this case it is a simple value service.
 angular.module('inside.services', ['ngResource']).
   value('version', '0.1').
-  factory('LoginService', function($resource, $http, $q, $rootScope) {
+  factory('LoginService', ['$resource', '$http', '$q', '$rootScope', function($resource, $http, $q, $rootScope) {
       return {
           login: function(email, pwd, options, callback) {
               $http({
@@ -75,8 +75,8 @@ angular.module('inside.services', ['ngResource']).
               return defered.promise;
           }
       };
-  }).
-    factory('MotifsService', function($http, $q) {
+  }]).
+    factory('MotifsService', ['$http', '$q', function($http, $q) {
         var motifs = null;
         return {
             list: function() {
@@ -96,8 +96,8 @@ angular.module('inside.services', ['ngResource']).
                 return defered.promise;
             }
         };
-    }).
-    factory('ContactService', function($http, $q, $rootScope) {
+    }]).
+    factory('ContactService', ['$http', '$q', '$rootScope', function($http, $q, $rootScope) {
         var motifs = null;
         return {
             send: function(demande) {
@@ -120,8 +120,8 @@ angular.module('inside.services', ['ngResource']).
                 return defered.promise;
             }
         };
-    }).
-    factory('HistoryService', function ($http, $q, $rootScope) {
+    }]).
+    factory('HistoryService', ['$http', '$q', '$rootScope', function ($http, $q, $rootScope) {
         var motifs = null;
         return {
             list: function (user) {
@@ -146,8 +146,8 @@ angular.module('inside.services', ['ngResource']).
                 return defered.promise;
             }
         };
-    }).
-  factory('UsersService', function($resource, $q, $rootScope) {
+    }]).
+  factory('UsersService', ['$resource', '$q', '$rootScope', function($resource, $q, $rootScope) {
       var resource = $resource('/data-users/:id',
              { id: '@id' }, {
                  charge: { method: 'POST', params: { charge: true} },
@@ -196,8 +196,8 @@ angular.module('inside.services', ['ngResource']).
               })
           }
       };*/
-  }).
-  factory('CongesService', function($resource, $q, $rootScope) {
+  }]).
+  factory('CongesService', ['$resource', '$q', '$rootScope', function($resource, $q, $rootScope) {
       var resource = $resource('/data-conges/:id',
              { id: '@id' }, {
                  create: { method: 'POST', params: { creation: true} }
@@ -296,8 +296,8 @@ angular.module('inside.services', ['ngResource']).
               return defered.promise;
           }
       };
-  }).
-  factory('CongesAdminService', function ($resource, $q, $rootScope, $filter) {
+  }]).
+  factory('CongesAdminService', ['$resource', '$q', '$rootScope', '$filter', function ($resource, $q, $rootScope, $filter) {
       var resource = $resource('/data-admin-conges/:id',
              { id: '@id' }, {
                  /*'queryValidation': { method: 'GET', isArray: true, params: { etat: 1} },
@@ -419,8 +419,8 @@ angular.module('inside.services', ['ngResource']).
               return defered.promise;
           }
       };
-  }).
-  factory('ActiviteService', function($resource, $q, $rootScope) {
+  }]).
+  factory('ActiviteService', ['$resource', '$q', '$rootScope', function($resource, $q, $rootScope) {
       var resource = $resource('/data-activite/:mois',
              { id: '@mois' }, {
                  list: { method: 'GET' },
@@ -514,8 +514,8 @@ angular.module('inside.services', ['ngResource']).
               return defered.promise;
           }
       };
-  }).
- factory('ActiviteAdminService', function($resource, $q, $rootScope) {
+  }]).
+ factory('ActiviteAdminService', ['$resource', '$q', '$rootScope', function($resource, $q, $rootScope) {
      var resource = $resource('/data-admin-activite/:id',
              { id: '@id' }, {
                  list: { method: 'GET', isArray: true },
@@ -685,4 +685,4 @@ angular.module('inside.services', ['ngResource']).
              return defered.promise;
          }
      };
- });
+ }]);

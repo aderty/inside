@@ -1,5 +1,13 @@
 ﻿'use strict';
 
+(function() {
+    /* Controllers */
+    // Contrôleur principal de la gestion des utilisateurs
+    this.register('CongesMain', ['$scope', '$rootScope', '$dialog', 'UsersService', 'CongesService', CongesMain]);
+    this.register('DialogAideConges', ['$scope', 'dialog', DialogAideConges]);
+    this.register('CongesGauges', ['$scope', '$rootScope', CongesGauges]);
+    this.register('CongesGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesService', '$timeout', CongesGrid]);
+
 function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.edition = 0;
     $scope.mode = "";
@@ -211,5 +219,5 @@ function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, C
                 });
             }
         });
-
 };
+}).call(app.controllerProvider);

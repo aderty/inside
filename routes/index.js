@@ -2,7 +2,8 @@
 var path = require('path'),
     users = require('./users'),
     conges = require('./conges'),
-    activite = require('./activite');
+    activite = require('./activite'),
+    config = require('../config.json');
 
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");
@@ -15,10 +16,10 @@ exports.manifest = function (req, res) {
  * GET home page.
  */
 
-exports.index = function (req, res) {
+exports.index = function(req, res) {
     //res.setHeader('Cache-Control', 'public, max-age=' + 31557600000);
     res.setHeader('Cache-Control', 'no-cache');
-    users.infos(req, res, function (err, infos) {
+    users.infos(req, res, function(err, infos) {
         if (err) {
             console.log(err);
             res.redirect("/logout");
@@ -27,7 +28,8 @@ exports.index = function (req, res) {
             connected: req.session.username ? true : false,
             role: req.session.role ? req.session.role : 0,
             prenom: req.session.prenom,
-            infos: infos || {}
+            infos: infos || {},
+            prefix: config.env.NODE_ENV == 'production' ? 'min/' : ''
         });
     });
 };

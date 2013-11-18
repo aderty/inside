@@ -75,11 +75,13 @@
 
 <% include scripts.html %>
 
-<script src="../js/directives.js"></script>
-<script src="../js/filters.js"></script>
-<script src="../js/services.js"></script>
-<script src="../js/app.js"></script>
-<script src="../js/controllers.js"></script>
+<% if (prefix) { %><script>window.prefix = '<%=prefix %>';</script><% } %>
+
+<script src="../js/<%=prefix %>directives.js"></script>
+<script src="../js/<%=prefix %>filters.js"></script>
+<script src="../js/<%=prefix %>services.js"></script>
+<script src="../js/<%=prefix %>app.js"></script>
+<script src="../js/<%=prefix %>controllers.js"></script>
 
 <% include footer.html %>
 
