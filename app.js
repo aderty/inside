@@ -22,8 +22,8 @@ var express = require('express')
 const parseCookie = require('connect').utils.parseSignedCookies;
 
 var options = {
-    key: fs.readFileSync('../key/inside-groupe.com.pem'),
-    cert: fs.readFileSync('../key/inside-groupe.com.crt'),
+    key: fs.readFileSync(__dirname + '/key/inside-groupe.com.pem'),
+    cert: fs.readFileSync(__dirname + '/key/inside-groupe.com.crt'),
     //ca: fs.readFileSync('../key/inside-groupe.com.csr'),
     requestCert: true
 };
@@ -258,7 +258,7 @@ app.post('/passwordLost', routes.users.passwordLostValid);
 // redirect all others to the index (HTML5 history)
 app.get('*', [requireLogin], routes.index);
 
-if (!module.parent) {
+//if (!module.parent) {
     // set up plain http server
     var currentHttp = express();
     // set up a route to redirect http to https
@@ -272,7 +272,7 @@ if (!module.parent) {
     server.listen(SECURE_PORT);
     console.log('Server running at http://127.0.0.1:' + PORT);
     console.log('Server running at https://127.0.0.1:' + SECURE_PORT);
-}
+//}
 
 process.on('uncaughtException', function (exception) {
     //exception.response.writeHead(exception.code, {'Content-Type': 'text/html'});

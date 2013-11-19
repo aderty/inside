@@ -3,6 +3,7 @@ bin/
 obj/
 My Project/
 sql/
+key/
 *.json
 !package.json
 *.sln
