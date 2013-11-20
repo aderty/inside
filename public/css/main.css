@@ -52,10 +52,14 @@ html.start .background > span{
   100% { transform: rotate(359deg); }
 }
 
-#logo {
+#logo, #logoPrint {
     float: left; 
     height: 35px;
     margin: 4px 20px 0 5px;
+}
+#logoPrint
+{
+	display:none;
 }
 
 #login .control-group {
@@ -194,8 +198,17 @@ table td.cell > div {
 #mainActivite input,
 #activiteCalendar input,
 #editUser input {
-    height:inherit;
+    height:30px;
 }
+#pwd input[type=checkbox],
+#login input[type=checkbox],
+#editConges input[type=checkbox],
+#mainActivite input[type=checkbox],
+#activiteCalendar input[type=checkbox],
+#editUser input[type=checkbox] {
+    height: 15px;
+}
+
 #demandeContact .controls,
 #pwd .controls,
 #login .controls,
@@ -635,6 +648,11 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
 	width: 12px;
 	height: 12px;
 	top: 1px;
+}
+
+.fc-event-container > .popover
+{
+	z-index: 1010;
 }
 
 .titre {
