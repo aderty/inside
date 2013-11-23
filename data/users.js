@@ -291,7 +291,7 @@ var data = {
         });*/
     },
     getNextId: function(fn) {
-        db.query('SELECT MAX(id) + 1 AS next FROM users WHERE id <> 999999', function(error, ret) {
+        db.query('SELECT MAX(id) + 1 AS next FROM users WHERE id < 111111', function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
                 return fn(error);
