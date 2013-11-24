@@ -205,7 +205,13 @@ table td.cell > div {
 #editConges input[type=checkbox],
 #mainActivite input[type=checkbox],
 #activiteCalendar input[type=checkbox],
-#editUser input[type=checkbox] {
+#editUser input[type=checkbox],
+#pwd input[type=radio],
+#login input[type=radio],
+#editConges input[type=radio],
+#mainActivite input[type=radio],
+#activiteCalendar input[type=radio],
+#editUser input[type=radio] {
     height: 15px;
 }
 
