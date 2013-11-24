@@ -130,36 +130,20 @@ var data = {
         if (!checkConges(conges)) {
             return fn("Congés invalide");
         }
-        db.query("CALL AddConges(?, ?, ?, ?, ?, ?, @rowid, @duree, @retour)", [conges.user, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function(err, ret) {
-            if (err) {
+        db.query("CALL AddConges(?, ?, ?, ?, ?, ?, @rowid, @duree, @retour); select @rowid, @duree,@retour;", [conges.user, conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
+            if (err || ret.length == 0) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de l'insertion du congés.");
             }
-            db.query("select @rowid, @duree,@retour;", function(err2, ret2) {
-                if (err2 || ret2.length == 0) {
-                    console.log('ERROR: ' + err2);
-                    fn("Erreur lors de l'insertion du congés.");
-                }
-                if (ret2[0]['@retour']) {
-                    var error = ret2[0]['@retour'];
-                    return fn(errors[error] || error);
-                }
-                fn(null, {
-                    id: ret2[0]['@rowid'],
-                    duree: ret2[0]['@duree']
-                });
+            if (ret[1][0]['@retour']) {
+                var error = ret[1][0]['@retour'];
+                return fn(errors[error] || error);
+            }
+            fn(null, {
+                id: ret[1][0]['@rowid'],
+                duree: ret[1][0]['@duree']
             });
         });
-        /*db.insert("conges", conges, function(err, ret) {
-        if (err) {
-        if (err.code && err.code == "ER_DUP_ENTRY") {
-        return fn("Matricule déjà attribué !");
-        }
-        console.log('ERROR: ' + err);
-        return fn("Erreur lors de l'insertion du congés.");
-        }
-        fn(null, { id: ret.insertId });
-        });*/
     },
     // Mise à jour via POST
     updateConges: function(conges, forcer, fn) {

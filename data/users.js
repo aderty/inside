@@ -44,34 +44,28 @@ var errors = {
 
 var data = {
     infos: function(id, role, fn) {
-        db.query("CALL StartUser(?, ?, @retour, @params)", [id, role], function(err, ret) {
-            if (err) {
+        db.query("CALL StartUser(?, ?, @retour, @params); select @retour,@params;", [id, role], function (err, ret) {
+            if (err || ret.length == 0) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des informations de démarage.");
             }
-            db.query("select @retour,@params;", function(err2, ret2) {
-                if (err2 || ret2.length == 0) {
-                    console.log('ERROR: ' + err2);
-                    fn("Erreur lors de l'insertion du congés.");
-                }
-                if (ret2[0]['@retour']) {
-                    var error = ret2[0]['@retour'];
-                    return fn(errors[error] || error);
-                }
-                var params = ret2[0]['@params'].split('|'),
-                infos = {};
-                if (params && params.length) {
-                    for (var i = 0, l = params.length; i < l; i++) {
-                        try {
-                            infos[params[i].split(':')[0]] = parseInt(params[i].split(':')[1]);
-                        }
-                        catch (e) {
-                            infos[params[i].split(':')[0]] = params[i].split(':')[1];
-                        }
+            if (ret[1][0]['@retour']) {
+                var error = ret[1][0]['@retour'];
+                return fn(errors[error] || error);
+            }
+            var params = ret[1][0]['@params'].split('|'),
+            infos = {};
+            if (params && params.length) {
+                for (var i = 0, l = params.length; i < l; i++) {
+                    try {
+                        infos[params[i].split(':')[0]] = parseInt(params[i].split(':')[1]);
+                    }
+                    catch (e) {
+                        infos[params[i].split(':')[0]] = params[i].split(':')[1];
                     }
                 }
-                fn(null, infos);
-            });
+            }
+            fn(null, infos);
         });
     },
     login: function(email, pwd, fn) {
