@@ -2,6 +2,7 @@
 var mysql = require('mysql'),
 config = require('../config.json').db;
 config.multipleStatements = true;
+config.checkInterval = 5000;
 
 // Module natif filesystem pour lire le fichier de configuration
 var fs = require('fs');
@@ -9,40 +10,54 @@ var fs = require('fs');
 var EventEmitter = require('events').EventEmitter;
 var events = new EventEmitter();
 
-// On initialise un nouveau client qui exécutera nos requêtes, en lui passant
-// l'objet config précédemment initialisé.
+var connectionState = false, first = true;
 var client = mysql.createConnection(config);
 
-function handleDisconnect(connection) {
-    connection.on('error', function (err) {
-        if (!err.fatal) {
-            return;
-        }
-
-        if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-            throw err;
-        }
-
-        console.log('Re-connecting lost connection: ' + err.stack);
-
+function attemptConnection() {
+    if (!connectionState) {
+        // On initialise un nouveau client qui exécutera nos requêtes, en lui passant
+        // l'objet config précédemment initialisé.
         client = mysql.createConnection(config);
-        handleDisconnect(client);
-        client.connect();
-    });
-}
+        client.connect(function(err) {
+            // connected! (unless `err` is set)
+            if (err) {
+                console.error('mysql db unable to connect: ' + err);
+                connectionState = false;
+            } else {
+                console.info('mysql connect!');
+                connectionState = true;
+                // -> Transmission de l'event "connected"
+                events.emit('connected', null);
+            }
+        });
+        client.on('close', function(err) {
+            console.error('mysqldb conn close');
+            connectionState = false;
+        });
+        client.on('error', function(err) {
+            console.error('mysqldb error: ' + err);
+            connectionState = false;
 
-handleDisconnect(client);
-
-// On se connecte à la base de données. Un programme node.js ne possède qu'un
-// seul thread d'exécution, nous n'avons donc pas besoin de nous inquiéter
-// des problèmes de concurrence.
-client.connect(function (err) {
-    // connected! (unless `err` is set)
-    if (err) {
-        return console.log(err);
+            /*
+            if (!err.fatal) {
+            return;
+            }
+            if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+            throw err;
+            }
+            console.log('Re-connecting lost connection: ' + err.stack);
+            */
+        });
     }
-    events.emit('connected', null);
-});
+}
+attemptConnection();
+
+var dbConnChecker = setInterval(function() {
+    if (!connectionState) {
+        console.info('not connected, attempting reconnect');
+        attemptConnection();
+    }
+}, config.checkInterval);
 
 // Nous déclarons quelques fonctions utilitaires
 function hashToClause(hash, separator) {
@@ -72,7 +87,7 @@ function insert(table, values, callback) {
     q += clause.clause + ';';
     // On envoie la reqûete avec le callback fourni.
     // Les paramètres dans clause.values sont automatiquement échappés.
-    client.query(q, clause.values, callback);
+    callQuery(q, clause.values, callback);
 }
 
 // La suppression prend en paramètres :
@@ -84,7 +99,7 @@ function remove(table, where, callback) {
     var q = 'DELETE FROM ' + table + ' WHERE ';
     var clause = hashToClause(where, ' AND ');
     q += clause.clause;
-    client.query(q, clause.values, callback);
+    callQuery(q, clause.values, callback);
 }
 
 // La lecture prend les mêmes paramètres que la suppression à l'exception
@@ -97,7 +112,7 @@ function read(table, where, columns, callback) {
         var clause = hashToClause(where, ' AND ');
         q += ' WHERE ' + clause.clause;
     }
-    client.query(q, (where ? clause.values : callback), callback);
+    callQuery(q, (where ? clause.values : callback), callback);
 }
 
 // la mise à jour prend les paramètres suivants :
@@ -111,7 +126,7 @@ function update(table, where, values, callback) {
     var q = 'UPDATE ' + table + ' SET ' + valuesClause.clause + ' WHERE ' +
         whereClause.clause + ';';
     var inputs = valuesClause.values.concat(whereClause.values);
-    client.query(q, inputs, callback);
+    callQuery(q, inputs, callback);
 }
 
 // On expose maintenant les méthodes au travers de l'objet exports
@@ -142,8 +157,22 @@ exports.findAll = function (table, where, callback) {
 // Dans certains cas les méthodes CRUD simples ne suffisent pas à obtenir le
 // résultat escompté. On donne donc accès à la méthode query pour pouvoir
 // utiliser du SQL directement si besoin est.
-exports.query = function (query, values, callback) {
-    return client.query(query, values, callback);
+exports.query = function(query, values, callback) {
+    return callQuery(query, values, callback);
 }
+
+var callQuery = function(query, values, callback) {
+    if (!connectionState) {
+        // Si la fonction callback se trouve en second argument    
+        if (callback == undefined && typeof values == "function") {
+            callback = values;
+        }
+        if (callback) {
+            callback("Problème de connection à la base de données");
+        }
+        return;
+    }
+    return client.query(query, values, callback);
+};
 
 exports.events = events;
