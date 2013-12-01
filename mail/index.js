@@ -98,11 +98,11 @@ var Mail = {
         console.log("envois de l'email à : " + user.email);
 
         var subject = conges.etat == 2 ? "[InsideConsulting] Validation de votre demande de congés du " : "[InsideConsulting] Refus de votre demande de congés du ";
-        if (moment(conges.debut.date).diff(moment(conges.fin.date), 'days') != 0) {
-            subject += moment(conges.debut.date).format('D MMMM YYYY') + " au " + moment(conges.fin.date).format('D MMMM YYYY') + " !";
+        if (moment(conges.debut).diff(moment(conges.fin), 'days') != 0) {
+            subject += moment(conges.debut).format('D MMMM YYYY') + " au " + moment(conges.fin).format('D MMMM YYYY') + " !";
         }
         else {
-            subject += moment(conges.debut.date).format('D MMMM YYYY') + " !";
+            subject += moment(conges.debut).format('D MMMM YYYY') + " !";
         }
 
         // setup e-mail data with unicode symbols
@@ -114,10 +114,10 @@ var Mail = {
                 "email": user.email,
                 "prenom": user.prenom,
                 "nom": user.nom,
-                "debut": moment(conges.debut.date).format('D MMMM YYYY'),
-                "fin": moment(conges.fin.date).format('D MMMM YYYY'),
-                "debutType": conges.debut.type == 1 ? "après-midi" : "matin",
-                "finType": conges.fin.type == 1 ? "soir" : "midi",
+                "debut": moment(conges.debut).format('D MMMM YYYY'),
+                "fin": moment(conges.fin).format('D MMMM YYYY'),
+                "debutType": conges.debut.getHours() >= 8 ? "après-midi" : "matin",
+                "finType": conges.fin.getHours() > 14 ? "soir" : "midi",
                 "motif": conges.libelle,
                 "refus": conges.refus || "Non communiqué",
                 "owner": owner
