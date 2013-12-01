@@ -1,0 +1,6 @@
+crontab -e
+
+01 03 * * 1-5 /bin/sh /home/inside/apps/cron/matin
+00 00 1 1 * /bin/sh /home/inside/apps/cron/1_janvier
+00 00 1 6 * /bin/sh /home/inside/apps/cron/1_juin
+

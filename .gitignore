@@ -2,7 +2,7 @@
 bin/
 obj/
 My Project/
-sql/
+sql/exclu
 key/
 *.json
 !package.json
