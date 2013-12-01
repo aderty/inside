@@ -1,6 +1,8 @@
-﻿var db = require('../data/db');
+﻿var db = require('../data/db'),
+    moment = require('moment');
 
 db.events.once('connected', function (result) {
+    console.log("TASK 3 : " + new moment().format("DD/MM/YYYY HH:mm"));
     console.log("TASK 3 : Début du transfert des CP anticipés vers CP.");
     db.query("CALL TransfertCP();", null, function (err, ret) {
         if (err) {
