@@ -122,10 +122,10 @@ BEGIN
 
 -- maj des CP (+ 2.08) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 2.08 WHERE tab1.motif = 'CP' and tab1.user <> 999999 
-	and period_diff(date_format(now(), '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
 -- maj des RTT (+ 0.75) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 0.75 WHERE tab1.motif = 'RTT' and tab1.user <> 999999 
-	and period_diff(date_format(now(), '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
 
 END $$
 DELIMITER ;
@@ -324,6 +324,7 @@ SET min_motif = 0;
 SET nbdispo = 1000;
 SET etat = 1;
 
+-- On vérifie la présence d'un autre congé dans les dates du congé demandé.
 SELECT CheckConflis(-1, user, d1, d2) INTO nbconflis;
 
 IF (nbconflis > 0) THEN
@@ -332,6 +333,7 @@ IF (nbconflis > 0) THEN
  LEAVE ThisSP;
 END IF;
 
+-- On vérifie le nombre de jour de travail dans le congé.
 SELECT BizDaysInclusive(d1, d2) INTO duree;
 IF duree <= 0 THEN
 	SET duree = -1;
@@ -339,6 +341,7 @@ IF duree <= 0 THEN
 	LEAVE ThisSP;
 END IF;
 
+-- On vérifie le nombre de jour dispo pour l'utilisateur
 SELECT min INTO min_motif FROM conges_motifs WHERE conges_motifs.id = motif;
 
 IF (SELECT count(*) FROM conges_compteurs WHERE conges_compteurs.user = user AND conges_compteurs.motif = motif) THEN
@@ -351,9 +354,11 @@ IF nbdispo - duree  < min_motif THEN
 	LEAVE ThisSP;
 END IF;
 
+-- Congé admin -> état validé directement
 IF typeConges = 'R' THEN
 	SET etat = 2;
 END IF;
+-- Ajout du nouveau congé.
 INSERT INTO conges(user, etat, debut, fin, duree, motif, justification, type) VALUES
 			(user, etat, d1,d2, duree, motif, justification, typeConges);
 SET rowid = LAST_INSERT_ID();
@@ -364,6 +369,70 @@ SET rowid = LAST_INSERT_ID();
 
 END $$
 DELIMITER ;
+
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- Select AddToAllConges('N', 'CP',STR_TO_DATE('12/12/2013', '%d/%m/%Y'), STR_TO_DATE('19/12/2013', '%d/%m/%Y'), '');
+-- CALL AddToAllConges('N', 'CP',STR_TO_DATE('29/10/2013', '%d/%m/%Y'), STR_TO_DATE('12/11/2013', '%d/%m/%Y'), '', @duree, @retour);
+-- SELECT @duree, @retour;
+-- --------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS AddToAllConges; 
+DELIMITER $$
+
+CREATE PROCEDURE `AddToAllConges` (typeConges VARCHAR(5), motif VARCHAR(10) CHARACTER SET utf8,  d1 DATETIME, d2 DATETIME, justification VARCHAR(1000), OUT rowid INT, OUT duree FLOAT, OUT retour VARCHAR(1000) CHARACTER SET utf8)
+ThisSP:BEGIN
+DECLARE nbconflis, _etat INT;
+SET duree = -1;
+SET _etat = 1;
+SET nbconflis = 0;
+
+-- On ne vérifie pas le nombre de jour dispo pour chaque utilisateur
+-- car c'est une action admin dont authorisée même si le seuil min est dépassé.
+
+-- On vérifie le nombre de jour de travail dans le congé en 1er.
+SELECT BizDaysInclusive(d1, d2) INTO duree;
+IF duree <= 0 THEN
+	SET duree = -1;
+	SET retour = "ZERO_JOUR_TRAVAIL";
+	LEAVE ThisSP;
+END IF;
+
+-- Congé admin -> état validé directement
+IF typeConges = 'R' THEN
+	SET _etat = 2;
+END IF;
+
+-- SELECT CheckConflis(-1, user, d1, d2) INTO nbconflis;
+-- IF (nbconflis > 0) THEN
+-- SET duree = -1;
+-- SET retour = "CONGES_PRESENT";
+-- LEAVE ThisSP;
+-- END IF;
+
+-- Ajout du nouveau congé.
+IF motif = 'RTT' THEN
+	-- Gestion des utilisateurs sans RTT
+	INSERT INTO conges(user, etat, debut, fin, duree, motif, justification, type)
+	SELECT users.id, _etat, d1, d2, duree, motif, justification, typeConges
+	FROM users WHERE users.etat = 1 and users.id <> 999999 and users.id <> 0 and users.hasRtt = 1;
+ELSE
+	INSERT INTO conges(user, etat, debut, fin, duree, motif, justification, type)
+	SELECT users.id, _etat, d1, d2, duree, motif, justification, typeConges
+	FROM users WHERE users.etat = 1 and users.id <> 999999 and users.id <> 0;
+END IF;
+
+SET rowid = LAST_INSERT_ID();
+IF motif = 'RTT' THEN
+	-- Gestion des utilisateurs sans RTT
+	UPDATE conges_compteurs join users on conges_compteurs.user = users.id SET conges_compteurs.compteur = conges_compteurs.compteur - duree WHERE users.etat = 1 and conges_compteurs.user <> 999999 AND conges_compteurs.user <> 0 AND conges_compteurs.motif = motif and users.hasRtt = 1;
+ELSE
+	UPDATE conges_compteurs join users on conges_compteurs.user = users.id SET conges_compteurs.compteur = conges_compteurs.compteur - duree WHERE users.etat = 1 and conges_compteurs.user <> 999999 AND conges_compteurs.user <> 0 AND conges_compteurs.motif = motif;
+END IF;
+
+END $$
+DELIMITER ;
+
 
 -- --------------------------------------------------------------------------------
 -- Routine DDL

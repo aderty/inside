@@ -112,7 +112,19 @@ var routesAdmin = {
         var conges = req.body;
         conges.type = 'R';
         if (conges.create) {
+            // Création d'un congé
             delete conges.create;
+            if (conges.user == '999999') {
+                // Congé pour tous
+                data.conges.addToAllConges(conges, function (err, ret) {
+                    dataCallback(res)(err, ret);
+                    if (!err) {
+                        history.log(conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
+                    }
+                });
+                return;
+            }
+            // Congé pour un utilisateur
             data.conges.addConges(conges, function (err, ret) {
                 dataCallback(res)(err, ret);
                 if (!err) {
@@ -122,6 +134,7 @@ var routesAdmin = {
             return;
         }
         if (req.query.etat) {
+            // Modification de l'état d'un congé (Validation ou refus)
             data.conges.updateEtatConges(conges, function (err, ret) {
                 if (!err) {
                     if (conges.etat == 2 || conges.etat == 3) {
@@ -136,6 +149,7 @@ var routesAdmin = {
             });
             return;
         }
+        // Mise à jour d'un congé particulier
         data.conges.updateConges(conges, true, function (err, ret) {
             dataCallback(res)(err, ret);
             if (!err) {

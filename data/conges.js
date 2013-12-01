@@ -145,6 +145,26 @@ var data = {
             });
         });
     },
+    addToAllConges: function (conges, fn) {
+        if (!checkConges(conges)) {
+            return fn("Congés invalide");
+        }
+        console.log("addToAllConges");
+        db.query("CALL AddToAllConges(?, ?, ?, ?, ?, @rowid, @duree, @retour); select @rowid, @duree,@retour;", [conges.type, conges.motif, conges.debut, conges.fin, conges.justification], function (err, ret) {
+            if (err || ret.length == 0) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de l'insertion du congés.");
+            }
+            if (ret[1][0]['@retour']) {
+                var error = ret[1][0]['@retour'];
+                return fn(errors[error] || error);
+            }
+            fn(null, {
+                id: ret[1][0]['@rowid'],
+                duree: ret[1][0]['@duree']
+            });
+        });
+    },
     // Mise à jour via POST
     updateConges: function(conges, forcer, fn) {
         if (!checkConges(conges)) {
