@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "PROD : calculCongesAcquis.js"
+/root/node/node /home/inside/apps/prod/task/calculCongesAcquis.js >> prod.log &
+echo "DEV : calculCongesAcquis.js"
+/root/node/node /home/inside/apps/dev/task/calculCongesAcquis.js >> dev.log &
