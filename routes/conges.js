@@ -136,8 +136,12 @@ var routesAdmin = {
             });
             return;
         }
-        data.conges.updateConges(conges, true, dataCallback(res));
-        history.log(conges.user, "[Admin " + req.session.username + "] Modification du congé " + JSON.stringify(conges));
+        data.conges.updateConges(conges, true, function (err, ret) {
+            dataCallback(res)(err, ret);
+            if (!err) {
+                history.log(conges.user, "[Admin " + req.session.username + "] Modification du congé " + JSON.stringify(conges));
+            }
+        }); 
     },
     remove: function (req, res) {
         var conges = req.query;
