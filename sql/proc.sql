@@ -99,7 +99,8 @@ CREATE PROCEDURE `TransfertCP` ()
 BEGIN
 
 -- CP = CP + CP_ANT
-UPDATE  conges_compteurs as tab1 join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' SET tab1.compteur = tab1.compteur + tab2.compteur WHERE tab1.motif = 'CP' and tab1.user <> 999999;
+-- Attention Round(CP_ANT, 1) : arrondi aux décimales
+UPDATE  conges_compteurs as tab1 join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' SET tab1.compteur = tab1.compteur + ROUND(tab2.compteur, 1) WHERE tab1.motif = 'CP' and tab1.user <> 999999;
 -- Remise à 0 de CP_ANT
 UPDATE  conges_compteurs SET compteur = 0 WHERE motif = 'CP_ANT';
 
