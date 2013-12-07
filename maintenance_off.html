@@ -1,10 +1,38 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html manifest="inside.manifest" id="ng-app" ng-app="inside" class="start" xmlns:ng="http://angularjs.org">
 <head>
-  <meta charset="utf-8" />
-  <title> Inside Consulting </title>
+    <meta charset="utf-8" />
+    <title> Inside Consulting </title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 </head>
-    <body>
-        Maintenance
-    </body>
+<body>
+
+
+
+    <div class="container-fluid" ng-controller="NavBar">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="navbar">
+                    <a href="/"><img src="img/logo_inside.png" id="logo" /></a>
+                    <img src="img/logo_inside.png" id="logoPrint" />
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </a>
+                            <a class="brand span3" href="#">{{page}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    ﻿<!-- Développé par Aderty -->
+</body>
 </html>

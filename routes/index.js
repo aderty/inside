@@ -25,7 +25,7 @@ exports.index = function(req, res) {
             res.redirect("/logout");
         }
         res.render('index', {
-            connected: req.session.username ? true : false,
+            connected: req.session.username != undefined ? true : false,
             role: req.session.role ? req.session.role : 0,
             prenom: req.session.prenom,
             infos: infos || {},

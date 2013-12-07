@@ -196,7 +196,7 @@ var data = {
             return;
         }
         var id = user.lastId || user.id;
-        if (user.lastId) {
+        if (user.lastId != undefined) {
             delete user.lastId;
         }
         db.updateById("users", id, user, function(err, ret) {

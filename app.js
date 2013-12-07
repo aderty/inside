@@ -102,7 +102,7 @@ function minFile(req, res, next) {
 
 
 function cookieKeep(req, res, next){
-    if(req.signedCookies._id && !req.session.username){
+    if(req.signedCookies._id && req.session.username == undefined){
         var cookie = req.signedCookies._id;
         req.session.username = cookie.username;
         req.session.role = cookie.role;
@@ -113,7 +113,7 @@ function cookieKeep(req, res, next){
 
 /** Middleware for limited access */
 function requireLogin(req, res, next) {
-    if (req.session.username) {
+    if (req.session.username != undefined) {
         // User is authenticated, let him in
         next();
     } else {
@@ -123,7 +123,7 @@ function requireLogin(req, res, next) {
 }
 
 function dataLogin(req, res, next) {
-    if (req.session.username) {
+    if (req.session.username != undefined) {
         // User is authenticated, let him in
         next();
     } else {

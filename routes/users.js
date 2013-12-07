@@ -177,7 +177,7 @@ exports.setUser = function (req, res, user) {
     setCookie(res, user);
 }
 exports.infos = function (req, res, fn) {
-    if (!req.session || !req.session.username) {
+    if (!req.session || req.session.username == undefined) {
         return fn(null, {});
     }
     data.users.infos(req.session.username, req.session.role, function (err, infos) {
