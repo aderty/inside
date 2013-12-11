@@ -125,7 +125,7 @@
     <div class="control-group" ng-class="{error: editUser.inputCp.$dirty && editUser.inputCp.$invalid, success:editUser.inputCp.$dirty && !editUser.inputCp.$invalid}">
         <label class="control-label" for="inputCp">Congés payés acquis</label>
         <div class="controls">
-            <input type="number" min="0" max="50" id="inputCp" decimal name="inputCp" ng-model="currentUser.cp" required placeholder="0">
+            <input type="number" min="-50" max="50" id="inputCp" decimal name="inputCp" ng-model="currentUser.cp" required placeholder="0">
             <div class="input-help">
                 <h4>Le nombre de congé doit être inférieur à 50.</h4>
             </div>
@@ -135,7 +135,7 @@
     <div class="control-group" ng-class="{error: editUser.inputCpAnt.$dirty && editUser.inputCpAnt.$invalid, success:editUser.inputCpAnt.$dirty && !editUser.inputCpAnt.$invalid}">
         <label class="control-label" for="inputCp">Congés payés en cours</label>
         <div class="controls">
-            <input type="number" min="0" max="50" id="inputCpAnt" decimal name="inputCpAnt" ng-model="currentUser.cp_ant" required placeholder="0">
+            <input type="number" min="-50" max="50" id="inputCpAnt" decimal name="inputCpAnt" ng-model="currentUser.cp_ant" required placeholder="0">
             <div class="input-help">
                 <h4>Le nombre de congé doit être inférieur à 50.</h4>
             </div>
@@ -145,7 +145,7 @@
     <div class="control-group" ng-if="currentUser.hasRtt" ng-class="{error: editUser.inputRtt.$dirty && editUser.inputRtt.$invalid, success:editUser.inputRtt.$dirty && !editUser.inputRtt.$invalid}">
         <label class="control-label" for="inputRtt">RTT</label>
         <div class="controls">
-            <input type="number" min="0" max="50" id="inputRtt" decimal name="inputRtt" ng-model="currentUser.rtt" required placeholder="0">
+            <input type="number" min="-50" max="50" id="inputRtt" decimal name="inputRtt" ng-model="currentUser.rtt" required placeholder="0">
             <div class="input-help">
                 <h4>Le nombre de congé doit être inférieur à 50.</h4>
             </div>
