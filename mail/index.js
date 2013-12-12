@@ -97,7 +97,7 @@ var Mail = {
         }
         console.log("envois de l'email à : " + user.email);
 
-        var subject = conges.etat == 2 ? "[InsideConsulting] Validation de votre demande de congés du " : "[InsideConsulting] Refus de votre demande de congés du ";
+        var subject = conges.etat == 2 ? "[InsideConsulting] Validation de votre demande d'absence du " : "[InsideConsulting] Refus de votre demande d'absence du ";
         if (moment(conges.debut).diff(moment(conges.fin), 'days') != 0) {
             subject += moment(conges.debut).format('D MMMM YYYY') + " au " + moment(conges.fin).format('D MMMM YYYY') + " !";
         }
@@ -119,6 +119,7 @@ var Mail = {
                 "debutType": conges.debut.getHours() >= 8 ? "après-midi" : "matin",
                 "finType": conges.fin.getHours() > 14 ? "soir" : "midi",
                 "motif": conges.libelle,
+                "duree": conges.duree,
                 "refus": conges.refus || "Non communiqué",
                 "owner": owner
             })
