@@ -191,6 +191,7 @@ app.post('/data-users/:id', [dataLogin, dataRh], routes.users.save);
 app.post('/data-users', [dataLogin, dataRh], routes.users.save);
 
 app.put('/data-users', [dataLogin], routes.users.password);
+app.put('/data-users/:id', [dataLogin], routes.users.password);
 
 // Suppression via POST
 app.delete('/data-users/:id', [dataLogin, dataRh], routes.users.remove);

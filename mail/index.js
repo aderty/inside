@@ -61,12 +61,12 @@ var Mail = {
         var mailOptions = {
             from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
             to: user.email, // list of receivers
-            subject: "[InsideConsulting] Création de votre compte !",
+            subject: "[Inside] Création de votre compte !",
             html: generateFormTemplate(path.join(dirTemplate, 'ajoutUser.html'),{
                 "email": user.email,
                 "prenom": user.prenom,
                 "password": password,
-                "url": "http://176.31.188.68:81/",
+                "url": "https://extranet.inside-groupe.com",
                 "color": function () {
                     var arr = ["purple", "red", "green", "yello"];
                     return arr[Math.floor(Math.random() * 3)];
@@ -97,7 +97,7 @@ var Mail = {
         }
         console.log("envois de l'email à : " + user.email);
 
-        var subject = conges.etat == 2 ? "[InsideConsulting] Validation de votre demande d'absence du " : "[InsideConsulting] Refus de votre demande d'absence du ";
+        var subject = conges.etat == 2 ? "[Inside] Validation de votre demande d'absence du " : "[Inside] Refus de votre demande d'absence du ";
         if (moment(conges.debut).diff(moment(conges.fin), 'days') != 0) {
             subject += moment(conges.debut).format('D MMMM YYYY') + " au " + moment(conges.fin).format('D MMMM YYYY') + " !";
         }
@@ -147,7 +147,7 @@ var Mail = {
         }
         console.log("envois de l'email à : " + user.email);
 
-        var subject = "[InsideConsulting] Récupération de compte après la perte de votre mot de passe";
+        var subject = "[Inside] Récupération de compte après la perte de votre mot de passe";
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
@@ -183,7 +183,7 @@ var Mail = {
 
         console.log("envois de l'email à : " + email_admin);
 
-        var subject = "[InsideConsulting] Listes des congés à valider.";
+        var subject = "[Inside] Listes des congés à valider.";
 
         for (var i = 0, l = conges.length; i < l; i++) {
             conges[i].debutType = conges[i].debut.getHours() >= 8 ? "après-midi" : "matin";
@@ -226,7 +226,7 @@ var Mail = {
 
         console.log("envois de l'email Ã  : " + email_admin);
 
-        var subject = "[InsideConsulting] Demande d'information de " + user + " : " + sujet;
+        var subject = "[Inside] Demande d'information de " + user + " : " + sujet;
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
