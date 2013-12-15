@@ -149,7 +149,7 @@
         };
 
         function format(user) {
-            return user.nom.toLowerCase() + " " + (user.prenom || "");
+            return user.nom + " " + (user.prenom || "");
         }
 
         $scope.currentUser = {};

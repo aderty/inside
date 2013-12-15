@@ -219,6 +219,11 @@
                             data.duree = 0;
                         }
                         if (toDo) {
+                            if (data.type == 'JF' && $scope.indexEvents[current.date()] && $scope.events[$scope.indexEvents[current.date()]]) {
+                                // Si c'est un jour férié et que une période de congès contient ce jour férié
+                                // -> Il faut supprimer l'event de type congès posé le jour férié
+                                $scope.events.splice($scope.indexEvents[current.date()], 1);
+                            }
                             data.heuresSup = 0;
                             data.heuresAstreinte = 0;
                             data.heuresNuit = 0;
@@ -227,7 +232,11 @@
                             $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         }
                     }
-                    lastCong = angular.copy(cong);
+                    // Si la date de fin du congès précédant n'est pas encore fini (cas d'un jour férie dans une période d'autre congés)
+                    // -> On ne modifie pas le congé précédant.
+                    if (!lastCong || lastCong.fin.date.getDate() <= current.date()) {
+                        lastCong = angular.copy(cong);
+                    }
                     cong = $scope.conges.shift();
                 }
                 function inEventConges(current) {
