@@ -15,6 +15,8 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.currentConges = {};
     $scope.currentCongesSaved = null;
 
+    $scope.placeholderDate = moment().format("DD/MM/YYYY");
+
     $scope.motifsConges = angular.copy($rootScope.motifsConges);
     for (var i = 0, l = $scope.motifsConges.length; i < l; i++) {
         if ($scope.motifsConges[i].id == 'RCE') {
