@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>inside</Name>
+    <RootNamespace>inside</RootNamespace>
+    <NodeExePath />
+    <NodeExeArguments />
+    <ScriptArguments />
+    <StartWebBrowser>True</StartWebBrowser>
+    <LaunchUrl />
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>4e978356-4481-4862-96ff-8edd3e6e422c</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>app.js</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <NodejsPort>1480</NodejsPort>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="app.js" />
+    <Compile Include="data\activite.js" />
+    <Compile Include="data\conges.js" />
+    <Compile Include="data\db.js" />
+    <Compile Include="data\history.js" />
+    <Compile Include="data\index.js" />
+    <Compile Include="data\users.js" />
+    <Compile Include="history\index.js" />
+    <Compile Include="mail\index.js" />
+    <Compile Include="public\js\accueil.js" />
+    <Compile Include="public\js\activite.js" />
+    <Compile Include="public\js\admin-activite.js" />
+    <Compile Include="public\js\admin-conges.js" />
+    <Compile Include="public\js\app.js" />
+    <Compile Include="public\js\conges.js" />
+    <Compile Include="public\js\controllers.js" />
+    <Compile Include="public\js\directives.js" />
+    <Compile Include="public\js\filters.js" />
+    <Compile Include="public\js\min\accueil.js" />
+    <Compile Include="public\js\min\activite.js" />
+    <Compile Include="public\js\min\admin-activite.js" />
+    <Compile Include="public\js\min\admin-conges.js" />
+    <Compile Include="public\js\min\app.js" />
+    <Compile Include="public\js\min\conges.js" />
+    <Compile Include="public\js\min\controllers.js" />
+    <Compile Include="public\js\min\directives.js" />
+    <Compile Include="public\js\min\filters.js" />
+    <Compile Include="public\js\min\services.js" />
+    <Compile Include="public\js\min\users.js" />
+    <Compile Include="public\js\services.js" />
+    <Compile Include="public\js\users.js" />
+    <Compile Include="public\libs\angularjs\angular-resource.js" />
+    <Compile Include="public\libs\angularjs\angular-resource.min.js" />
+    <Compile Include="public\libs\angularjs\angular-route.js" />
+    <Compile Include="public\libs\angularjs\angular-route.min.js" />
+    <Compile Include="public\libs\angularjs\angular-ui.js" />
+    <Compile Include="public\libs\angularjs\angular-ui.min.js" />
+    <Compile Include="public\libs\angularjs\angular.js" />
+    <Compile Include="public\libs\angularjs\angular.min.js" />
+    <Compile Include="public\libs\angularjs\calendar.js" />
+    <Compile Include="public\libs\angularjs\fullcalendar.js" />
+    <Compile Include="public\libs\angularjs\fullcalendar.locale.fr.js" />
+    <Compile Include="public\libs\angularjs\fullcalendar.min.js" />
+    <Compile Include="public\libs\angularjs\gcal.js" />
+    <Compile Include="public\libs\angularjs\ng-grid.min.js" />
+    <Compile Include="public\libs\angularjs\ng-table.js" />
+    <Compile Include="public\libs\angularjs\ng-table_.min.js" />
+    <Compile Include="public\libs\angularjs\plugins\ng-grid-csv-export.js" />
+    <Compile Include="public\libs\angularjs\plugins\ng-grid-flexible-height.js" />
+    <Compile Include="public\libs\angularjs\plugins\ng-grid-layout.js" />
+    <Compile Include="public\libs\angularjs\plugins\ng-grid-reorderable.js" />
+    <Compile Include="public\libs\angularjs\plugins\ng-grid-wysiwyg-export.js" />
+    <Compile Include="public\libs\angularjs\ui-bootstrap-tpls-0.5.0.js" />
+    <Compile Include="public\libs\angularjs\ui-bootstrap-tpls-0.5.0.min.js" />
+    <Compile Include="public\libs\bootstrap\js\bootstrap.js" />
+    <Compile Include="public\libs\bootstrap\js\bootstrap.min.js" />
+    <Compile Include="public\libs\jquery-1.9.1.min.js" />
+    <Compile Include="public\libs\jqueryui\i18n\jquery.ui.datepicker-fr.js" />
+    <Compile Include="public\libs\jqueryui\jquery-ui-1.10.3.custom.min.js" />
+    <Compile Include="public\libs\justgage.1.0.1.min.js" />
+    <Compile Include="public\libs\moment-fr.js" />
+    <Compile Include="public\libs\moment.min.js" />
+    <Compile Include="public\libs\raphael.2.1.0.min.js" />
+    <Compile Include="public\libs\script.min.js" />
+    <Compile Include="public\libs\select2\select2.min.js" />
+    <Compile Include="public\libs\select2\select2_locale_fr.js" />
+    <Compile Include="routes\activite.js" />
+    <Compile Include="routes\conges.js" />
+    <Compile Include="routes\index.js" />
+    <Compile Include="routes\users.js" />
+    <Compile Include="sql\exclu\recup\temp\js\admin-activite.js" />
+    <Compile Include="sql\exclu\recup\temp\js\admin-conges.js" />
+    <Compile Include="sql\exclu\recup\temp\js\app.js" />
+    <Compile Include="sql\exclu\recup\temp\js\conges.js" />
+    <Compile Include="sql\exclu\recup\temp\js\directives.js" />
+    <Compile Include="sql\exclu\recup\temp\js\users.js" />
+    <Compile Include="sql\exclu\recup\temp\routes\conges.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-resource.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-resource.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-route.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-route.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-ui.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular-ui.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular.js" />
+    <Compile Include="sql\exclu\test\angularjs\angular.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\calendar.js" />
+    <Compile Include="sql\exclu\test\angularjs\fullcalendar.js" />
+    <Compile Include="sql\exclu\test\angularjs\fullcalendar.locale.fr.js" />
+    <Compile Include="sql\exclu\test\angularjs\fullcalendar.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\gcal.js" />
+    <Compile Include="sql\exclu\test\angularjs\ng-grid.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\ng-table.js" />
+    <Compile Include="sql\exclu\test\angularjs\ng-table_.min.js" />
+    <Compile Include="sql\exclu\test\angularjs\plugins\ng-grid-csv-export.js" />
+    <Compile Include="sql\exclu\test\angularjs\plugins\ng-grid-flexible-height.js" />
+    <Compile Include="sql\exclu\test\angularjs\plugins\ng-grid-layout.js" />
+    <Compile Include="sql\exclu\test\angularjs\plugins\ng-grid-reorderable.js" />
+    <Compile Include="sql\exclu\test\angularjs\plugins\ng-grid-wysiwyg-export.js" />
+    <Compile Include="sql\exclu\test\angularjs\ui-bootstrap-tpls-0.5.0.js" />
+    <Compile Include="sql\exclu\test\angularjs\ui-bootstrap-tpls-0.5.0.min.js" />
+    <Compile Include="sql\exclu\test\app.js" />
+    <Compile Include="task\calculCongesAcquis.js" />
+    <Compile Include="task\razCompteurs.js" />
+    <Compile Include="task\transfertCP.js" />
+    <Compile Include="task\validationConges.js" />
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
+    <Content Include="bin\config.json" />
+    <Content Include="bin\inside.dll" />
+    <Content Include="bin\inside.dll.config" />
+    <Content Include="bin\inside.pdb" />
+    <Content Include="bin\inside.xml" />
+    <Content Include="config.json" />
+    <Content Include="inside.vbproj" />
+    <Content Include="inside.vbproj.user" />
+    <Content Include="mail\templates\ajoutUser.html" />
+    <Content Include="mail\templates\contact.html" />
+    <Content Include="mail\templates\passwordLost.html" />
+    <Content Include="mail\templates\recapConges.html" />
+    <Content Include="mail\templates\refusConges.html" />
+    <Content Include="mail\templates\validationConges.html" />
+    <Content Include="maintenance_off.html" />
+    <Content Include="manifest.manifest" />
+    <Content Include="My Project\Application.Designer.vb" />
+    <Content Include="My Project\Application.myapp" />
+    <Content Include="My Project\AssemblyInfo.vb" />
+    <Content Include="My Project\MyExtensions\MyWebExtension.vb" />
+    <Content Include="My Project\Resources.Designer.vb" />
+    <Content Include="My Project\Resources.resx" />
+    <Content Include="My Project\Settings.Designer.vb" />
+    <Content Include="My Project\Settings.settings" />
+    <Content Include="mysql-config.json" />
+    <Content Include="package.json" />
+    <Content Include="Procfile" />
+    <Content Include="public\css\fontello.css" />
+    <Content Include="public\css\main.css" />
+    <Content Include="public\css\print.css" />
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\font\fontello.eot" />
+    <Content Include="public\font\fontello.svg" />
+    <Content Include="public\font\fontello.ttf" />
+    <Content Include="public\font\fontello.woff" />
+    <Content Include="public\img\bg-small.jpg" />
+    <Content Include="public\img\bg.jpg" />
+    <Content Include="public\img\loader.gif" />
+    <Content Include="public\img\logo_inside.png" />
+    <Content Include="public\libs\angularjs\angular-ui.min.css" />
+    <Content Include="public\libs\angularjs\fullcalendar.css" />
+    <Content Include="public\libs\angularjs\fullcalendar.print.css" />
+    <Content Include="public\libs\angularjs\ng-grid.css" />
+    <Content Include="public\libs\angularjs\ng-table.css" />
+    <Content Include="public\libs\bootstrap\css\bootstrap-responsive.css" />
+    <Content Include="public\libs\bootstrap\css\bootstrap-responsive.min.css" />
+    <Content Include="public\libs\bootstrap\css\bootstrap.css" />
+    <Content Include="public\libs\bootstrap\css\bootstrap.min.css" />
+    <Content Include="public\libs\bootstrap\css\old\bootstrap.css" />
+    <Content Include="public\libs\bootstrap\css\old\bootstrap.min.css" />
+    <Content Include="public\libs\bootstrap\img\glyphicons-halflings-white.png" />
+    <Content Include="public\libs\bootstrap\img\glyphicons-halflings.png" />
+    <Content Include="public\libs\jqueryui\images\animated-overlay.gif" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="public\libs\jqueryui\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="public\libs\jqueryui\images\ui-icons_222222_256x240.png" />
+    <Content Include="public\libs\jqueryui\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="public\libs\jqueryui\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="public\libs\jqueryui\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="public\libs\jqueryui\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="public\libs\jqueryui\jquery-ui-1.10.2.custom.min.css" />
+    <Content Include="public\libs\select2\select2-spinner.gif" />
+    <Content Include="public\libs\select2\select2.css" />
+    <Content Include="public\libs\select2\select2.png" />
+    <Content Include="public\libs\select2\select2x2.png" />
+    <Content Include="public\templates\aide-conges.html" />
+    <Content Include="public\templates\contact.html" />
+    <Content Include="public\templates\history.html" />
+    <Content Include="public\templates\password.html" />
+    <Content Include="public\templates\passwordLost.html" />
+    <Content Include="sql\cron\1_janvier" />
+    <Content Include="sql\cron\1_juin" />
+    <Content Include="sql\cron\cron.txt" />
+    <Content Include="sql\cron\matin" />
+    <Content Include="sql\cron\mois" />
+    <Content Include="sql\exclu\20130509\config.json" />
+    <Content Include="sql\exclu\20130509\creation.sql" />
+    <Content Include="sql\exclu\20130509\proc.sql" />
+    <Content Include="sql\exclu\20130509\tables.sql" />
+    <Content Include="sql\exclu\backup.sql" />
+    <Content Include="sql\exclu\comp1.sql" />
+    <Content Include="sql\exclu\comptmp.sql" />
+    <Content Include="sql\exclu\config.json" />
+    <Content Include="sql\exclu\config_dev\config - Copie.json" />
+    <Content Include="sql\exclu\config_dev\config.json" />
+    <Content Include="sql\exclu\config_prod\com.inside-groupe.extranet" />
+    <Content Include="sql\exclu\config_prod\com.inside-groupe.extranet_" />
+    <Content Include="sql\exclu\config_prod\config - Copie.json" />
+    <Content Include="sql\exclu\config_prod\config.json" />
+    <Content Include="sql\exclu\config_prod\nginx - Copie.conf" />
+    <Content Include="sql\exclu\config_prod\nginx-release-centos-6-0.el6.ngx.noarch.rpm" />
+    <Content Include="sql\exclu\config_prod\nginx.conf" />
+    <Content Include="sql\exclu\config_prod\nginx_maintenace.txt" />
+    <Content Include="sql\exclu\config_prod\nginx_redirect.txt" />
+    <Content Include="sql\exclu\config_prod\nginx_upstream.txt" />
+    <Content Include="sql\exclu\creation.sql" />
+    <Content Include="sql\exclu\creationUser.sql" />
+    <Content Include="sql\exclu\Dump20130521.zip" />
+    <Content Include="sql\exclu\next\next.txt" />
+    <Content Include="sql\exclu\nodeup" />
+    <Content Include="sql\exclu\old\AddConges.sql" />
+    <Content Include="sql\exclu\old\biz.sql" />
+    <Content Include="sql\exclu\old\feries.sql" />
+    <Content Include="sql\exclu\old\insert_date.sql" />
+    <Content Include="sql\exclu\old\RemoveConges.sql" />
+    <Content Include="sql\exclu\old\sql.zip" />
+    <Content Include="sql\exclu\old\UpdateConges.sql" />
+    <Content Include="sql\exclu\prod\AddConges.sql" />
+    <Content Include="sql\exclu\prod\biz.sql" />
+    <Content Include="sql\exclu\prod\feries.sql" />
+    <Content Include="sql\exclu\prod\RemoveConges.sql" />
+    <Content Include="sql\exclu\prod\UpdateConges.sql" />
+    <Content Include="sql\exclu\recup\temp.zip" />
+    <Content Include="sql\exclu\recup\temp2.zip" />
+    <Content Include="sql\exclu\recup\temp3.zip" />
+    <Content Include="sql\exclu\recup\temp\views\partials\admin-activite.html" />
+    <Content Include="sql\exclu\recup\temp\views\partials\admin-conges.html" />
+    <Content Include="sql\exclu\recup\temp\views\partials\conges.html" />
+    <Content Include="sql\exclu\recup\temp\views\partials\users.html" />
+    <Content Include="sql\exclu\restart" />
+    <Content Include="sql\exclu\test.sql" />
+    <Content Include="sql\exclu\test\angularjs\angular-ui.min.css" />
+    <Content Include="sql\exclu\test\angularjs\fullcalendar.css" />
+    <Content Include="sql\exclu\test\angularjs\fullcalendar.print.css" />
+    <Content Include="sql\exclu\test\angularjs\ng-grid.css" />
+    <Content Include="sql\exclu\test\angularjs\ng-table.css" />
+    <Content Include="sql\exclu\test\scripts.html" />
+    <Content Include="sql\proc.sql" />
+    <Content Include="sql\tables.sql" />
+    <Content Include="views\admin.html" />
+    <Content Include="views\footer.html" />
+    <Content Include="views\forms\conges.html" />
+    <Content Include="views\forms\user.html" />
+    <Content Include="views\header.html" />
+    <Content Include="views\index.html" />
+    <Content Include="views\partials\.gitignore" />
+    <Content Include="views\partials\activite.html" />
+    <Content Include="views\partials\admin-activite.html" />
+    <Content Include="views\partials\admin-conges.html" />
+    <Content Include="views\partials\conges.html" />
+    <Content Include="views\partials\index.html" />
+    <Content Include="views\partials\users.html" />
+    <Content Include="views\scripts.html" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config" />
+    <Content Include="Web.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
+    <Folder Include="data\" />
+    <Folder Include="data\models\" />
+    <Folder Include="history\" />
+    <Folder Include="mail\" />
+    <Folder Include="mail\templates\" />
+    <Folder Include="My Project\" />
+    <Folder Include="My Project\MyExtensions\" />
+    <Folder Include="public\" />
+    <Folder Include="public\css\" />
+    <Folder Include="public\font\" />
+    <Folder Include="public\img\" />
+    <Folder Include="public\js\" />
+    <Folder Include="public\js\min\" />
+    <Folder Include="public\libs\" />
+    <Folder Include="public\libs\angularjs\" />
+    <Folder Include="public\libs\angularjs\plugins\" />
+    <Folder Include="public\libs\bootstrap\" />
+    <Folder Include="public\libs\bootstrap\css\" />
+    <Folder Include="public\libs\bootstrap\css\old\" />
+    <Folder Include="public\libs\bootstrap\img\" />
+    <Folder Include="public\libs\bootstrap\js\" />
+    <Folder Include="public\libs\jqueryui\" />
+    <Folder Include="public\libs\jqueryui\i18n\" />
+    <Folder Include="public\libs\jqueryui\images\" />
+    <Folder Include="public\libs\select2\" />
+    <Folder Include="public\templates\" />
+    <Folder Include="routes\" />
+    <Folder Include="sql\" />
+    <Folder Include="sql\cron\" />
+    <Folder Include="sql\exclu\" />
+    <Folder Include="sql\exclu\20130509\" />
+    <Folder Include="sql\exclu\config_dev\" />
+    <Folder Include="sql\exclu\config_prod\" />
+    <Folder Include="sql\exclu\next\" />
+    <Folder Include="sql\exclu\old\" />
+    <Folder Include="sql\exclu\prod\" />
+    <Folder Include="sql\exclu\recup\" />
+    <Folder Include="sql\exclu\recup\temp\" />
+    <Folder Include="sql\exclu\recup\temp\js\" />
+    <Folder Include="sql\exclu\recup\temp\routes\" />
+    <Folder Include="sql\exclu\recup\temp\views\" />
+    <Folder Include="sql\exclu\recup\temp\views\partials\" />
+    <Folder Include="sql\exclu\test\" />
+    <Folder Include="sql\exclu\test\angularjs\" />
+    <Folder Include="sql\exclu\test\angularjs\plugins\" />
+    <Folder Include="task\" />
+    <Folder Include="views\" />
+    <Folder Include="views\forms\" />
+    <Folder Include="views\partials\" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

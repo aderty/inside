@@ -114,7 +114,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     }
     
     $scope.isEditable = function(currentConges) {
-        return moment(currentConges.creation).add('days', 1) > moment() && currentConges.etat == 1;
+        return moment(currentConges.creation).add('days', 2) > moment() && currentConges.etat == 1;
     };
 
     $scope.isUnchanged = function(currentConges) {
