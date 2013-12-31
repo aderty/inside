@@ -65,7 +65,7 @@
                 backdrop: true,
                 keyboard: true,
                 backdropClick: true,
-                templateUrl: '/templates/history.html',
+                templateUrl: '/templates/history.html?v=' + config.version,
                 controller: 'DialogHistory'
             };
             var d = $dialog.dialog(opts);

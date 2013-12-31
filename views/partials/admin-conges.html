@@ -8,7 +8,7 @@
                     <!--Grilles des congés-->
                     <div class="bs-docs-example">
                         <tabset>
-                            <tab heading="Congés en attente de validation">
+                            <tab heading="Absences en attente de validation">
                                  <div loading-container="loading"> 
                                     <table id="congesAdminGrid" ng-table="tableParamsCongesAValider" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesAvalider"> 
@@ -46,7 +46,7 @@
                                     </table> 
                                 </div>
                             </tab>
-                            <tab heading="Congés validés">
+                            <tab heading="Absences validées">
                                 <div loading-container="loading"> 
                                     <table id="congesAdminGridVal" ng-table="tableParamsValider" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesValider"> 
@@ -84,7 +84,7 @@
                                     </table> 
                                 </div>
                             </tab>
-                            <tab heading="Congés refusés">
+                            <tab heading="Absences refusées">
                                     <div loading-container="loading"> 
                                     <table id="congesAdminGridRef" ng-table="tableParamsRefuser" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesRefuser"> 
@@ -133,7 +133,7 @@
             <!--Body content-->
             <div class="row">
                 <div class="span12">
-                    <button authenticate="4" type="button" class="btn btn-primary" ng-if="edition == 0" ng-click="create();"><i class="icon-plus icon-white"></i> Créer un congé de régulation</button>
+                    <button authenticate="4" type="button" class="btn btn-primary" ng-if="edition == 0" ng-click="create();"><i class="icon-plus icon-white"></i> Créer une absence de régulation</button>
                     <div class="alert alert-block alert-info" ng-if="edition == 1">
                         <h4>{{lblMode}}</h4>
                     </div>
@@ -192,10 +192,10 @@
 
 <script type="text/x-handlebars-template" id="refusTmpl">
     <div class="modal-header">
-        <h1>Refus d'un congé</h1>
+        <h1>Refus d'une absence</h1>
     </div>
     <div class="modal-body" id="refus">
-    <p>Etes-vous sûr de vouloir refuser la demande de congés ?
+    <p>Etes-vous sûr de vouloir refuser la demande d'absence ?
     </p>
     <!--<form id="refusConges" name="refusConges" class="form-horizontal" ui-keypress="{'enter':'close('yes')'}" novalidate>-->
     <form id="refusConges" name="refusConges" class="form-horizontal" novalidate>

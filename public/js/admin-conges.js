@@ -40,9 +40,9 @@
             if ($scope.currentConges.etat == 2 || $scope.currentConges.etat == 3) return;
             var conges = angular.copy($scope.currentConges);
             conges.etat = 2;
-            var msg = 'Etes-vous sûr de vouloir valider la demande de congés ?';
+            var msg = 'Etes-vous sûr de vouloir valider la demande d\'absence ?';
             var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no'}];
-            var msgbox = $dialog.messageBox('Validation d\'un congé', msg, btns);
+            var msgbox = $dialog.messageBox('Validation d\'une absence', msg, btns);
             msgbox.open().then(function(result) {
                 if (result === 'yes') {
                     CongesAdminService.updateEtat(conges, false).then(function(reponse) {
@@ -120,7 +120,7 @@
             };
             $scope.edition = 1;
             $scope.mode = "Création";
-            $scope.lblMode = "Nouveau congé de régulation";
+            $scope.lblMode = "Nouvelle absence de régulation";
         }
 
         $scope.cancel = function() {
@@ -136,13 +136,13 @@
             $scope.currentCongesSaved = angular.copy($scope.currentConges);
             $scope.edition = 2;
             $scope.mode = "Edition";
-            $scope.lblMode = "Modification d'un congé";
+            $scope.lblMode = "Modification d'une absence";
             $scope.dateOptionsFin.minDate = $scope.currentConges.debut.date;
         }
 
         $scope['delete'] = function(row) {
             var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no'}];
-            var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
+            var msgbox = $dialog.messageBox('Suppression d\'une absence', 'Etes-vous sûr de supprimer la demande d\'absence ?', btns);
             msgbox.open().then(function(result) {
                 if (result === 'yes') {
                     CongesAdminService.remove(row).then(function(reponse) {
@@ -229,7 +229,7 @@
                 backdrop: true,
                 keyboard: true,
                 backdropClick: true,
-                templateUrl: '/templates/aide-conges.html',
+                templateUrl: '/templates/aide-conges.html?v=' + config.version,
                 controller: 'DialogAideConges'
             });
             d.open();
@@ -281,7 +281,7 @@
 
         $rootScope.tableParamsCongesAValider = new ngTableParams({
             page: 1,            // show first page
-            count: 10,
+            count: 100,
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }
@@ -296,7 +296,7 @@
     });
         $rootScope.tableParamsValider = new ngTableParams({
             page: 1,            // show first page
-            count: 10,
+            count: 100,
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }
@@ -311,7 +311,7 @@
     });
         $rootScope.tableParamsRefuser = new ngTableParams({
             page: 1,            // show first page
-            count: 10,
+            count: 100,
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }

@@ -57,7 +57,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             backdrop: true,
             keyboard: true,
             backdropClick: true,
-            templateUrl: '/templates/aide-conges.html',
+            templateUrl: '/templates/aide-conges.html?v=' + config.version,
             controller: 'DialogAideConges'
         });
         d.open();
@@ -77,7 +77,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         };
         $scope.edition = 1;
         $scope.mode = "Création";
-        $scope.lblMode = "Nouvelle demande de congés";
+        $scope.lblMode = "Nouvelle demande d'absence";
     }
 
     $scope.cancel = function () {
@@ -93,12 +93,12 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.currentCongesSaved = angular.copy($scope.currentConges);
         $scope.edition = 2;
         $scope.mode = "Edition";
-        $scope.lblMode = "Modification d'une demande de congés";
+        $scope.lblMode = "Modification d'une demande d'absence";
     }
 
     $scope['delete'] = function (row) {
         var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no' }];
-        var msgbox = $dialog.messageBox('Suppression d\'un congé', 'Etes-vous sûr de supprimer la demande de congés ?', btns);
+        var msgbox = $dialog.messageBox('Suppression d\'une absence', 'Etes-vous sûr de supprimer la demande d\'absence ?', btns);
         msgbox.open().then(function(result){
             if (result === 'yes') {
                 CongesService.remove(row).then(function (reponse) {

@@ -14,11 +14,11 @@ app.run(["$rootScope", "MotifsService", function($rootScope, MotifsService) {
             searcher: "users"
         },
         conges: {
-            name: "Mes demandes de congés",
+            name: "Mes demandes d'absence",
             searcher: false
         },
         "admin-conges": {
-            name: "Validation des congés",
+            name: "Validation des absences",
             searcher: "admin-conges"
         },
         activite: {
@@ -134,7 +134,7 @@ controller('NavBar', ['$scope', '$rootScope', 'LoginService', '$dialog', functio
         backdrop: true,
         keyboard: true,
         backdropClick: true,
-        templateUrl: '/templates/password.html',
+        templateUrl: '/templates/password.html?v=' + config.version,
         controller: 'DialogPassword'
     };
 
@@ -153,7 +153,7 @@ controller('NavBar', ['$scope', '$rootScope', 'LoginService', '$dialog', functio
         backdrop: true,
         keyboard: true,
         backdropClick: true,
-        templateUrl: '/templates/contact.html',
+        templateUrl: '/templates/contact.html?v=' + config.version,
         controller: 'DialogContact'
     };
 
@@ -196,7 +196,7 @@ controller('DialogContact', ['$scope', '$rootScope', 'dialog', 'ContactService',
     $rootScope.error = "";
     $scope.enable = true;
     $scope.sujets = [
-        { libelle: "Congés" },
+        { libelle: "Absences / congés" },
         { libelle: "Compte-rendu d'activité" },
         { libelle: "Mon compte" },
         { libelle: "Poser une question..." }

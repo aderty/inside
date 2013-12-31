@@ -9,7 +9,7 @@
     /* Controllers */
     function ActiviteAdmin($scope, $rootScope, $dialog, $timeout, $compile, $filter, ngTableParams, ngTableFilter, ActiviteAdminService) {
         var currentYear = new Date().getFullYear();
-        $scope.lstAnnees = [currentYear, currentYear - 1, currentYear - 2];
+        $scope.lstAnnees = [currentYear + 1, currentYear, currentYear - 1, currentYear - 2];
         $scope.lstMois = [];
         $scope.lstMois.push.apply($scope.lstMois, jQuery.fullCalendar.monthNames);
         $scope.lstMois.splice(0, 0, "Tous");

@@ -29,7 +29,7 @@
             </select>
             <a title="Aide" class="icon-question-sign" href="" ng-click="showAide()"></a>
             <div class="input-help">
-                <h4>Vous devez renseigner un motif de congés.</h4>
+                <h4>Vous devez renseigner un motif d'absence.</h4>
             </div>
            
         </div>
@@ -40,7 +40,7 @@
         <div class="controls">
             <input type="datetime" ng-model="currentConges.debut.date" required id="inputDateDebut" name="inputDateDebut" ui-date="dateOptionsDebut" placeholder="{{placeholderDate}}">
             <div class="input-help">
-                <h4>Vous devez renseigner une date de début de congés.</h4>
+                <h4>Vous devez renseigner une date de début d'absence.</h4>
             </div>
         </div>
         <div ng-show="!editConges.inputDateDebut.$invalid" class="controls typeDate">
@@ -55,11 +55,11 @@
     </div>
     <!--Saisie date de fin de congés-->
     <div class="control-group" ng-class="{error: editConges.inputDateFin.$dirty && editConges.inputDateFin.$invalid, success:editConges.inputDateFin.$dirty && !editConges.inputDateFin.$invalid}">
-        <label class="control-label" for="inputDateFin">Date de début</label>
+        <label class="control-label" for="inputDateFin">Date de fin</label>
         <div class="controls">
             <input type="datetime" ng-model="currentConges.fin.date" ng-disabled="editConges.inputDateDebut.$invalid" required id="inputDateFin" name="inputDateFin" ui-validate="{test:'$value >= currentConges.debut.date'}" ui-validate-watch=" 'currentConges.debut.date' " ui-date="dateOptionsFin" placeholder="{{placeholderDate}}">
             <div class="input-help">
-                <h4>Vous devez renseigner une date de fin de congés supérieure ou égale à la date de début.</h4>
+                <h4>Vous devez renseigner une date de fin d'absence supérieure ou égale à la date de début.</h4>
             </div>
         </div>
         <div ng-show="!editConges.inputDateFin.$invalid" class="controls typeDate">
