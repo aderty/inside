@@ -5,6 +5,8 @@ var path = require('path'),
     activite = require('./activite'),
     config = require('../config.json');
 
+var VERSION = 1;
+
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");
     res.header('Cache-Control', 'no-cache');
@@ -29,7 +31,8 @@ exports.index = function(req, res) {
             role: req.session.role ? req.session.role : 0,
             prenom: req.session.prenom,
             infos: infos || {},
-            prefix: config.env.NODE_ENV == 'production' ? 'min/' : ''
+            prefix: config.env.NODE_ENV == 'production' ? 'min/' : '',
+            version: VERSION
         });
     });
 };

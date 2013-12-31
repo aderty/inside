@@ -107,7 +107,7 @@
            <option ng-hide="data.duree == 1" value="2">Après-midi</option>
       </select>
     </accordion-group>
-    <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3'">
+    <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'WK' || data.type == 'JF'">
       <p>Nombre d'heures suplémentaires</p>
       <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
       <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
@@ -117,7 +117,7 @@
       <p>Nombre d'heures d'intervention</p>
       <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
     </accordion-group>
-    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT'">
+    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT'  || data.type == 'WK' || data.type == 'JF'">
       <p>Remarques...</p>
         <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
     </accordion-group>

@@ -14,12 +14,12 @@
     
     var prefix = window.prefix || '';
     var appScripts = {
-        accueil: 'js/'+ prefix +'accueil.js',
-        users: 'js/'+ prefix +'users.js',
-        conges: 'js/'+ prefix +'conges.js',
-        'admin-conges': 'js/'+ prefix +'admin-conges.js',
-        activite: 'js/'+ prefix +'activite.js',
-        'admin-activite': 'js/'+ prefix +'admin-activite.js',
+        accueil: 'js/'+ prefix +'accueil.js?v=' + config.version,
+        users: 'js/'+ prefix +'users.js?v=' + config.version,
+        conges: 'js/'+ prefix +'conges.js?v=' + config.version,
+        'admin-conges': 'js/'+ prefix +'admin-conges.js?v=' + config.version,
+        activite: 'js/'+ prefix +'activite.js?v=' + config.version,
+        'admin-activite': 'js/'+ prefix +'admin-activite.js?v=' + config.version
     };
 
     window.app = angular.module('inside', [/*'ngRoute', */'inside.directives', 'inside.filters', 'inside.services', 'ui.bootstrap', 'ui', 'ui.calendar', 'ngTable'])
@@ -31,36 +31,36 @@
             window.app.provide = $provide;
             $routeProvider
             .when('/index', {
-                templateUrl: 'partials/index.html',
+                templateUrl: 'partials/index.html?v=' + config.version,
                 controller: 'appController',
                 resolve: { deps: resolve([appScripts.accueil]) }
             })
           .when('/products/:productSku', {
-              templateUrl: 'partials/product.html',
+              templateUrl: 'partials/product.html?v=' + config.version,
               controller: 'appController'
           })
           .when('/users', {
-              templateUrl: 'admin-partials/users.html',
+              templateUrl: 'admin-partials/users.html?v=' + config.version,
               controller: 'appController',
               resolve: { deps: resolve([appScripts.users]) }
           })
           .when('/conges', {
-              templateUrl: 'partials/conges.html',
+              templateUrl: 'partials/conges.html?v=' + config.version,
               controller: 'appController',
               resolve: { deps: resolve([appScripts.conges]) }
           })
           .when('/admin-conges', {
-              templateUrl: 'admin-partials/admin-conges.html',
+              templateUrl: 'admin-partials/admin-conges.html?v=' + config.version,
               controller: 'appController',
               resolve: { deps: resolve([appScripts['admin-conges']]) }
           })
           .when('/activite', {
-              templateUrl: 'partials/activite.html',
+              templateUrl: 'partials/activite.html?v=' + config.version,
               controller: 'appController',
               resolve: { deps: resolve([appScripts.activite]) }
           })
           .when('/admin-activite', {
-              templateUrl: 'admin-partials/admin-activite.html',
+              templateUrl: 'admin-partials/admin-activite.html?v=' + config.version,
               controller: 'appController',
               resolve: { deps: resolve([appScripts['admin-activite']]) }
           })

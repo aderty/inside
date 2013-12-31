@@ -34,25 +34,25 @@
                                             <td data-title="'Utilisateur'" sortable="user.id"> 
                                                 <div class="matriculeCell" data-toggle="tooltip" title="{{activite.user.nom}} {{activite.user.prenom}}">{{activite.user.nom}} {{activite.user.prenom}}</div>
                                             </td>
-                                            <td class="travail" data-title="'En mission 1'" sortable="JT1"> 
+                                            <td class="travail" data-title="'M1'" sortable="JT1"> 
                                             {{activite.JT1}} 
                                             </td>
-                                            <td class="travail" data-title="'En mission 2'" sortable="JT2"> 
+                                            <td class="travail" data-title="'M2'" sortable="JT2"> 
                                             {{activite.JT2}} 
                                             </td>
-                                            <td class="travail" data-title="'En mission 3'" sortable="JT3"> 
+                                            <td class="travail" data-title="'M3'" sortable="JT3"> 
                                             {{activite.JT3}} 
                                             </td>
-                                            <td class="travail" data-title="'Formation'" sortable="FOR"> 
+                                            <td class="travail" data-title="'FOR'" sortable="FOR"> 
                                             {{activite.FOR}} 
                                             </td>
-                                            <td class="travail" data-title="'Inter contrat'" sortable="INT"> 
+                                            <td class="travail" data-title="'INT'" sortable="INT"> 
                                             {{activite.INT}} 
                                             </td>
                                             <td class="conges" data-title="'CP'" sortable="CP"> 
                                             {{activite.CP}} 
                                             </td>
-                                            <td class="conges" data-title="'CP anticipés'" sortable="CP_ANT"> 
+                                            <td class="conges" data-title="'CP ant'" sortable="CP_ANT"> 
                                             {{activite.CP_ANT}} 
                                             </td>
                                             <td class="conges" data-title="'RTT'" sortable="RTT"> 
@@ -61,16 +61,16 @@
                                             <td class="conges" data-title="'Autre'" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite | detailsAutreActivite}}" > 
                                             {{activite.AU + activite.CS + activite.DC + activite.DEM + activite.ENF + activite.MA + activite.MAR + activite.MAT + activite.NAI + activite.PAT}} 
                                             </td>
-                                            <td class="heures" data-title="'Heures suplémentaires'" sortable="heuresSup" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresSup.details | detailsHeures}}"> 
+                                            <td class="heures" data-title="'HS'" sortable="heuresSup" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresSup.details | detailsHeures}}"> 
                                             {{activite.heuresSup.total}} 
                                             </td>
-                                            <td class="heures" data-title="'Heures de nuit'" sortable="heuresNuit" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresNuit.details | detailsHeures}}"> 
+                                            <td class="heures" data-title="'HN'" sortable="heuresNuit" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresNuit.details | detailsHeures}}"> 
                                             {{activite.heuresNuit.total}} 
                                              </td>
-                                            <td class="heures" data-title="'Heures d\'astreintes'" sortable="heuresAstreinte" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresAstreinte.details | detailsHeures}}"> 
+                                            <td class="heures" data-title="'HA'" sortable="heuresAstreinte" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresAstreinte.details | detailsHeures}}"> 
                                             {{activite.heuresAstreinte.total}} 
                                             </td>
-                                            <td class="heures" data-title="'Heures d\'intervention'" sortable="heuresInt" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresInt.details | detailsHeures}}"> 
+                                            <td class="heures" data-title="'HI'" sortable="heuresInt" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresInt.details | detailsHeures}}"> 
                                             {{activite.heuresInt.total}} 
                                             </td>
                                             <td sortable="etat" style="width:15px;"> 
@@ -213,20 +213,20 @@
            <option ng-hide="data.duree == 1" value="2">Après-midi</option>
       </select>
     </accordion-group>
-    <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3'">
-      <p>Nombre d'heures suplémentaires</p>
-      <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
-      <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
-      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
-      <p ng-if="hasHeuresAstreinte(data);">Nombre d'heures d'astreinte</p>
-      <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
-      <p>Nombre d'heures d'intervention</p>
-      <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
-    </accordion-group>
-    <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT'">
-      <p>Remarques...</p>
-        <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
-    </accordion-group>
+      <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'WK' || data.type == 'JF'">
+          <p>Nombre d'heures suplémentaires</p>
+          <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
+          <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
+          <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
+          <p ng-if="hasHeuresAstreinte(data);">Nombre d'heures d'astreinte</p>
+          <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
+          <p>Nombre d'heures d'intervention</p>
+          <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
+      </accordion-group>
+      <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT' || data.type == 'WK' || data.type == 'JF'">
+          <p>Remarques...</p>
+          <textarea id="inputInfos" name="inputInfos" ng-model="data.information"></textarea>
+      </accordion-group>
   </accordion>
   <div class="modal-footer">
     <button class="btn btn-primary" ng-click="valid(currentEvent);" >Valider</button>

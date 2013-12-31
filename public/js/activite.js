@@ -55,15 +55,15 @@
                         // Pas de compteur pas les weekend
                         if (event.data.type != 'WK' && event.data.type != 'JF') {
                             eventActivite(event.data.type, event.data.duree == 0 ? 1 : 0.5);
-                            hSup += event.data.heuresSup || 0;
-                            hAst += event.data.heuresAstreinte || 0;
-                            hNuit += event.data.heuresNuit || 0;
-                            hInt += event.data.heuresInt || 0;
                             joursTotal++;
                             if (businessDay(moment(event.start))) {
                                 joursOuvres++;
                             }
                         }
+                        hSup += event.data.heuresSup || 0;
+                        hAst += event.data.heuresAstreinte || 0;
+                        hNuit += event.data.heuresNuit || 0;
+                        hInt += event.data.heuresInt || 0;
                     }
                     $scope.heuresSup = hSup;
                     $scope.heuresAstreinte = hAst;
@@ -109,14 +109,14 @@
                     var toDo = true;
                     if (businessDay(current) && !skip) {
                         var data = angular.copy(cong);
-                        data.start = true;
+                        data.start = data.debut.date.getDate() == current.date();
                         if (data.fin.date.getMonth() <= current.month() && data.fin.date.getDate() <= current.date()) {
                             data.end = true;
                         }
                         if (!data.end && data.debut.type == 0) {
                             data.duree = 0;
                         }
-                        else if (!data.end && data.debut.type == 1) {
+                        else if (data.start && !data.end && data.debut.type == 1) {
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
@@ -136,18 +136,26 @@
                         data.duree = 2;
                         }*/
                         else if (data.debut.type == 0 && data.end && data.fin.type == 0) {
+                            // C'est la fin d'un congès et il se termine à midi
                             data.duree = 1;
                             var date = new Date(current.toDate());
                             date.setHours(8);
                             $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             date = new Date(current.toDate());
                             date.setHours(12);
-                            if ($scope.conges.length > 0 && $scope.conges[0].fin.date.getMonth() == current.month() && $scope.conges[0].fin.date.getDate() < current.date()) {
+                            if ($scope.conges.length > 0 && $scope.conges[0].debut.date.getMonth() == current.month() && $scope.conges[0].debut.date.getDate() <= current.date()) {
+                                // Un autre congès est commence l'après-midi même.
+                                var dataAp = angular.copy($scope.conges[0]);
+                                dataAp.duree = 2;
+                                $scope.events.push({ title: $filter('motifCongesShort')(dataAp.type), allDay: false, start: date, data: dataAp, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                            }
+                            else {
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
+                            $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
                         }
-                        else if (data.debut.type == 1 && data.end && data.fin.type == 1) {
+                        else if (data.debut.type == 1 && data.start && data.end && data.fin.type == 1) {
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
@@ -270,7 +278,7 @@
                             // Dans une période de congés.
                             inEventConges(current);
                         }
-                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
+                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()) {
                             // Au début d'une période de congés.
                             startEventConges(current);
                         }
@@ -409,7 +417,7 @@
                 }
             };
             eventScope.hasHeuresAstreinte = function(data) {
-                return data.heuresAstreinte > 0 || (!businessDay(moment(start)) && (data.type == 'JT1'|| data.type == 'JT2'|| data.type == 'JT3')) || data.type == 'JF';
+                return data.heuresAstreinte > 0 || (!businessDay(moment(start)) && (data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3')) || data.type == 'JF';
             };
             return $compile($.trim($('#eventTmpl').html()))(eventScope)
             .attr("rel", "popover").popover({

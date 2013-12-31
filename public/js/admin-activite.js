@@ -170,14 +170,14 @@
                     var toDo = true;
                     if (businessDay(current) && !skip) {
                         var data = angular.copy(cong);
-                        data.start = true;
+                        data.start = data.debut.date.getDate() == current.date();
                         if (data.fin.date.getMonth() <= current.month() && data.fin.date.getDate() <= current.date()) {
                             data.end = true;
                         }
                         if (!data.end && data.debut.type == 0) {
                             data.duree = 0;
                         }
-                        else if (!data.end && data.debut.type == 1) {
+                        else if (data.start && !data.end && data.debut.type == 1) {
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
@@ -191,18 +191,26 @@
                             toDo = false;
                         }
                         else if (data.debut.type == 0 && data.end && data.fin.type == 0) {
+                            // C'est la fin d'un congès et il se termine à midi
                             data.duree = 1;
                             var date = new Date(current.toDate());
                             date.setHours(8);
                             $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             date = new Date(current.toDate());
                             date.setHours(12);
-                            if ($scope.conges.length > 0 && $scope.conges[0].fin.date.getMonth() == current.month() && $scope.conges[0].fin.date.getDate() < current.date()) {
+                            if ($scope.conges.length > 0 && $scope.conges[0].debut.date.getMonth() == current.month() && $scope.conges[0].debut.date.getDate() <= current.date()) {
+                                // Un autre congès est commence l'après-midi même.
+                                var dataAp = angular.copy($scope.conges[0]);
+                                dataAp.duree = 2;
+                                $scope.events.push({ title: $filter('motifCongesShort')(dataAp.type), allDay: false, start: date, data: dataAp, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                            }
+                            else {
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
+                            $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
                         }
-                        else if (data.debut.type == 1 && data.end && data.fin.type == 1) {
+                        else if (data.debut.type == 1 && data.start && data.end && data.fin.type == 1) {
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
@@ -326,7 +334,7 @@
                             // Dans une période de congés.
                             inEventConges(current);
                         }
-                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
+                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()) {
                             // Au début d'une période de congés.
                             startEventConges(current);
                         }
