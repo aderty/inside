@@ -283,22 +283,36 @@ AND DATEDIFF(congesTmp.fin, d2) > 0)
 AND DATEDIFF(d1, congesTmp.debut) < 0 
 AND DATEDIFF(congesTmp.fin, d2) < 0)
 		Or 
--- Même Debut et 
+-- Même Debut et Fin après et 
 (congesTmp.etat <> 3
 AND DATEDIFF(d1, congesTmp.debut) = 0 
-AND HOUR(d1) >= HOUR(congesTmp.debut)) 
+AND HOUR(d1) < HOUR(congesTmp.debut)
+AND DATEDIFF(d2, congesTmp.debut) > 0) 
+		Or
+(congesTmp.etat <> 3
+AND DATEDIFF(congesTmp.fin, d1) = 0
+AND HOUR(d1) < HOUR(congesTmp.fin)
+AND DATEDIFF(congesTmp.fin, d2) < 0 ) 
 		Or 
 (congesTmp.etat <> 3
 AND DATEDIFF(congesTmp.fin, d1) = 0
-AND HOUR(d1) < HOUR(congesTmp.fin)) 
+AND DATEDIFF(congesTmp.fin, d2) = 0
+AND HOUR(d1) < HOUR(congesTmp.fin) AND HOUR(d2) >= HOUR(congesTmp.fin)) 
 		Or
 (congesTmp.etat <> 3
-AND DATEDIFF(d2, congesTmp.debut) = 0 
-AND HOUR(d2) > HOUR(congesTmp.debut)) 
-		Or 
-(congesTmp.etat <> 3
-AND DATEDIFF(congesTmp.fin, d2) = 0
-AND HOUR(d2) <= HOUR(congesTmp.fin));
+AND DATEDIFF(d1, congesTmp.debut) = 0 
+AND DATEDIFF(d2, congesTmp.debut) = 0
+AND HOUR(d2) > HOUR(congesTmp.debut) AND HOUR(d1) <= HOUR(congesTmp.debut))
+ 		Or 
+ (congesTmp.etat <> 3
+ AND DATEDIFF(congesTmp.debut, d2) = 0
+ AND HOUR(d2) > HOUR(congesTmp.debut)
+ AND DATEDIFF(congesTmp.debut, d1) > 0 )
+ 		Or 
+ (congesTmp.etat <> 3
+ AND DATEDIFF(congesTmp.fin, d2) = 0
+ AND HOUR(d2) < HOUR(congesTmp.fin)
+ AND DATEDIFF(congesTmp.fin, d1) < 0 );
 
 
   RETURN nbconflis;

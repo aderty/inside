@@ -170,32 +170,36 @@
                     var toDo = true;
                     if (businessDay(current) && !skip) {
                         var data = angular.copy(cong);
+                        // Le congès commence le jour même ou a déjà été commencé
                         data.start = data.debut.date.getDate() == current.date();
                         if (data.fin.date.getMonth() <= current.month() && data.fin.date.getDate() <= current.date()) {
+                            // Le congès se fini le même jour que son commencement
                             data.end = true;
                         }
                         if (!data.end && data.debut.type == 0) {
+                            // Congès non fini et commencant le matin (cas normal)
                             data.duree = 0;
                         }
                         else if (data.start && !data.end && data.debut.type == 1) {
+                            // Début du congès à midi sans être fini la journée même
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
-                            if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
+                            if ((!lastCong || lastCong.fin.date.getMonth() != current.month() || lastCong.fin.date.getDate() < current.date()) && data.fin.date.getDate() > current.date()) {
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
                             date = new Date(current.toDate());
                             date.setHours(12);
-                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
                         }
                         else if (data.debut.type == 0 && data.end && data.fin.type == 0) {
-                            // C'est la fin d'un congès et il se termine à midi
+                            // Début du congès le matin et fin du congès à midi
                             data.duree = 1;
                             var date = new Date(current.toDate());
                             date.setHours(8);
-                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             date = new Date(current.toDate());
                             date.setHours(12);
                             if ($scope.conges.length > 0 && $scope.conges[0].debut.date.getMonth() == current.month() && $scope.conges[0].debut.date.getDate() <= current.date()) {
@@ -203,6 +207,10 @@
                                 var dataAp = angular.copy($scope.conges[0]);
                                 dataAp.duree = 2;
                                 $scope.events.push({ title: $filter('motifCongesShort')(dataAp.type), allDay: false, start: date, data: dataAp, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                                if (!$scope.conges[0].fin.date.getDate() <= current.date()) {
+                                    lastCong = angular.copy(cong);
+                                    cong = $scope.conges.shift();
+                                }
                             }
                             else {
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
@@ -211,19 +219,21 @@
                             toDo = false;
                         }
                         else if (data.debut.type == 1 && data.start && data.end && data.fin.type == 1) {
+                            // Début du congès le midi et fin du congès le soir même
                             data.duree = 2;
                             var date = new Date(current.toDate());
                             date.setHours(8);
-                            if (lastCong.fin.date.getMonth() == current.month() && data.fin.date.getDate() < current.date()) {
+                            if (!lastCong || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() < current.date())) {
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
                             date = new Date(current.toDate());
                             date.setHours(12);
-                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
+                            $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
                         }
                         else if (data.debut.type == 0 && data.end && data.fin.type == 1) {
+                            // Début du congès le matin et fin du congès le soir même (cas normal)
                             data.duree = 0;
                         }
                         if (toDo) {
@@ -254,9 +264,11 @@
                         data.end = true;
                     }
                     if (!data.end) {
+                        // Congès non fini
                         data.duree = 0;
                     }
                     if (data.end && data.fin.type == 0) {
+                        // Fin du congè le matin
                         data.duree = 1;
                         var date = new Date(current.toDate());
                         date.setHours(8);
@@ -264,20 +276,25 @@
                         data.heuresAstreinte = 0;
                         data.heuresNuit = 0;
                         data.heuresInt = 0;
-                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), start: date, data: data });
+                        $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         date = new Date(current.toDate());
                         date.setHours(12);
-                        if (cong && cong.fin.date.getMonth() == current.month() && cong.fin.date.getDate() < current.date()) {
+                        if (!cong || cong.fin.date.getMonth() != current.month() || cong.fin.date.getDate() < current.date()) {
+                            // Fin d'un congès dont le congès en cours est déjà fini
+                            $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
+                        }
+                        else if ((lastCong && lastCong.fin.date.getMonth() == current.month() || lastCong.fin.date.getDate() == current.date()) && (!cong || cong.debut.date.getMonth() != current.month() || cong.debut.date.getDate() > current.date())) {
+                            // Fin d'un congès dont le dernier congès ce fini aujourd'hui et le congès en cours (suivant) ne commence pas aujourd'hui
                             $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                         }
                         toDo = false;
                     }
                     if (data.end && data.fin.type == 1) {
+                        // Fin du congès le soir (cas normal)
                         data.duree = 0;
                     }
                     if (toDo) {
-                        data.duree = 0;
                         data.heuresSup = 0;
                         data.heuresAstreinte = 0;
                         data.heuresNuit = 0;
