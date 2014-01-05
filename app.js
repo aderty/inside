@@ -14,6 +14,9 @@ var express = require('express')
   , history = require('./history')
   , path = require('path')
   , url = require('url')
+  , redisUrl = url.parse(config.redis || "redis://redis:@127.0.0.1:6379")
+  , redisAuth = redisUrl.auth.split(':')
+  , RedisStore = require('connect-redis')(express)
   , fs = require('fs')
   //, assetManager = require('connect-assetmanager')
   , PORT = process.env.PORT || config.env.PORT
@@ -66,8 +69,14 @@ app.configure(function(){
     // Session management
     // Internal session data storage engine, this is the default engine embedded with connect.
     // Much more can be found as external modules (Redis, Mongo, Mysql, file...). look at "npm search connect session store"
-    this.sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 });
+    //this.sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 });
     //this.sessionStore = new MongoStore({url: config.getConnectionString()});
+    this.sessionStore = new RedisStore({
+        host: redisUrl.hostname
+      , port: redisUrl.port
+      , db: redisAuth[0]
+      , pass: redisAuth[1]
+    });
 
     app.use(express.session({
         secret : config.secret,
@@ -282,3 +291,5 @@ process.on('uncaughtException', function (exception) {
     //exception.response.writeHead(exception.code, {'Content-Type': 'text/html'});
     //exception.response.end('Error ' + exception.code + ' - ' + exception.message);
 });*/
+
+//require("./task/validationConges");

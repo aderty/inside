@@ -4,6 +4,7 @@
   "main": "app",
   "dependencies": {
     "connect": "2.7.X",
+	"connect-redis": "1.4.X",
     "express": "3.X.X",
 	"crypto": "0.X.X",
 	"async": "X.X.X",
