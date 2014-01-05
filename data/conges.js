@@ -99,15 +99,16 @@ var data = {
     listCongesEtat: function (etat, admin, past, fn) {
         var query, values = [etat];
         if (!past) {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW() ORDER BY conges.debut DESC';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW() ';
         }
         else {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? ORDER BY conges.debut DESC';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? ';
         }
-        if (admin > 0) {
-            query += ' AND users.admin = ?';
+        if (admin > -1) {
+            query += ' AND users.admin = ? ';
             values.push(admin);
         }
+        query += ' ORDER BY conges.debut DESC';
         db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

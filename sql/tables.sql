@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `etat` INT NOT NULL DEFAULT 1,
   `admin` MEDIUMINT NOT NULL DEFAULT 1,
   `creation` timestamp NOT NULL DEFAULT current_timestamp,
-  `last_connection` timestamp NOT NULL DEFAULT current_timestamp,
+  `last_connection` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   CONSTRAINT FOREIGN KEY (`role` ) REFERENCES `roles` (`id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT FOREIGN KEY (`admin` ) REFERENCES `users` (`id` ) ON DELETE NO ACTION ON UPDATE CASCADE,

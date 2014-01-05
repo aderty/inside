@@ -181,7 +181,7 @@ exports.infos = function (req, res, fn) {
         return fn(null, {});
     }
     data.users.infos(req.session.username, req.session.role, function (err, infos) {
-        if (infos.roleChanged) {
+        if (infos && infos.roleChanged) {
             exports.setUser(req, res, {
                 id: req.session.username,
                 role: parseInt(infos.roleChanged),
