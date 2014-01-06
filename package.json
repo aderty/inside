@@ -7,6 +7,7 @@
 	"connect-redis": "1.4.X",
     "express": "3.X.X",
 	"crypto": "0.X.X",
+	"redis": "0.10.X",
 	"async": "X.X.X",
 	"mysql": "2.X.X",
 	"mongoose": "3.4.0",

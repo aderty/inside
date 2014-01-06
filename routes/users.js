@@ -99,11 +99,11 @@ var routes = {
         var user = req.body;
         var pwd = user.pwd;
         data.users.saveUser(user, function(err, ret) {
-            if (!err && ret.create) {
+            if (!err && ret && ret.create) {
                 mail.Mail.ajoutUser(user, pwd, function(err) {
                 });
             }
-            if (ret.create) {
+            if (ret && ret.create) {
                 history.log(user.id, "[Admin " + req.session.username + "] Création de l'utilisateur " + JSON.stringify(user));
             }
             else {
