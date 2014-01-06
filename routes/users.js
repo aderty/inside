@@ -1,11 +1,31 @@
-﻿var data = require('../data'),
+﻿var config = require('../config.json'),
+    data = require('../data'),
+    url = require('url'),
+    redis = require('redis'),    
+    redisUrl = url.parse(config.redis || "redis://redis:@127.0.0.1:6379"),
+    redisAuth = redisUrl.auth.split(':'),
     mail = require('../mail'),
     uuid = require('node-uuid'),
     history = require('../history').history,
     config = require('../config.json');
 
+redisClient = redis.createClient(redisUrl.port, redisUrl.hostname);
+redisClient.auth(redisAuth[1], function(err){
+    if(err) console.log("REDIS : Error " + err);
+});
 
-var listLostPasswordKeys = {};
+// if you'd like to select database 3, instead of 0 (default), call
+// client.select(3, function() { /* ... */ });
+var redisReady = false;
+redisClient.on("error", function (err) {
+        console.log("REDIS : Error " + err);
+});
+redisClient.on("connect", function (err) {
+        console.log("REDIS : Connected to redis ");
+        redisReady = true;
+});
+
+//var listLostPasswordKeys = {};
 
 /// Routes
 function dataCallback(res) {
@@ -118,7 +138,10 @@ var routes = {
             if (err) {
                 return dataCallback(res)(err);
             }
-            listLostPasswordKeys[key] = req.body.email;
+            //listLostPasswordKeys[key] = req.body.email;
+            redisClient.set(key, req.body.email);
+            redisClient.expire(key, 480);
+            
             mail.Mail.passwordLost(user, key);
             dataCallback(res)(null, { success: true });
         });
@@ -130,24 +153,33 @@ var routes = {
         if (!req.body.key) {
             return dataCallback(res)("Pas de code renseigné.");
         }
-        if (!listLostPasswordKeys[req.body.key] || listLostPasswordKeys[req.body.key] != req.body.email) {
+
+        /*if (!listLostPasswordKeys[req.body.key] || listLostPasswordKeys[req.body.key] != req.body.email) {
             return dataCallback(res)("Le code saisi est incorrect.");
-        }
-        data.users.getUser(req.body.email, function (err, user) {
-            if (err) {
-                return dataCallback(res)(err);
+        }*/
+
+        redisClient.get(req.body.key, function(err, email) {
+            // reply is null when the key is missing
+            if (!email || email != req.body.email) {
+                return dataCallback(res)("Le code saisi est incorrect.");
             }
-            delete listLostPasswordKeys[req.body.key];
-            data.users.passwordUpdate(user.id, req.body.pwd, function (err, ret) {
+            data.users.getUser(req.body.email, function (err, user) {
+                //delete listLostPasswordKeys[req.body.key];
+                redisClient.del(req.body.key);
                 if (err) {
                     return dataCallback(res)(err);
                 }
-                data.users.infos(user.id, user.role, function (err, infos) {
+                data.users.passwordUpdate(user.id, req.body.pwd, function (err, ret) {
                     if (err) {
                         return dataCallback(res)(err);
                     }
-                    user.infos = infos;
-                    return dataCallback(res)(null, user);
+                    data.users.infos(user.id, user.role, function (err, infos) {
+                        if (err) {
+                            return dataCallback(res)(err);
+                        }
+                        user.infos = infos;
+                        return dataCallback(res)(null, user);
+                    });
                 });
             });
         });
