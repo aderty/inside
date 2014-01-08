@@ -180,6 +180,7 @@ function cleanLogin(req, res, next) {
 
 app.get('/', [cookieKeep], routes.index);
 app.get('/index', [cookieKeep], routes.index);
+app.get('/lost', [cookieKeep], routes.index);
 app.get('/partials/:name', routes.partials);
 app.get('/admin-partials/:name', [dataLogin, dataRh], routes.partials);
 app.get('/forms/:name', [dataLogin], routes.forms);

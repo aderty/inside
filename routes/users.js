@@ -178,6 +178,7 @@ var routes = {
                             return dataCallback(res)(err);
                         }
                         user.infos = infos;
+                        setSession(req, user);
                         return dataCallback(res)(null, user);
                     });
                 });

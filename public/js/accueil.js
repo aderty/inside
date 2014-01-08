@@ -2,12 +2,12 @@
 (function() {
     /* Controllers */
     // Contrôleur principal de la gestion des utilisateurs
-    this.register('LoginController', ['$scope', '$rootScope', '$dialog', 'LoginService', LoginController]);
+    this.register('LoginController', ['$scope', '$rootScope', '$dialog', '$location', '$routeParams', 'LoginService', LoginController]);
     this.register('DialogPasswordLost', ['$scope', '$rootScope', 'dialog', 'LoginService', DialogPasswordLost]);
- 
+
     /* Controllers */
     // Contrôleur de login
-    function LoginController($scope, $rootScope, $dialog, LoginService) {
+    function LoginController($scope, $rootScope, $dialog, $location, $routeParams, LoginService) {
         $scope.user = {};
         $rootScope.error = null;
         $scope.connect = function(user) {
@@ -40,14 +40,22 @@
             templateUrl: '/templates/passwordLost.html',
             controller: 'DialogPasswordLost'
         };
-        $scope.passwordLost = function() {
+        $scope.passwordLost = function(email, key) {
             $rootScope.error = "";
-            var d = $dialog.dialog($scope.opts);
+            var opts = angular.copy($scope.opts);
+            // Si un email est présent ou un code -> Ajout aux options de la popup
+            if (email) opts.email = email;
+            if (key) opts.key = key;
+            var d = $dialog.dialog(opts);
             d.open().then(function(result) {
                 if (result) {
                 }
             });
         };
+        // Appel de l'url de mot de passe oublié -> Ouverture automatique de la popup de récupération
+        if (location.pathname.indexOf("lost") > -1 && $routeParams.email && $routeParams.key) {
+            $scope.passwordLost($routeParams.email, $routeParams.key);
+        }
     }
 
     // Contrôleur de la popup de modification de password
@@ -57,6 +65,15 @@
         $scope.password = {
             etat: 0
         };
+        // Alimentation depuis l'url
+        if (dialog.options.email) {
+            $scope.password.email = dialog.options.email;
+            if (dialog.options.key) {
+                $scope.password.key = dialog.options.key;
+                // L'email et la clé est présent
+                $scope.password.etat = 1;
+            }
+        }
         $scope.close = function() {
             $rootScope.error = "";
             dialog.close();

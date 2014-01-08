@@ -35,6 +35,11 @@
                 controller: 'appController',
                 resolve: { deps: resolve([appScripts.accueil]) }
             })
+            .when('/lost', {
+                templateUrl: 'partials/index.html?v=' + config.version,
+                controller: 'appController',
+                resolve: { deps: resolve([appScripts.accueil]) }
+            })
           .when('/products/:productSku', {
               templateUrl: 'partials/product.html?v=' + config.version,
               controller: 'appController'

@@ -10,6 +10,8 @@
 
 moment.lang('fr');
 
+var URL = "https://extranet.inside-groupe.com";
+
 var email = nodemailer.createTransport("SMTP", config);
 
 /*var config = {
@@ -66,7 +68,7 @@ var Mail = {
                 "email": user.email,
                 "prenom": user.prenom,
                 "password": password,
-                "url": "https://extranet.inside-groupe.com",
+                "url": URL,
                 "color": function () {
                     var arr = ["purple", "red", "green", "yello"];
                     return arr[Math.floor(Math.random() * 3)];
@@ -158,7 +160,8 @@ var Mail = {
                 "email": user.email,
                 "prenom": user.prenom,
                 "nom": user.nom,
-                "code": key
+                "code": key,
+                "url": URL
             })
         }
         email.sendMail(mailOptions, function (error, response) {
