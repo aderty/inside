@@ -53,6 +53,10 @@ var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0
 var Mail = {
     ajoutUser: function(user, password, fn) {
         //return fn(null);
+        if(!config.enable){
+            if (fn) fn(null, true);
+            return;
+        }
         if (!user) return fn("Utilisateur invalide");
         if (!re.test(user.email)) {
             return fn("Email utilisateur invalide");
@@ -89,6 +93,10 @@ var Mail = {
         });
     },
     validationConges: function(user, conges, owner, fn) {
+        if(!config.enable){
+            if (fn) fn(null, true);
+            return;
+        }
         //return fn(null);
         if (!user) return fn("Utilisateur invalide");
         if (!re.test(user.email)) {
