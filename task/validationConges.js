@@ -11,7 +11,7 @@ data.events.once('connected', function (result) {
     var toExec = [];
     toExec.push(doRecapConges(-1, config.admin));
 
-    db.query("SELECT DISTINCT userAdmin.id, userAdmin.email FROM users As users1 JOIN users AS userAdmin ON users1.admin = userAdmin.id JOIN conges ON conges.user = users1.id WHERE conges.etat = 1;", function(err, result){
+    db.query("SELECT DISTINCT userAdmin.id, userAdmin.email FROM users As users1 JOIN users AS userAdmin ON users1.admin = userAdmin.id JOIN conges ON conges.user = users1.id WHERE conges.etat = 1  AND conges.fin > NOW();", function(err, result){
         if (err) {
             console.log('TASK 1 : ERROR: ' + err);
             return;
