@@ -104,10 +104,10 @@ var routes = {
                 });
             }
             if (ret && ret.create) {
-                history.log(user.id, "[Admin " + req.session.username + "] Création de l'utilisateur " + JSON.stringify(user));
+                history.log(req, user.id, "[Admin " + req.session.username + "] Création de l'utilisateur " + JSON.stringify(user));
             }
             else {
-                history.log(user.id, "[Admin " + req.session.username + "] Modification de l'utilisateur " + JSON.stringify(user));
+                history.log(req, user.id, "[Admin " + req.session.username + "] Modification de l'utilisateur " + JSON.stringify(user));
             }
             dataCallback(res)(err, ret);
         });
@@ -127,7 +127,7 @@ var routes = {
 
     remove: function(req, res) {
         data.users.removeUser(req.params.id, dataCallback(res));
-        history.log(req.params.id, "[Admin " + req.session.username + "] Suppression de l'utilisateur " + req.params.id);
+        history.log(req, req.params.id, "[Admin " + req.session.username + "] Suppression de l'utilisateur " + req.params.id);
     },
     passwordLost: function(req, res) {
         if (!req.body.email) {
@@ -198,7 +198,7 @@ var routes = {
             }
             mail.Mail.contact(config.admin, user.prenom + " " + user.nom, req.body.sujet, req.body.message, function (err, ret) {
                 if (err) return console.log(err);
-                history.log(req.session.username, "Demande d'information " + req.body.sujet + ", message : " + req.body.message);
+                history.log(req, req.session.username, "Demande d'information " + req.body.sujet + ", message : " + req.body.message);
             });
             dataCallback(res)(null, { success: true });
         });

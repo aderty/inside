@@ -49,7 +49,7 @@ var routes = {
             data.conges.addConges(conges, function(err, ret){
                 dataCallback(res)(err, ret);
                 if(!err){
-                    history.log(req.session.username, "Création d'un congé " + JSON.stringify(conges));
+                    history.log(req, req.session.username, "Création d'un congé " + JSON.stringify(conges));
                 }
             });
             return;
@@ -57,7 +57,7 @@ var routes = {
         data.conges.updateConges(conges, false, function (err, ret) {
             dataCallback(res)(err, ret);
             if (!err) {
-                history.log(req.session.username, "Modification du congé " + JSON.stringify(conges));
+                history.log(req, req.session.username, "Modification du congé " + JSON.stringify(conges));
             }
         });
     },
@@ -71,7 +71,7 @@ var routes = {
         data.conges.removeConges(req.params.id, function (err, ret) {
             dataCallback(res)(err, ret);
             if (!err) {
-                history.log(req.session.username, "Suppression du congé " + req.params.id + " : " + JSON.stringify(req.query));
+                history.log(req, req.session.username, "Suppression du congé " + req.params.id + " : " + JSON.stringify(req.query));
             }
         });
     },
@@ -119,7 +119,7 @@ var routesAdmin = {
                 data.conges.addToAllConges(conges, function (err, ret) {
                     dataCallback(res)(err, ret);
                     if (!err) {
-                        history.log(conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
+                        history.log(req, conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
                     }
                 });
                 return;
@@ -128,7 +128,7 @@ var routesAdmin = {
             data.conges.addConges(conges, function (err, ret) {
                 dataCallback(res)(err, ret);
                 if (!err) {
-                    history.log(conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
+                    history.log(req, conges.user, "[Admin " + req.session.username + "] Création d'un congé " + JSON.stringify(conges));
                 }
             });
             return;
@@ -143,7 +143,7 @@ var routesAdmin = {
                             mail.Mail.validationConges(user, conges, req.session.prenom);
                         });
                     }
-                    history.log(conges.user, "[Admin " + req.session.username + "] Modification de l'état d'un congé " + JSON.stringify(conges));
+                    history.log(req, conges.user, "[Admin " + req.session.username + "] Modification de l'état d'un congé " + JSON.stringify(conges));
                 }
                 dataCallback(res)(err, ret);
             });
@@ -153,7 +153,7 @@ var routesAdmin = {
         data.conges.updateConges(conges, true, function (err, ret) {
             dataCallback(res)(err, ret);
             if (!err) {
-                history.log(conges.user, "[Admin " + req.session.username + "] Modification du congé " + JSON.stringify(conges));
+                history.log(req, conges.user, "[Admin " + req.session.username + "] Modification du congé " + JSON.stringify(conges));
             }
         }); 
     },
@@ -162,7 +162,7 @@ var routesAdmin = {
         data.conges.removeConges(req.params.id, function (err, ret) {
             dataCallback(res)(err, ret);
             if (!err) {
-                history.log(conges.user, "[Admin " + req.session.username + "] Suppression du congé " + req.params.id + " : " + JSON.stringify(conges));
+                history.log(req, conges.user, "[Admin " + req.session.username + "] Suppression du congé " + req.params.id + " : " + JSON.stringify(conges));
             }
         }); 
     }

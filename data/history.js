@@ -6,8 +6,9 @@ db.events.once('connected', function(result) {
 });
 
 var data = {
-    log: function(user, log, fn) {
+    log: function(req, user, log, fn) {
         var histo = {
+            ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
             user: user,
             log: log
         };

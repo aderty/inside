@@ -28,8 +28,8 @@ data.events.once('connected', function (result) {
   }
 
 var history = {
-    log: function(user, log, fn) {
-        return data.history.log(user, log, fn);
+    log: function(req, user, log, fn) {
+        return data.history.log(req, user, log, fn);
     }
 }
 

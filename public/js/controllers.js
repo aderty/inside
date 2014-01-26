@@ -170,6 +170,7 @@ controller('NavBar', ['$scope', '$rootScope', 'LoginService', '$dialog', functio
 controller('DialogPassword', ['$scope', '$rootScope', 'dialog', 'UsersService', function($scope, $rootScope, dialog, UsersService) {
     // Contrôleur de la popup de modification de password
     $rootScope.error = "";
+    $scope.currentUser = {};
     $scope.enable = true;
     $scope.close = function() {
         $rootScope.error = "";

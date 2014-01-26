@@ -100,7 +100,8 @@ BEGIN
 
 -- CP = CP + CP_ANT
 -- Attention Round(CP_ANT, 1) : arrondi aux décimales
-UPDATE  conges_compteurs as tab1 join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' SET tab1.compteur = tab1.compteur + ROUND(tab2.compteur, 1) WHERE tab1.motif = 'CP' and tab1.user <> 999999;
+UPDATE  conges_compteurs as tab1 join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' 
+SET tab1.compteur = ROUND(tab1.compteur + tab2.compteur, 2) WHERE tab1.motif = 'CP' and tab1.user <> 999999;
 -- Remise à 0 de CP_ANT
 UPDATE  conges_compteurs SET compteur = 0 WHERE motif = 'CP_ANT';
 
@@ -121,11 +122,13 @@ CREATE PROCEDURE `CalculCongesAcquis` ()
 BEGIN
 
 -- maj des CP (+ 2.08) pour les utilisateurs qui sont inscris depuis plus d'un mois.
-UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 2.08 WHERE tab1.motif = 'CP' and tab1.user <> 999999 
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 2.08 
+WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999 
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0;
 -- maj des RTT (+ 0.75) pour les utilisateurs qui sont inscris depuis plus d'un mois.
-UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 0.75 WHERE tab1.motif = 'RTT' and tab1.user <> 999999 
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 1;
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 0.75 
+WHERE tab1.motif = 'RTT' and tab1.user <> 999999 
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0;
 
 END $$
 DELIMITER ;
