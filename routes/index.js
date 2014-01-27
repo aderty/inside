@@ -27,9 +27,9 @@ exports.index = function(req, res) {
             res.redirect("/logout");
         }
         res.render('index', {
-            connected: req.session.username != undefined ? true : false,
+            connected: req.session && req.session.username != undefined ? true : false,
             role: req.session.role ? req.session.role : 0,
-            prenom: req.session.prenom,
+            prenom: req.session ? req.session.prenom : '',
             infos: infos || {},
             prefix: config.env.NODE_ENV == 'production' ? 'min/' : '',
             version: VERSION
