@@ -1,5 +1,5 @@
 #!/bin/sh
 echo "PROD : validationConges.js"
-/root/node/node /home/inside/apps/prod/task/validationConges.js >> prod.log &
-echo "DEV : validationConges.js"
-/root/node/node /home/inside/apps/dev/task/validationConges.js >> dev.log &
+/usr/local/bin/node /home/inside/apps/prod/task/validationConges.js >> prod.log
+# echo "DEV : validationConges.js"
+# /root/node/node /home/inside/apps/dev/task/validationConges.js >> dev.log &

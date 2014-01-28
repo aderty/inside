@@ -1,5 +1,5 @@
 #!/bin/sh
 echo "PROD : transfertCP.js"
-/root/node/node /home/inside/apps/prod/task/transfertCP.js >> prod.log &
-echo "DEV : transfertCP.js"
-/root/node/node /home/inside/apps/dev/task/transfertCP.js >> dev.log &
+/usr/local/bin/node /home/inside/apps/prod/task/transfertCP.js >> prod.log 
+# echo "DEV : transfertCP.js"
+# /root/node/node /home/inside/apps/dev/task/transfertCP.js >> dev.log &

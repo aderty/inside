@@ -1,5 +1,5 @@
 #!/bin/sh
 echo "PROD : razCompteurs.js"
-/root/node/node /home/inside/apps/prod/task/razCompteurs.js >> prod.log &
-echo "DEV : razCompteurs.js"
-/root/node/node /home/inside/apps/dev/task/razCompteurs.js >> dev.log &
+/usr/local/bin/node /home/inside/apps/prod/task/razCompteurs.js >> prod.log 
+# echo "DEV : razCompteurs.js"
+# /root/node/node /home/inside/apps/dev/task/razCompteurs.js >> dev.log &
