@@ -168,6 +168,10 @@ table td.cell > div {
     line-height: 16px;
 }
 
+.accueil{
+    background-color: rgba(245,245,245,0.95);
+}
+
 #login {
     width: 500px;
     left: 50%;
