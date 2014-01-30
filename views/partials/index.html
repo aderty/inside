@@ -11,7 +11,7 @@
     <div class="span12" ng-controller="LoginController">
         <!--Sidebar content-->
         <!--Formulaire login--> 
-        <form id="login" name="login" class="form-horizontal well" ui-keypress="{'enter':'connect(user)'}" novalidate>
+        <form id="login" name="login" class="form-horizontal well accueil" ui-keypress="{'enter':'connect(user)'}" novalidate>
             <div class="row-fluid">
                 <span class="span12 center">
                     <img class="offset3 span6" src="img/sami.png" />
@@ -24,45 +24,45 @@
                 <div class="span12 separator">
                 </div>
             </div>
-            
-          <!--Saisie email-->
-          <div class="control-group" ng-class="{error: login.email.$dirty && login.email.$invalid, success:login.email.$dirty && !login.email.$invalid}">
-            <!--<label class="control-label" for="email">Email</label>-->
-            <!--<div class="controls">-->
+
+            <!--Saisie email-->
+            <div class="control-group" ng-class="{error: login.email.$dirty && login.email.$invalid, success:login.email.$dirty && !login.email.$invalid}">
+                <!--<label class="control-label" for="email">Email</label>-->
+                <!--<div class="controls">-->
                 <div class="input-prepend offset3">
-                  <span title="Email" class="add-on">@</span>
-                  <input type="email" id="email" name="email" ng-model="user.email" required placeholder="votre@email.fr" />
-                  <div class="input-help">
-                      <h4>Vous devez renseigner un email.</h4>
-                   </div>
+                    <span title="Email" class="add-on">@</span>
+                    <input type="email" id="email" name="email" ng-model="user.email" required placeholder="votre@email.fr" />
+                    <div class="input-help">
+                        <h4>Vous devez renseigner un email.</h4>
+                    </div>
                 </div>
-           <!-- </div>-->
-          </div>
-          <!--Saisie password-->
-          <div class="control-group" ng-class="{error: login.password.$dirty && login.password.$invalid, success:login.password.$dirty && !login.password.$invalid}">
-            <!--<label class="control-label" for="password">Password</label>-->
-            <!--<div class="controls password">-->
-                <div class="input-prepend offset3">
-                  <span title="Password" class="add-on"><i class="icon_key"></i></span>
-                  <input type="password" id="password" name="password" ng-model="user.pwd" required placeholder="Mot de passe" />
-                  <div class="input-help">
-                      <h4>Vous devez renseigner un mot de passe.</h4>
-                   </div>
-                </div>
-            <!--</div>-->
-          </div>
-            <!--Saisie envoi de mail-->
-          <div class="control-group">
-            <div class="controls check">
-              <label class="checkbox">
-                <input type="checkbox" name="keep" id="keep" ng-model="user.keep" checked="checked" /> Rester connecté
-              </label>
+                <!-- </div>-->
             </div>
-          </div>   
+            <!--Saisie password-->
+            <div class="control-group" ng-class="{error: login.password.$dirty && login.password.$invalid, success:login.password.$dirty && !login.password.$invalid}">
+                <!--<label class="control-label" for="password">Password</label>-->
+                <!--<div class="controls password">-->
+                <div class="input-prepend offset3">
+                    <span title="Password" class="add-on"><i class="icon_key"></i></span>
+                    <input type="password" id="password" name="password" ng-model="user.pwd" required placeholder="Mot de passe" />
+                    <div class="input-help">
+                        <h4>Vous devez renseigner un mot de passe.</h4>
+                    </div>
+                </div>
+                <!--</div>-->
+            </div>
+            <!--Saisie envoi de mail-->
+            <div class="control-group">
+                <div class="controls check">
+                    <label class="checkbox">
+                        <input type="checkbox" name="keep" id="keep" ng-model="user.keep" checked="checked" /> Rester connecté
+                    </label>
+                </div>
+            </div>
             <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>Problème de connection...</span></div>
-          <!--Zone d'action du formulaire-->
+            <!--Zone d'action du formulaire-->
             <div class="form-actions">
-              <button type="button" ng-click="connect(user);" class="btn btn-primary"><i class="icon_login"></i> Se connecter</button>
+                <button type="button" ng-click="connect(user);" class="btn btn-primary"><i class="icon_login"></i> Se connecter</button>
             </div>
             <label class="control-label" style="float: right;">
                 <a ng-click="passwordLost();">Mot de passe oublié</a>
