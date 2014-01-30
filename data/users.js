@@ -1,6 +1,6 @@
 ﻿var db = require('./db');
 var crypto = require('crypto');
-var shasum = crypto.createHash('sha1');
+var shasum = crypto.createHash('sha256');
 shasum.update("utf8");
 
 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -70,7 +70,7 @@ var data = {
     },
     login: function(email, pwd, fn) {
         // Chiffrage du pass en sha1
-        var hash = crypto.createHash('sha1').update(pwd).digest("hex");
+        var hash = crypto.createHash('sha256').update(pwd).digest("hex");
         // On test l'existance du compte
         db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '" AND etat=1', function(error, ret) {
             if (error) {
@@ -156,7 +156,7 @@ var data = {
         }
         if (user.pwd) {
             // Chiffrage du pass en sha1
-            user.pwd = crypto.createHash('sha1').update(user.pwd).digest("hex");
+            user.pwd = crypto.createHash('sha256').update(user.pwd).digest("hex");
         }
         var cp, cp_ant, rtt;
         if (typeof user.cp != "undefined") {
@@ -235,7 +235,7 @@ var data = {
             return fn("Mot de passe d'utilisateur invalide");
         }
         // Chiffrage du pass en sha1
-        var hash = crypto.createHash('sha1').update(oldPwd).digest("hex");
+        var hash = crypto.createHash('sha256').update(oldPwd).digest("hex");
         // On test l'existance du compte
         db.query('SELECT * FROM users WHERE id = ? AND pwd = ? AND etat=1', [id, hash], function(error, ret) {
             if (error) {
@@ -256,7 +256,7 @@ var data = {
             return fn("Mot de passe d'utilisateur invalide");
         }
         // Chiffrage du pass en sha1
-        var hash = crypto.createHash('sha1').update(pwd).digest("hex");
+        var hash = crypto.createHash('sha256').update(pwd).digest("hex");
         db.query('UPDATE users SET pwd = ? WHERE id = ?', [hash, id], function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
