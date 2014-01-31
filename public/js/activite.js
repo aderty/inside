@@ -111,7 +111,7 @@
                         var data = angular.copy(cong);
                         // Le congès commence le jour même ou a déjà été commencé
                         data.start = data.debut.date.getDate() == current.date();
-                        if (data.fin.date.getMonth() <= current.month() && data.fin.date.getDate() <= current.date()) {
+                        if (data.fin.date.getMonth() < current.month() || (data.fin.date.getMonth() == current.month() && data.fin.date.getDate() <= current.date())) {
                             // Le congès se fini le même jour que son commencement
                             data.end = true;
                         }
@@ -191,7 +191,7 @@
                     }
                     // Si la date de fin du congès précédant n'est pas encore fini (cas d'un jour férie dans une période d'autre congés)
                     // -> On ne modifie pas le congé précédant.
-                    if (!lastCong || lastCong.fin.date.getDate() <= current.date()) {
+                    if (!lastCong || lastCong.fin.date.getMonth() != current.month() || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date())) {
                         lastCong = angular.copy(cong);
                     }
                     cong = $scope.conges.shift();
@@ -199,7 +199,7 @@
                 function inEventConges(current) {
                     var data = angular.copy(lastCong);
                     var toDo = true;
-                    if (data.fin.date.getMonth() <= current.month() && data.fin.date.getDate() <= current.date()) {
+                    if (data.fin.date.getMonth() < current.month() || (data.fin.date.getMonth() == current.month() && data.fin.date.getDate() <= current.date())) {
                         data.end = true;
                     }
                     if (!data.end) {
@@ -274,10 +274,15 @@
                             /*if (inConges && businessDay(current)) {
                             inEventConges(current, true);
                             }*/
+                            /*jgo 31/01/2014*/
+                            if(cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
+                                cong = $scope.conges.shift();
+                            }
+                            /*fin jgo 31/01/2014*/
                             if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
                                 startEventConges(current, true);
                             }
-                            if (inConges && lastCong && lastCong.fin.date <= current.toDate()) {
+                            if (inConges && lastCong && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
                                 endEventConges(current);
                             }
                             current = current.add('days', 1);
