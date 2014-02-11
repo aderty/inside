@@ -1,4 +1,4 @@
-01 03 * * 1-5 /bin/sh /home/inside/apps/cron/matin
-00 00 1 * * /bin/sh /home/inside/apps/cron/mois
-00 00 1 1 * /bin/sh /home/inside/apps/cron/1_janvier
-00 00 1 6 * /bin/sh /home/inside/apps/cron/1_juin
+01 03 * * 1-5 /usr/local/bin/node /home/inside/apps/prod/task/validationConges.js >> /home/inside/apps/cron/matin.log 2>&1
+01 00 1 * * /usr/local/bin/node /home/inside/apps/prod/task/calculCongesAcquis.js >> /home/inside/apps/cron/mois.log 2>&1
+01 00 1 1 * /usr/local/bin/node /home/inside/apps/prod/task/razCompteurs.js >> /home/inside/apps/cron/1_janvier.log 2>&1
+01 00 1 6 * /usr/local/bin/node /home/inside/apps/prod/task/transfertCP.js >> /home/inside/apps/cron/1_juin.log 2>&1
