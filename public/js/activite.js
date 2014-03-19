@@ -475,6 +475,9 @@
         $scope.closeSuccess = function() {
             $scope.successOperation = "";
         };
+        $scope.closeError = function() {
+            $rootScope.error = "";
+        };
 
         $scope.save = function(events) {
             var activite = angular.copy($scope.activite);
@@ -491,13 +494,16 @@
                     heuresInt: item.data.heuresInt
                 };
             });
-
+            $scope.saving = true;
             ActiviteService.save(activite, creation).then(function(reponse) {
+                $scope.saving = false;
                 if (reponse.success === true) {
                     isDirty = false;
                     $scope.isDirty = false;
                     $scope.successOperation = "Activité enregistrée";
                 }
+            }, function() {
+                $scope.saving = false;
             });
         };
 

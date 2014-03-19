@@ -132,7 +132,9 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             // Création -> Flag création
             conges.create = true;
         }
+        $scope.saving = true;
         CongesService.save(conges, $scope.edition == 1).then(function (reponse) {
+            $scope.saving = false;
             $rootScope.error = null;
             if ($scope.edition == 1) {
                 $rootScope.infos.nbCongesVal++;
@@ -153,6 +155,8 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
                 $scope.cp_ant = retour.cp_ant;
                 $scope.rtt = retour.rtt;
             });
+        }, function () {
+            $scope.saving = false;
         });
     }
 

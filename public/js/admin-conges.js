@@ -179,7 +179,9 @@
 
         $scope.save = function(currentConges) {
             var conges = angular.copy(currentConges);
+            $scope.saving = true;
             CongesAdminService.save(conges, $scope.edition == 1).then(function(reponse) {
+                $scope.saving = false;
                 $rootScope.error = null;
                 if (currentConges.typeuser == 2) {
                     currentConges.user = conges.user;
@@ -195,6 +197,8 @@
                 }
                 $scope.edition = 0;
                 $scope.currentConges = null;
+            }, function () {
+                $scope.saving = false;
             });
         }
         $scope.selectUserOptions = {

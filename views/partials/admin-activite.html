@@ -137,7 +137,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
-                            <button class="btn btn-success" type="button" ng-click="save(eventSources[0])"><i class="icon_upload"></i> Enregistrer l'activité</button>
+                            <button class="btn btn-success" type="button" ng-disabled="saving" ng-click="save(eventSources[0])"><i class="icon-share icon-white"></i> Enregistrer l'activité</button>
                             <button ng-click="close()" class="btn" >Annuler</button>
                         </div>
                     </script>
@@ -229,7 +229,7 @@
       </accordion-group>
   </accordion>
   <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="valid(currentEvent);" >Valider</button>
+      <button class="btn btn-primary" ng-click="valid(currentEvent);">Valider</button>
     <button class="btn" ng-click="cancel();">Annuler</button>
   </div>
 </script>

@@ -576,8 +576,9 @@
                     typeActivitePerso.push({ type: type, nb: nb });
                 }
             }
-
+            $scope.saving = true;
             ActiviteAdminService.save(activite, creation).then(function(reponse) {
+                $scope.saving = false;
                 if (reponse.success === true) {
                     $scope.successOperation = "Activité enregistrée";
                     $rootScope.error = "";
@@ -610,6 +611,8 @@
                     activite.heuresInt = hInt;
                     dialog.close(activite);
                 }
+            }, function () {
+                $scope.saving = false;
             });
         };
 

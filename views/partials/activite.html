@@ -37,6 +37,10 @@
                         <button type="button" class="close" ng-click="closeSuccess();">×</button>
                         {{successOperation}}
                     </div>
+                    <div class="alert alert-block alert-error" ng-class="{masquer: !error}">
+                        <button type="button" class="close" ng-click="closeError();">×</button>
+                        <span>{{error}}</span>
+                    </div>
                     <!--Grilles des congés-->
                     <div class="alert alert-info">
                         <div ng-if="!eventSelectionne">
@@ -68,7 +72,7 @@
                     <span class="titre">Actions</span>
                     <hr />
                     <p ng-if="activite.etat <= 1 && !future">
-                        <button class="btn btn-large btn-success" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Enregistrer mon activité</button>
+                        <button class="btn btn-large btn-success" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Enregistrer mon activité</button>
                     </p>
                     <p ng-if="activite.etat <= 1 && !future && isDirty">
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
