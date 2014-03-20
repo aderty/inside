@@ -46,7 +46,6 @@ var data = {
         if (!checkActivite(activite)) {
             return fn("Activité invalide");
         }
-        activite.mois = new Date(activite.mois);
         var activ = {
             user: id,
             mois: activite.mois, //new Date(activite.mois),
@@ -67,7 +66,6 @@ var data = {
         if (!checkActivite(activite)) {
             return fn("Activité invalide");
         }
-        
         var request = "DELETE FROM activite_jour WHERE user = ? AND YEAR(jour) = YEAR(?) AND MONTH(jour) = MONTH(?);";
         var values = [id, activite.mois, activite.mois];
         request += "INSERT INTO activite_jour (user, jour, type, information, heuresSup, heuresAstreinte, heuresNuit, heuresInt) VALUES ";

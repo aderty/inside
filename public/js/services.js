@@ -501,6 +501,7 @@ angular.module('inside.services', ['ngResource']).
                   activite.create = true;
               }
               resource.save(activite, function(reponse) {
+                  if(activite.create) delete activite.create;
                   if (reponse.error) {
                       $rootScope.error = reponse.error;
                       defered.reject(reponse.error);
@@ -672,6 +673,7 @@ angular.module('inside.services', ['ngResource']).
                  activite.user = activite.user.id;
              }
              resource.save(activite, function (reponse) {
+                 if(activite.create) delete activite.create;
                  if (reponse.error) {
                      $rootScope.error = reponse.error;
                      defered.reject(reponse.error);

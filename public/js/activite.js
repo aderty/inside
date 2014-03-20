@@ -501,6 +501,7 @@
                     isDirty = false;
                     $scope.isDirty = false;
                     $scope.successOperation = "Activité enregistrée";
+                    $scope.activite.etat = 1;
                 }
             }, function() {
                 $scope.saving = false;

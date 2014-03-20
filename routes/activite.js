@@ -32,6 +32,7 @@ var routes = {
     save: function (req, res) {
         var activite = req.body;
         activite.etat = 1;
+        activite.mois = new Date(activite.mois);
         if (activite.create) {
             delete activite.create;
             data.activite.addActiviteUser(req.session.username, activite, false, dataCallback(res));
@@ -40,19 +41,6 @@ var routes = {
         }
         data.activite.updateActiviteJoursUser(req.session.username, activite, false, dataCallback(res));
         history.log(req, req.session.username, "Modification du CRA de " + activite.mois);
-    },
-
-    // Ajout via POST
-    /*add: function (req, res) {
-    data.users.insertUser(req.body, dataCallback(res));
-    },*/
-
-    remove: function (req, res) {
-        data.activite.removeConges(req.params.id, dataCallback(res));
-    },
-
-    motifs: function (req, res) {
-        data.activite.listMotifs(dataCallback(res));
     }
 };
 
@@ -99,6 +87,7 @@ var routesAdmin = {
         }
         // Création / modification d'activité
         activite.etat = 1;
+        activite.mois = new Date(activite.mois);
         if (activite.create) {
             delete activite.create;
             data.activite.addActiviteUser(activite.user, activite, false, dataCallback(res));
