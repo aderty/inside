@@ -190,21 +190,21 @@ app.get('/logout', routes.users.logout);
 
  
 // Lecture, via GET
-app.get('/data-users', [dataLogin, dataRh], routes.users.list);
+app.get('/data-users', [dataLogin, dataSuperAdmin], routes.users.list);
 app.get('/data-users/:id', [dataLogin], routes.users.get);
  
 // Mise à jour via POST
 //app.post('/data-users/:id', routes.users.update);
  
 // Ajout via POST
-app.post('/data-users/:id', [dataLogin, dataRh], routes.users.save);
-app.post('/data-users', [dataLogin, dataRh], routes.users.save);
+app.post('/data-users/:id', [dataLogin, dataSuperAdmin], routes.users.save);
+app.post('/data-users', [dataLogin, dataSuperAdmin], routes.users.save);
 
 app.put('/data-users', [dataLogin], routes.users.password);
 app.put('/data-users/:id', [dataLogin], routes.users.password);
 
 // Suppression via POST
-app.delete('/data-users/:id', [dataLogin, dataRh], routes.users.remove);
+app.delete('/data-users/:id', [dataLogin, dataSuperAdmin], routes.users.remove);
 
 // Lecture, via GET
 app.get('/data-conges', [dataLogin], routes.conges.list);

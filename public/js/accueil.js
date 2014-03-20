@@ -22,13 +22,14 @@
                 return;
             }
             LoginService.login(user.email, user.pwd, { keep: user.keep }, function(response) {
-                if (!response) {
+                if (!response || response.error) {
                     $scope.user = {};
                     $scope.login.$setPristine();
                     $rootScope.connected = false;
                     $rootScope.error = true;
                     return;
                 }
+                $rootScope.error = "";
                 $rootScope.initConnected(response);
             });
         };

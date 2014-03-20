@@ -22,7 +22,7 @@
         'admin-activite': 'js/'+ prefix +'admin-activite.js?v=' + config.version
     };
 
-    window.app = angular.module('inside', [/*'ngRoute', */'inside.directives', 'inside.filters', 'inside.services', 'ui.bootstrap', 'ui', 'ui.calendar', 'ngTable'])
+    window.app = angular.module('inside', [/*'ngRoute', 'ngAnimate', */'inside.directives', 'inside.filters', 'inside.services', 'ui.bootstrap', 'ui', 'ui.calendar', 'ngTable', 'chieffancypants.loadingBar'])
         .config(['$routeProvider', '$locationProvider', '$controllerProvider', '$compileProvider', '$provide', function($routeProvider, $locationProvider, $controllerProvider, $compileProvider, $provide) {
             window.app.controllerProvider = $controllerProvider;
             //window.app.compileProvider = $compileProvider;
@@ -78,7 +78,10 @@
 
             // configure html5 to get links working on jsfiddle
             $locationProvider.html5Mode(true);
-        } ]).run(["$rootScope", "$location", function($rootScope, $location) {
+        } ])
+        .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+            cfpLoadingBarProvider.includeSpinner = false;
+        }]).run(["$rootScope", "$location", function($rootScope, $location) {
             // Suppression de la classe CSS de démarrage.
             $(document.documentElement).removeClass("start");
             $(".background").empty();

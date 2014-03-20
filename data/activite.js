@@ -26,7 +26,7 @@ var errors = {
 
 var data = {
     getActiviteUser: function(id, options, fn) {
-        db.query("CALL GetActivite(?, ?, ?, @etat, @mois);SELECT @etat, CAST(@mois as DATE) as mois", [id, options.start, options.end], function (err, ret) {
+        db.query("CALL GetActivite(?, ?, ?, @etat, @mois);SELECT @etat, CAST(@mois as DATE) as mois", [id, options.start, options.end], function(err, ret) {
             if (err || !ret || ret.length < 3) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération de l'activité de " + id);
@@ -142,7 +142,7 @@ var data = {
         if (!options.mois) {
             options.mois = -1;
         }
-        db.query("CALL GetListActivites(?, ?)", [options.annee, options.mois], function (err, ret) {
+        db.query("CALL GetListActivites(?, ?, ?)", [options.annee, options.mois, options.admin], function(err, ret) {
             if (err || !ret || !ret.length) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des activités du mois " + options.mois + "/" + options.annee + ".");
@@ -191,101 +191,101 @@ var data = {
         /*
         
         var getActiviteSelectRequest = function(activite) {
-            return ", (IFNULL(t" + activite + ".nb,0) + IFNULL(t" + activite + "bis.nb,0) * 0.5) AS \"" + activite + "\"";
+        return ", (IFNULL(t" + activite + ".nb,0) + IFNULL(t" + activite + "bis.nb,0) * 0.5) AS \"" + activite + "\"";
         };
         var getActiviteRequest = function(activite, mois) {
-            if (mois) {
-                return " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup) as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t" + activite + " on t" + activite + ".user = activite.user" +
-                " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t" + activite + "bis on t" + activite + "bis.user = activite.user";
-            }
-            return " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user, jour FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? group by user, month(jour)) as t" + activite + " on t" + activite + ".user = activite.user AND month(t" + activite + ".jour) = month(activite.mois) " +
-                " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user, jour FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? group by user, month(jour)) as t" + activite + "bis on t" + activite + "bis.user = activite.user AND month(t" + activite + "bis.jour) = month(activite.mois) ";
+        if (mois) {
+        return " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup) as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t" + activite + " on t" + activite + ".user = activite.user" +
+        " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? AND MONTH(activite_jour.jour) = ? group by user) as t" + activite + "bis on t" + activite + "bis.user = activite.user";
+        }
+        return " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user, jour FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) = 0 AND YEAR(activite_jour.jour) = ? group by user, month(jour)) as t" + activite + " on t" + activite + ".user = activite.user AND month(t" + activite + ".jour) = month(activite.mois) " +
+        " LEFT JOIN (SELECT count(*) as nb,sum(heuresSup)  as heuresSup,sum(heuresAstreinte) as heuresAstreinte,sum(heuresNuit) as heuresNuit, user, jour FROM activite_jour WHERE type = '" + activite + "' AND HOUR(jour) > 0 AND YEAR(activite_jour.jour) = ? group by user, month(jour)) as t" + activite + "bis on t" + activite + "bis.user = activite.user AND month(t" + activite + "bis.jour) = month(activite.mois) ";
         };
 
         if (options && options.mois) {
             
 
             var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat,  IFNULL(tJT1.heuresSup,0) + IFNULL(tJT1bis.heuresSup,0) + IFNULL(tJT2.heuresSup,0) + IFNULL(tJT2bis.heuresSup,0) + IFNULL(tJT3.heuresSup,0) + IFNULL(tJT3bis.heuresSup,0) as heuresSup,  IFNULL(tJT1.heuresAstreinte,0) + IFNULL(tJT1bis.heuresAstreinte,0) + IFNULL(tJT2.heuresAstreinte,0) + IFNULL(tJT2bis.heuresAstreinte,0) + IFNULL(tJT3.heuresAstreinte,0) +  IFNULL(tJT3bis.heuresAstreinte,0) as heuresAstreinte, IFNULL(tJT1.heuresNuit,0) + IFNULL(tJT1bis.heuresNuit,0) + IFNULL(tJT2.heuresNuit,0) + IFNULL(tJT2bis.heuresNuit,0) + IFNULL(tJT3.heuresNuit,0) + IFNULL(tJT3bis.heuresNuit,0) as heuresNuit " +
-                        getActiviteSelectRequest('JT1') +
-                        getActiviteSelectRequest('JT2') +
-                        getActiviteSelectRequest('JT3') +
-                        getActiviteSelectRequest('FOR') +
-                        getActiviteSelectRequest('INT') +
-                        getActiviteSelectRequest('CP') +
-                        getActiviteSelectRequest('CP_ANT') +
-                        getActiviteSelectRequest('RTT') +
-                        getActiviteSelectRequest('RCE') +
-                        getActiviteSelectRequest('AE') +
-                        " FROM activite JOIN users on activite.user = users.id " +
-                        getActiviteRequest('JT1', true) +
-                        getActiviteRequest('JT2', true) +
-                        getActiviteRequest('JT3', true) +
-                        getActiviteRequest('FOR', true) +
-                        getActiviteRequest('INT', true) +
-                        getActiviteRequest('CP', true) +
-                        getActiviteRequest('CP_ANT', true) +
-                        getActiviteRequest('RTT', true) +
-                        getActiviteRequest('RCE', true) +
-                        getActiviteRequest('AE', true) +
-                        " WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ? ",
-            values = []; //options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois];
-            for (var i = 0, l = 21; i < l; i++) {
-                values.push(options.annee);
-                values.push(options.mois);
-            }
-            if (options.admin > 0) {
-                query += ' AND users.admin = ?';
-                values.push(options.admin);
-            }
-            query = query + ' ORDER BY activite.mois;';
-            db.query(query, values, function(err, ret) {
-                if (err) {
-                    console.log('ERROR: ' + err);
-                    return fn("Erreur lors de la récupération des activités du mois " + options.mois + "/" + options.annee + ".");
-                }
-                fn(null, ret);
-            });
+        getActiviteSelectRequest('JT1') +
+        getActiviteSelectRequest('JT2') +
+        getActiviteSelectRequest('JT3') +
+        getActiviteSelectRequest('FOR') +
+        getActiviteSelectRequest('INT') +
+        getActiviteSelectRequest('CP') +
+        getActiviteSelectRequest('CP_ANT') +
+        getActiviteSelectRequest('RTT') +
+        getActiviteSelectRequest('RCE') +
+        getActiviteSelectRequest('AE') +
+        " FROM activite JOIN users on activite.user = users.id " +
+        getActiviteRequest('JT1', true) +
+        getActiviteRequest('JT2', true) +
+        getActiviteRequest('JT3', true) +
+        getActiviteRequest('FOR', true) +
+        getActiviteRequest('INT', true) +
+        getActiviteRequest('CP', true) +
+        getActiviteRequest('CP_ANT', true) +
+        getActiviteRequest('RTT', true) +
+        getActiviteRequest('RCE', true) +
+        getActiviteRequest('AE', true) +
+        " WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ? ",
+        values = []; //options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois, options.annee, options.mois];
+        for (var i = 0, l = 21; i < l; i++) {
+        values.push(options.annee);
+        values.push(options.mois);
+        }
+        if (options.admin > 0) {
+        query += ' AND users.admin = ?';
+        values.push(options.admin);
+        }
+        query = query + ' ORDER BY activite.mois;';
+        db.query(query, values, function(err, ret) {
+        if (err) {
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de la récupération des activités du mois " + options.mois + "/" + options.annee + ".");
+        }
+        fn(null, ret);
+        });
         }
         else {
-            var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat, IFNULL(tJT1.heuresSup,0) +  IFNULL(tJT1bis.heuresSup,0) + IFNULL(tJT2.heuresSup,0) +  IFNULL(tJT2bis.heuresSup,0) + IFNULL(tJT3.heuresSup,0) +  IFNULL(tJT3bis.heuresSup,0) as heuresSup,  IFNULL(tJT1.heuresAstreinte,0) +  IFNULL(tJT1bis.heuresAstreinte,0) + IFNULL(tJT2.heuresAstreinte,0) +  IFNULL(tJT2bis.heuresAstreinte,0) + IFNULL(tJT3.heuresAstreinte,0) +  IFNULL(tJT3bis.heuresAstreinte,0) as heuresAstreinte,  IFNULL(tJT1.heuresNuit,0) +  IFNULL(tJT1bis.heuresNuit,0) +  IFNULL(tJT2.heuresNuit,0) +  IFNULL(tJT2bis.heuresNuit,0) +  IFNULL(tJT3.heuresNuit,0) +  IFNULL(tJT3bis.heuresNuit,0) as heuresNuit " +
-                        getActiviteSelectRequest('JT1') +
-                        getActiviteSelectRequest('JT2') +
-                        getActiviteSelectRequest('JT3') +
-                        getActiviteSelectRequest('FOR') +
-                        getActiviteSelectRequest('INT') +
-                        getActiviteSelectRequest('CP') +
-                        getActiviteSelectRequest('CP_ANT') +
-                        getActiviteSelectRequest('RTT') +
-                        getActiviteSelectRequest('RCE') +
-                        getActiviteSelectRequest('AE') +
-                        " FROM activite JOIN users on activite.user = users.id " +
-                        getActiviteRequest('JT1', false) +
-                        getActiviteRequest('JT2', false) +
-                        getActiviteRequest('JT3', false) +
-                        getActiviteRequest('FOR', false) +
-                        getActiviteRequest('INT', false) +
-                        getActiviteRequest('CP', false) +
-                        getActiviteRequest('CP_ANT', false) +
-                        getActiviteRequest('RTT', false) +
-                        getActiviteRequest('RCE', false) +
-                        getActiviteRequest('AE', false) +
-                        " WHERE YEAR(activite.mois) = ? ",
-            values = []; //options.annee, options.annee, options.annee, options.annee, options.annee];
-            for (var i = 0, l = 17; i < l; i++) {
-                values.push(options.annee);
-            }
-            if (options.admin > 0) {
-                query += ' AND users.admin = ?';
-                values.push(options.admin);
-            }
-            query = query + ' ORDER BY activite.mois;';
-            db.query(query, values, function(err, ret) {
-                if (err) {
-                    console.log('ERROR: ' + err);
-                    return fn("Erreur lors de la récupération des activités de l'année " + options.annee + ".");
-                }
-                fn(null, ret);
-            });
+        var query = "SELECT activite.mois, activite.user, users.nom, users.prenom, activite.etat, IFNULL(tJT1.heuresSup,0) +  IFNULL(tJT1bis.heuresSup,0) + IFNULL(tJT2.heuresSup,0) +  IFNULL(tJT2bis.heuresSup,0) + IFNULL(tJT3.heuresSup,0) +  IFNULL(tJT3bis.heuresSup,0) as heuresSup,  IFNULL(tJT1.heuresAstreinte,0) +  IFNULL(tJT1bis.heuresAstreinte,0) + IFNULL(tJT2.heuresAstreinte,0) +  IFNULL(tJT2bis.heuresAstreinte,0) + IFNULL(tJT3.heuresAstreinte,0) +  IFNULL(tJT3bis.heuresAstreinte,0) as heuresAstreinte,  IFNULL(tJT1.heuresNuit,0) +  IFNULL(tJT1bis.heuresNuit,0) +  IFNULL(tJT2.heuresNuit,0) +  IFNULL(tJT2bis.heuresNuit,0) +  IFNULL(tJT3.heuresNuit,0) +  IFNULL(tJT3bis.heuresNuit,0) as heuresNuit " +
+        getActiviteSelectRequest('JT1') +
+        getActiviteSelectRequest('JT2') +
+        getActiviteSelectRequest('JT3') +
+        getActiviteSelectRequest('FOR') +
+        getActiviteSelectRequest('INT') +
+        getActiviteSelectRequest('CP') +
+        getActiviteSelectRequest('CP_ANT') +
+        getActiviteSelectRequest('RTT') +
+        getActiviteSelectRequest('RCE') +
+        getActiviteSelectRequest('AE') +
+        " FROM activite JOIN users on activite.user = users.id " +
+        getActiviteRequest('JT1', false) +
+        getActiviteRequest('JT2', false) +
+        getActiviteRequest('JT3', false) +
+        getActiviteRequest('FOR', false) +
+        getActiviteRequest('INT', false) +
+        getActiviteRequest('CP', false) +
+        getActiviteRequest('CP_ANT', false) +
+        getActiviteRequest('RTT', false) +
+        getActiviteRequest('RCE', false) +
+        getActiviteRequest('AE', false) +
+        " WHERE YEAR(activite.mois) = ? ",
+        values = []; //options.annee, options.annee, options.annee, options.annee, options.annee];
+        for (var i = 0, l = 17; i < l; i++) {
+        values.push(options.annee);
+        }
+        if (options.admin > 0) {
+        query += ' AND users.admin = ?';
+        values.push(options.admin);
+        }
+        query = query + ' ORDER BY activite.mois;';
+        db.query(query, values, function(err, ret) {
+        if (err) {
+        console.log('ERROR: ' + err);
+        return fn("Erreur lors de la récupération des activités de l'année " + options.annee + ".");
+        }
+        fn(null, ret);
+        });
         }*/
     },
     listUserSansActivites: function(options, fn) {

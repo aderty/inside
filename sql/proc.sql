@@ -789,7 +789,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetListActivites; 
 DELIMITER $$
 
-CREATE PROCEDURE `GetListActivites` (annee INT, mois INT)
+CREATE PROCEDURE `GetListActivites` (annee INT, mois INT, admin INT)
 ThisSP:BEGIN
 
 IF (mois = -1) THEN
@@ -797,15 +797,17 @@ IF (mois = -1) THEN
 	SELECT activite.mois, activite.user, activite.etat, users.nom, users.prenom, sum(tActivite.nb) as nb, tActivite.type 
 	FROM activite JOIN users on activite.user = users.id
 
-	LEFT JOIN (SELECT count(*) as nb, type, user, MONTH(activite_jour.jour) as mois FROM activite_jour 
-	WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee group by user, type, MONTH(activite_jour.jour)
+	LEFT JOIN (SELECT count(*) as nb, type, user, MONTH(activite_jour.jour) as mois FROM activite_jour JOIN users on activite_jour.user = users.id 
+	WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1) 
+	group by user, type, MONTH(activite_jour.jour)
 
-	UNION ALL (SELECT count(*) * 0.5 as nb, type, user, MONTH(activite_jour.jour) as mois FROM activite_jour 
-	WHERE HOUR(jour) > 0 AND YEAR(activite_jour.jour) = annee group by user, type, MONTH(activite_jour.jour))) 
+	UNION ALL (SELECT count(*) * 0.5 as nb, type, user, MONTH(activite_jour.jour) as mois FROM activite_jour JOIN users on activite_jour.user = users.id 
+	WHERE HOUR(jour) > 0 AND YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1)
+	group by user, type, MONTH(activite_jour.jour))) 
 
 	as tActivite on tActivite.user = activite.user and MONTH(activite.mois) = tActivite.mois
 
-	WHERE YEAR(activite.mois) = annee
+	WHERE YEAR(activite.mois) = annee AND (users.admin = admin Or admin = -1)
 	group by activite.user, tActivite.type, activite.mois
 	ORDER BY activite.mois;
 
@@ -813,13 +815,14 @@ IF (mois = -1) THEN
 	SELECT activite.mois, tActivite.jour, activite.user, heuresSup, heuresAstreinte, heuresNuit, heuresInt 
 	FROM activite JOIN users on activite.user = users.id
 
-	RIGHT JOIN (SELECT jour,heuresSup, heuresAstreinte, heuresNuit, heuresInt, user FROM activite_jour 
-	WHERE YEAR(activite_jour.jour) = annee AND  (heuresSup > 0 OR heuresAstreinte > 0 OR heuresNuit > 0 OR heuresInt > 0)
+	RIGHT JOIN (SELECT jour,heuresSup, heuresAstreinte, heuresNuit, heuresInt, user FROM activite_jour JOIN users on activite_jour.user = users.id 
+	WHERE YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1) 
+	AND  (heuresSup > 0 OR heuresAstreinte > 0 OR heuresNuit > 0 OR heuresInt > 0)
 	group by user, jour) 
 
 	as tActivite on tActivite.user = activite.user AND MONTH(activite.mois) = MONTH(tActivite.jour)
 
-	WHERE YEAR(activite.mois) = annee
+	WHERE YEAR(activite.mois) = annee AND (users.admin = admin Or admin = -1)
 	group by activite.user, tActivite.jour
 	ORDER BY activite.mois;
 
@@ -830,17 +833,17 @@ END IF;
 SELECT activite.mois, activite.user, activite.etat, users.nom, users.prenom, sum(tActivite.nb) as nb, tActivite.type 
 	FROM activite JOIN users on activite.user = users.id
 
-LEFT JOIN (SELECT count(*) as nb, type, user FROM activite_jour 
-WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee 
+LEFT JOIN (SELECT count(*) as nb, type, user FROM activite_jour JOIN users on activite_jour.user = users.id 
+WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1) 
 AND MONTH(activite_jour.jour) = mois group by user, type
 
-UNION ALL (SELECT count(*) * 0.5 as nb, type, user FROM activite_jour 
-WHERE HOUR(jour) > 0 AND YEAR(activite_jour.jour) = annee 
+UNION ALL (SELECT count(*) * 0.5 as nb, type, user FROM activite_jour JOIN users on activite_jour.user = users.id 
+WHERE HOUR(jour) > 0 AND YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1) 
 AND MONTH(activite_jour.jour) = mois group by user, type)) 
 
 as tActivite on tActivite.user = activite.user
 
-WHERE YEAR(activite.mois) = annee AND MONTH(activite.mois) = mois
+WHERE YEAR(activite.mois) = annee AND MONTH(activite.mois) = mois AND (users.admin = admin Or admin = -1)
 group by activite.user, tActivite.type
 ORDER BY activite.mois;
 
@@ -848,13 +851,14 @@ ORDER BY activite.mois;
 SELECT activite.mois, tActivite.jour, activite.user, heuresSup, heuresAstreinte, heuresNuit, heuresInt 
 FROM activite JOIN users on activite.user = users.id
 
-RIGHT JOIN (SELECT jour,heuresSup, heuresAstreinte, heuresNuit, heuresInt, user FROM activite_jour 
-WHERE YEAR(activite_jour.jour) = annee AND  (heuresSup > 0 OR heuresAstreinte > 0 OR heuresNuit > 0 OR heuresInt > 0)
+RIGHT JOIN (SELECT jour,heuresSup, heuresAstreinte, heuresNuit, heuresInt, user FROM activite_jour JOIN users on activite_jour.user = users.id 
+WHERE YEAR(activite_jour.jour) = annee AND (users.admin = admin Or admin = -1) 
+AND  (heuresSup > 0 OR heuresAstreinte > 0 OR heuresNuit > 0 OR heuresInt > 0)
 AND MONTH(activite_jour.jour) = mois group by user, jour) 
 
 as tActivite on tActivite.user = activite.user AND MONTH(activite.mois) = MONTH(tActivite.jour)
 
-WHERE YEAR(activite.mois) = annee AND MONTH(activite.mois) = mois
+WHERE YEAR(activite.mois) = annee AND MONTH(activite.mois) = mois AND (users.admin = admin Or admin = -1)
 group by activite.user, tActivite.jour
 ORDER BY activite.mois;
 

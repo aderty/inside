@@ -28,7 +28,7 @@ exports.index = function(req, res) {
         }
         res.render('index', {
             connected: req.session && req.session.username != undefined ? true : false,
-            role: req.session.role ? req.session.role : 0,
+            role: req.session && req.session.role ? req.session.role : 0,
             prenom: req.session ? req.session.prenom : '',
             infos: infos || {},
             prefix: config.env.NODE_ENV == 'production' ? 'min/' : '',

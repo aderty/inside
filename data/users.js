@@ -75,14 +75,14 @@ var data = {
         db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '" AND etat=1', function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
-                return fn("Erreur lors de la tentative de login.");
+                return fn("Erreur lors de la tentative de login.", false);
             }
             if (ret && ret.length == 1) {
                 var user = cleanUsers(ret[0]);
                 data.infos(user.id, user.role, function(err, infos) {
                     if (err) {
                         console.log('ERROR: ' + err);
-                        return fn("Erreur lors de la récupération des informations de démarage.");
+                        return fn("Erreur lors de la récupération des informations de démarage.", false);
                     }
                     user.infos = infos;
                     return fn(null, user);
