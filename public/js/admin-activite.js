@@ -26,7 +26,7 @@
             }
         });
 
-        $rootScope.tableParamsActivite = new ngTableParams({
+        $scope.tableParamsActivite = new ngTableParams({
             page: 1,            // show first page
             count: 10,
             sorting: {
@@ -38,12 +38,12 @@
             var options = angular.copy($scope.selection);
             options.mois = $scope.lstMois.indexOf(options.mois);
             ActiviteAdminService.list(options).then(function(result) {
-                $rootScope.activites = ngTableFilter(result, params);
-                $defer.resolve($rootScope.activites);
+                $scope.activites = ngTableFilter(result, params);
+                $defer.resolve($scope.activites);
             });
         }
     });
-        $rootScope.tableParamsSansActivite = new ngTableParams({
+        $scope.tableParamsSansActivite = new ngTableParams({
             page: 1,            // show first page
             count: 10,
             sorting: {
@@ -55,8 +55,9 @@
             var options = angular.copy($scope.selection);
             options.mois = $scope.lstMois.indexOf(options.mois);
             ActiviteAdminService.listSans(options).then(function(result) {
-                $rootScope.sansActivites = ngTableFilter(result, params);
-                $defer.resolve($rootScope.sansActivites);
+                $scope.nbSansActivite = result && result.length ? result.length : 0;
+                $scope.sansActivites = ngTableFilter(result, params);
+                $defer.resolve($scope.sansActivites);
             });
         }
     });
@@ -64,8 +65,8 @@
         $scope.$watch('selection', function(selection) {
             var options = angular.copy(selection);
             options.mois = $scope.lstMois.indexOf(selection.mois);
-            $rootScope.tableParamsActivite.reload();
-            $rootScope.tableParamsSansActivite.reload();
+            $scope.tableParamsActivite.reload();
+            $scope.tableParamsSansActivite.reload();
         }, true);
 
         $scope.isEditable = function(row) {
@@ -136,9 +137,17 @@
                 if (result === 'yes') {
                     ActiviteAdminService.remove(activite).then(function(reponse) {
                         if (reponse.success) {
-                            var index = $rootScope.activites.indexOf(row);
-                            $rootScope.activites.splice(index, 1);
-                            $rootScope.infos.nbActivitesVal--;
+                            var index = $scope.activites.indexOf(row);
+                            $scope.activites.splice(index, 1);
+                            if ($rootScope.infos.nbActivitesVal > 0) $rootScope.infos.nbActivitesVal--;
+                            $scope.nbSansActivite++;
+                            $scope.sansActivites.push({
+                                id: row.user.id,
+                                mois: row.mois,
+                                nom: row.user.nom,
+                                prenom: row.user.prenom,
+                                user: row.user
+                            });
                         }
                     });
                 }
@@ -152,6 +161,7 @@
         $scope.create = function(row) {
 
             $rootScope.currentActivite = angular.copy(row);
+            $rootScope.currentActivite.etat = 0;
             $rootScope.currentActivite.mois.setHours(12);
             $scope.start = $rootScope.currentActivite.mois;
             // Correction bug "uniquement le matin"
@@ -336,7 +346,7 @@
                             inEventConges(current, true);
                             }*/
                             /*jgo 31/01/2014*/
-                            if(cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
+                            if (cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
                                 cong = $scope.conges.shift();
                             }
                             /*fin jgo 31/01/2014*/
@@ -381,11 +391,11 @@
                 var d = $dialog.dialog($scope.opts);
                 d.open().then(function(activite) {
                     if (activite) {
-                        var index = $rootScope.activites.indexOf(row);
-                        $rootScope.sansActivites.splice(index, 1);
+                        var index = $scope.sansActivites.indexOf(row);
+                        $scope.sansActivites.splice(index, 1);
                         $rootScope.infos.nbActivitesVal++;
-
-                        $rootScope.activites.push(activite);
+                        $scope.nbSansActivite--;
+                        $scope.activites.push(activite);
                     }
                 });
 
@@ -611,7 +621,7 @@
                     activite.heuresInt = hInt;
                     dialog.close(activite);
                 }
-            }, function () {
+            }, function() {
                 $scope.saving = false;
             });
         };

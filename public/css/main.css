@@ -676,8 +676,13 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
     text-shadow: 0 1px 0 #fff;
 }
 
+#adminActiviteChoix label
+{
+	font-weight: bold;
+}
 #adminActiviteChoix select {
-    width: 70%;
+    width: 108px;
+    margin-right: 5px;
 }
 
 

@@ -82,7 +82,7 @@ UPDATE  conges_compteurs SET compteur = 4 WHERE motif = 'MAR';
 UPDATE  conges_compteurs SET compteur = 3 WHERE motif = 'NAI';
 UPDATE  conges_compteurs SET compteur = 9 WHERE motif = 'PAT';
 -- Log du transfert
-INSERT INTO history SELECT current_timestamp as date, tab1.user as user, 'Remise à zéro des compteurs effectué' as log FROM conges_compteurs as tab1
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, 'Remise à zéro des compteurs effectué' as log FROM conges_compteurs as tab1
 WHERE tab1.user <> 999999 GROUP BY tab1.user;
 
 END $$
@@ -101,7 +101,7 @@ DELIMITER $$
 CREATE PROCEDURE `TransfertCP` ()
 BEGIN
 -- Log avant transfert
-INSERT INTO history SELECT current_timestamp as date, users.id as user, CONCAT('Valeurs avant transfert -> CP : ', tab1.cp, ' et CP_ANT : ', tab2.cp_ant) as log FROM users 
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Valeurs avant transfert -> CP : ', tab1.cp, ' et CP_ANT : ', tab2.cp_ant) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
 WHERE users.id <> 999999
@@ -114,7 +114,7 @@ SET tab1.compteur = ROUND(tab1.compteur + tab2.compteur, 2) WHERE tab1.motif = '
 -- Remise à 0 de CP_ANT
 UPDATE  conges_compteurs SET compteur = 0 WHERE motif = 'CP_ANT';
 -- Log du transfert
-INSERT INTO history SELECT current_timestamp as date, tab1.user as user, CONCAT('Transfert des CP anticipés vers CP effectué : Nouvelle valeur -> CP : ', tab1.compteur)  as log FROM conges_compteurs as tab1
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, CONCAT('Transfert des CP anticipés vers CP effectué : Nouvelle valeur -> CP : ', tab1.compteur)  as log FROM conges_compteurs as tab1
 WHERE tab1.motif = 'CP' and tab1.user <> 999999;
 
 END $$
@@ -134,7 +134,7 @@ CREATE PROCEDURE `CalculCongesAcquis` ()
 BEGIN
 
 -- Log avant calcul
-INSERT INTO history SELECT current_timestamp as date, users.id as user, CONCAT('Valeurs avant calcul des congès acquis -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Valeurs avant calcul des congès acquis -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
 WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0
@@ -150,7 +150,7 @@ WHERE tab1.motif = 'RTT' and tab1.user <> 999999
 	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0;
 	
 -- Log du calcul
-INSERT INTO history SELECT current_timestamp as date, users.id as user, CONCAT('Calcul des congès acquis effectué -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Calcul des congès acquis effectué -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
 WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0

@@ -3,17 +3,17 @@
     <div class="row-fluid">
         <div class="span12">
             <div class="row-fluid">
-                <div class="span12">
+                <div class="well">
                     <fieldset id="adminActiviteChoix">
                         <!--<legend>Rapports d’activité</legend>-->
-                        <div style="width:30%; float:left">
-                            <label>Année</label>
+                        <div style="float:left">
+                            <label for="inputAnnee">Année</label>
                             <select id="inputAnnee" name="inputAnnee" ng-model="selection.annee" ng-options="annee for annee in lstAnnees"></select>
                         </div>
-                            <div style="width:30%; float:left">
-                            <label>Mois</label>
+                        <div style="float:left">
+                            <label for="inputMois">Mois</label>
                             <select id="inputMois" name="inputMois" ng-model="selection.mois" ng-options="mois for mois in lstMois"></select>
-                                </div>
+                         </div>
                       </fieldset>
                 </div>
             </div><!--<div class="row-fluid">-->
@@ -89,7 +89,7 @@
                         </tab>
                         <tab>
                           <tab-heading>
-                            Utilisateurs sans activité <span class="badge badge-important" ng-if="sansActivites && sansActivites.length > 0">{{sansActivites.length}}</span>
+                            Utilisateurs sans activité <span class="badge badge-important" ng-if="nbSansActivite && nbSansActivite > 0">{{nbSansActivite}}</span>
                           </tab-heading>
                             <div loading-container="loading"> 
                                     <table id="sansSctiviteAdminGrid" ng-table="tableParamsSansActivite" show-filter="false" class="table table-bordered table-hover"> 
@@ -137,7 +137,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
-                            <button class="btn btn-success" type="button" ng-disabled="saving" ng-click="save(eventSources[0])"><i class="icon-share icon-white"></i> Enregistrer l'activité</button>
+                            <button class="btn btn-success" type="button" ng-if="currentActivite.etat <= 1" ng-disabled="saving" ng-click="save(eventSources[0])"><i class="icon-share icon-white"></i> Enregistrer l'activité</button>
                             <button ng-click="close()" class="btn" >Annuler</button>
                         </div>
                     </script>
