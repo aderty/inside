@@ -87,7 +87,7 @@
                                 </div>
                               <!--<grid id="activiteAdminGrid" ng-options="gridOptions"></grid>-->
                         </tab>
-                        <tab>
+                        <tab ng-if='!fullYear'>
                           <tab-heading>
                             Utilisateurs sans activité <span class="badge badge-important" ng-if="nbSansActivite && nbSansActivite > 0">{{nbSansActivite}}</span>
                           </tab-heading>

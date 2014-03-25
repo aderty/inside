@@ -4,6 +4,7 @@ obj/
 My Project/
 sql/exclu
 key/
+public/dist
 *.json
 !package.json
 *.sln

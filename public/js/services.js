@@ -153,7 +153,21 @@ angular.module('inside.services', ['ngResource']).
                  charge: { method: 'POST', params: { charge: true} },
                  changePassword: { method: 'PUT', params: { password: true} },
                  searcher: { method: 'GET', params: { search: true }, isArray: true }
-             });
+             }),
+      current;
+      resource.getCurrent = function(options){
+        var defered = $q.defer();
+        if(!current || (options && options.reload)){
+            resource.get({ id: 0 }, function(retour) {
+            current = retour;
+            defered.resolve(current);
+          });
+        }
+        else{
+            defered.resolve(current);
+        }
+        return defered.promise;
+      };
       resource.search = function(recherche) {
           var defered = $q.defer();
           var users = resource.searcher(recherche, function() {

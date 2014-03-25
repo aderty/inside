@@ -41,6 +41,7 @@
     <Compile Include="data\history.js" />
     <Compile Include="data\index.js" />
     <Compile Include="data\users.js" />
+    <Compile Include="gulpfile.js" />
     <Compile Include="history\index.js" />
     <Compile Include="mail\index.js" />
     <Compile Include="public\js\accueil.js" />

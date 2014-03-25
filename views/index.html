@@ -1,8 +1,13 @@
 ﻿<% include header.html %>
 
-<link rel="stylesheet" href="/css/main.css?v=<%=version %>" />
+<% if (prefix) { %>
+<link rel="stylesheet" type="text/css" href="../dist/css/all.min.css?v=<%=version %>" />
+<link rel="stylesheet" type="text/css" media="print" href="../dist/css/print.css?v=<%=version %>" />
+<% } else { %>
+<link rel="stylesheet" type="text/css"href="/css/main.css?v=<%=version %>" />
+<link rel="stylesheet" type="text/css" href="/css/fontello.css" />
 <link rel="stylesheet" type="text/css" media="print" href="/css/print.css?v=<%=version %>" />
-<link rel="stylesheet" href="/css/fontello.css" />
+<% } %>
 
 <script>
     var config = {
@@ -75,16 +80,19 @@
 
 <div ng-view></div>
 
-
 <% include scripts.html %>
 
 <% if (prefix) { %><script>window.prefix = '<%=prefix %>';</script><% } %>
 
-<script src="../js/<%=prefix %>directives.js?v=<%=version %>"></script>
-<script src="../js/<%=prefix %>filters.js?v=<%=version %>"></script>
-<script src="../js/<%=prefix %>services.js?v=<%=version %>"></script>
-<script src="../js/<%=prefix %>app.js?v=<%=version %>"></script>
-<script src="../js/<%=prefix %>controllers.js?v=<%=version %>"></script>
+<% if (prefix) { %>
+<script src="../dist/js/all.min.js?v=<%=version %>"></script>
+<% } else { %>
+<script src="../js/directives.js?v=<%=version %>"></script>
+<script src="../js/filters.js?v=<%=version %>"></script>
+<script src="../js/services.js?v=<%=version %>"></script>
+<script src="../js/app.js?v=<%=version %>"></script>
+<script src="../js/controllers.js?v=<%=version %>"></script>
+<% } %>
 
 <% include footer.html %>
 

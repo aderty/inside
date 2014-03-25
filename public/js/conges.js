@@ -45,7 +45,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
         $scope.dateOptionsFin.minDate = newValue;
     });
 
-    UsersService.get({ id: 0 }, function (retour) {
+    UsersService.getCurrent().then(function(retour) {
         $scope.user = retour;
         $scope.cp = retour.cp;
         $scope.cp_ant = retour.cp_ant;
@@ -105,7 +105,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
                     $rootScope.error = null;
                     var index = $rootScope.conges.indexOf(row);
                     $rootScope.conges.splice(index, 1);
-                    UsersService.get({ id: 0 }, function (retour) {
+                    UsersService.getCurrent({ reload: true }).then(function (retour) {
                         $scope.cp = retour.cp;
                         $scope.cp_ant = retour.cp_ant;
                         $scope.rtt = retour.rtt;
@@ -150,7 +150,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
             if (index == -1) {
                 $rootScope.conges.push(currentConges);
             }
-            UsersService.get({ id: 0 }, function (retour) {
+            UsersService.getCurrent({ reload: true }).then(function (retour) {
                 $scope.cp = retour.cp;
                 $scope.cp_ant = retour.cp_ant;
                 $scope.rtt = retour.rtt;

@@ -8,7 +8,7 @@
     // Contrôleur principal de la gestion des utilisateurs
     this.register('UsersMain', ['$scope', '$rootScope', '$dialog', 'UsersService', UsersMain]);
     this.register('UsersGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'UsersService', UsersGrid]);
-    this.register('DialogHistory', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'dialog', 'HistoryService', DialogHistory]);
+    this.register('DialogHistory', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'dialog', 'HistoryService', DialogHistory]);
 
     function UsersMain($scope, $rootScope, $dialog, UsersService) {
         if (!$rootScope.nextId) {
@@ -219,7 +219,7 @@
     };
 
     // Contrôleur de la popup de l'historique des actions de l'utilisateur
-    function DialogHistory($scope, $rootScope, $filter, ngTableParams, dialog, HistoryService) {
+    function DialogHistory($scope, $rootScope, $filter, ngTableParams, ngTableFilter, dialog, HistoryService) {
         $rootScope.error = "";
         $rootScope.history = null;
         var data;

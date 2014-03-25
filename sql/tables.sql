@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE TABLE IF NOT EXISTS `history` (
   `date` timestamp NOT NULL DEFAULT current_timestamp,
-  `ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `ip` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
   `user` MEDIUMINT NOT NULL,
   `log` varchar(2000) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   CONSTRAINT FOREIGN KEY (`user` ) REFERENCES `users` (`id` ) ON DELETE CASCADE ON UPDATE CASCADE

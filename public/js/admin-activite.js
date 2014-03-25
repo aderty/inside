@@ -61,12 +61,18 @@
             });
         }
     });
-
+        $scope.fullYear = false;
         $scope.$watch('selection', function(selection) {
             var options = angular.copy(selection);
             options.mois = $scope.lstMois.indexOf(selection.mois);
             $scope.tableParamsActivite.reload();
-            $scope.tableParamsSansActivite.reload();
+            if (options.mois > 0) {
+                $scope.tableParamsSansActivite.reload();
+                $scope.fullYear = false;
+            }
+            else {
+                $scope.fullYear = true;
+            }
         }, true);
 
         $scope.isEditable = function(row) {

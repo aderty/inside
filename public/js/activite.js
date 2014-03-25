@@ -25,7 +25,8 @@
             return momentDate.format("d") != 0 && momentDate.format("d") != 6;
         }
 
-        $scope.user = UsersService.get({ id: 0 }, function(retour) {
+        UsersService.getCurrent().then(function(user) {
+            $scope.user = user;
         });
         $scope.isDirty = false;
         $scope.eventSelectionne = null;
@@ -275,7 +276,7 @@
                             inEventConges(current, true);
                             }*/
                             /*jgo 31/01/2014*/
-                            if(cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
+                            if (cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
                                 cong = $scope.conges.shift();
                             }
                             /*fin jgo 31/01/2014*/

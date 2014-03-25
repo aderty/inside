@@ -12,14 +12,14 @@
         }];
     }
     
-    var prefix = window.prefix || '';
+    var prefix = window.prefix != undefined;
     var appScripts = {
-        accueil: 'js/'+ prefix +'accueil.js?v=' + config.version,
-        users: 'js/'+ prefix +'users.js?v=' + config.version,
-        conges: 'js/'+ prefix +'conges.js?v=' + config.version,
-        'admin-conges': 'js/'+ prefix +'admin-conges.js?v=' + config.version,
-        activite: 'js/'+ prefix +'activite.js?v=' + config.version,
-        'admin-activite': 'js/'+ prefix +'admin-activite.js?v=' + config.version
+        accueil: (prefix ? 'dist/' : '') + 'js/accueil.js?v=' + config.version,
+        users: (prefix ? 'dist/' : '') + 'js/users.js?v=' + config.version,
+        conges: (prefix ? 'dist/' : '') + 'js/conges.js?v=' + config.version,
+        'admin-conges': (prefix ? 'dist/' : '') + 'js/admin-conges.js?v=' + config.version,
+        activite: (prefix ? 'dist/' : '') + 'js/activite.js?v=' + config.version,
+        'admin-activite': (prefix ? 'dist/' : '') + 'js/admin-activite.js?v=' + config.version
     };
 
     window.app = angular.module('inside', [/*'ngRoute', 'ngAnimate', */'inside.directives', 'inside.filters', 'inside.services', 'ui.bootstrap', 'ui', 'ui.calendar', 'ngTable', 'chieffancypants.loadingBar'])
@@ -96,7 +96,7 @@
         }]);
 
 window.app.factory("ngTableFilter", ["$filter", function($filter) {
-    var isNumber, ngTableParams;
+    var isNumber, ngTableParams, ngTableFilter;
     isNumber = function(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     };

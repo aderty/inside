@@ -1,8 +1,12 @@
-﻿<script src="../libs/script.min.js"></script>
+﻿<% if (prefix) { %>
+<script src="../libs/script.min.js?v=<%=version %>"></script>
+<script src="../dist/js/libs.min.js?v=<%=version %>"></script>
+<% } else { %>
+<script src="../libs/script.min.js"></script>
 <script src="../libs/jquery-1.9.1.min.js"></script>
 <script src="../libs/jqueryui/jquery-ui-1.10.3.custom.min.js"></script>
 <script src="../libs/jqueryui/i18n/jquery.ui.datepicker-fr.js"></script>
-<script src="../libs/angularjs/angular.js"></script>
+<script src="../libs/angularjs/angular.min.js"></script>
 <!--<script src="../libs/angularjs/angular-route.min.js"></script>-->
 <script src="../libs/angularjs/angular-resource.min.js"></script>
 <!--<script src="../libs/angularjs/angular-animate.js"></script>-->
@@ -24,4 +28,6 @@
 <script src="../libs/justgage.1.0.1.min.js" async></script>
 <!-- loadingbar -->
 <script src="../libs/angularjs/loading-bar.js"></script>
-<link href="../libs/angularjs/loading-bar.min.css" rel="stylesheet" />
+<% } %>
+
+
