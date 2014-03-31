@@ -177,7 +177,7 @@
                             data.duree = 0;
                         }
                         if (toDo) {
-                            if (data.type == 'JF' && $scope.indexEvents[current.date()] && $scope.events[$scope.indexEvents[current.date()]]) {
+                            if (data.type == 'JF' && $scope.indexEvents[current.date()] != undefined && $scope.events[$scope.indexEvents[current.date()]] != undefined) {
                                 // Si c'est un jour férié et que une période de congès contient ce jour férié
                                 // -> Il faut supprimer l'event de type congès posé le jour férié
                                 $scope.events.splice($scope.indexEvents[current.date()], 1);
@@ -192,7 +192,7 @@
                     }
                     // Si la date de fin du congès précédant n'est pas encore fini (cas d'un jour férie dans une période d'autre congés)
                     // -> On ne modifie pas le congé précédant.
-                    if (!lastCong || lastCong.fin.date.getMonth() != current.month() || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date())) {
+                    if (!lastCong || lastCong.fin.date.getMonth() < current.month() || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date())) {
                         lastCong = angular.copy(cong);
                     }
                     cong = $scope.conges.shift();
@@ -268,7 +268,10 @@
                     var first = true;
                     var inConges = false;
                     var current = new moment($scope.start);
-
+                    if(current.date() == 1){
+                        // Commencer avant le 1er pour gérer les cas 1er jour férié avec congès commencé avant.
+                        current = current.add('days', -1);
+                    }
                     // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
                     if (current.date() != 1) {
                         while (current.date() != 1) {
@@ -280,7 +283,7 @@
                                 cong = $scope.conges.shift();
                             }
                             /*fin jgo 31/01/2014*/
-                            if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() == current.date()) {
+                            if (cong && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
                                 startEventConges(current, true);
                             }
                             if (inConges && lastCong && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
@@ -296,7 +299,7 @@
                             // Dans une période de congés.
                             inEventConges(current);
                         }
-                        if (cong && cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()) {
+                        if (cong && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
                             // Au début d'une période de congés.
                             startEventConges(current);
                         }

@@ -5,7 +5,7 @@ var path = require('path'),
     activite = require('./activite'),
     config = require('../config.json');
 
-var VERSION = 1;
+var VERSION = config.env.version || 1;
 
 exports.manifest = function (req, res) {
     res.header("Content-Type", "text/cache-manifest");

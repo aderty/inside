@@ -6,7 +6,7 @@
     this.register('CongesAdmin', ['$scope', '$rootScope', '$dialog', 'CongesAdminService', 'UsersService', CongesAdmin]);
     this.register('DialogConges', ['$scope', '$rootScope', 'dialog', DialogConges]);
     this.register('DialogAideConges', ['$scope', 'dialog', DialogAideConges]);
-    this.register('CongesAdminGrid', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', CongesAdminGrid]);
+    this.register('CongesAdminGrid', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', 'ConfigService', CongesAdminGrid]);
 
     /* Controllers */
     function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersService) {
@@ -15,6 +15,10 @@
         $scope.lblMode = "";
         $scope.currentConges = {};
         $scope.currentCongesSaved = null;
+
+        UsersService.getCurrent().then(function(user) {
+            $scope.user = user;
+        });
 
         $scope.showMatricule = true;
 
@@ -87,7 +91,8 @@
                 if (result === 'yes') {
                     CongesAdminService.updateEtat(conges, false).then(function(reponse) {
                         $rootScope.error = null;
-                        $rootScope.infos.nbCongesVal--;
+                        if ($rootScope.infos.nbCongesVal) $rootScope.infos.nbCongesVal--;
+                        if ($scope.user.id == $scope.currentConges.user.id) UsersService.getCurrent({ reload: true });
                         $scope.currentConges.etat = 3;
                         var index = $rootScope.congesAvalider.indexOf(row);
                         if (index > -1) {
@@ -141,11 +146,14 @@
         }
 
         $scope['delete'] = function(row) {
+            $scope.currentConges = row;
+            var conges = angular.copy($scope.currentConges);
             var btns = [{ label: 'Oui', result: 'yes', cssClass: 'btn-primary' }, { label: 'Non', result: 'no'}];
             var msgbox = $dialog.messageBox('Suppression d\'une absence', 'Etes-vous sûr de supprimer la demande d\'absence ?', btns);
             msgbox.open().then(function(result) {
                 if (result === 'yes') {
-                    CongesAdminService.remove(row).then(function(reponse) {
+                    CongesAdminService.remove(conges).then(function(reponse) {
+                        if ($scope.user.id == $scope.currentConges.user.id) UsersService.getCurrent({ reload: true });
                         var index = $rootScope.congesAvalider.indexOf(row);
                         if (index > -1) {
                             $rootScope.congesAvalider.splice(index, 1);
@@ -197,7 +205,7 @@
                 }
                 $scope.edition = 0;
                 $scope.currentConges = null;
-            }, function () {
+            }, function() {
                 $scope.saving = false;
             });
         }
@@ -255,7 +263,7 @@
     }
 
     // Contrôleur de la grille des congés
-    function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, ngTableFilter, CongesAdminService) {
+    function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, ngTableFilter, CongesAdminService, ConfigService) {
 
         $scope.filterOptions = {
             filterText: "",
@@ -285,7 +293,7 @@
 
         $rootScope.tableParamsCongesAValider = new ngTableParams({
             page: 1,            // show first page
-            count: 100,
+            count: ConfigService.pageSize(),
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }
@@ -300,7 +308,7 @@
     });
         $rootScope.tableParamsValider = new ngTableParams({
             page: 1,            // show first page
-            count: 100,
+            count: ConfigService.pageSize(),
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }
@@ -315,7 +323,7 @@
     });
         $rootScope.tableParamsRefuser = new ngTableParams({
             page: 1,            // show first page
-            count: 100,
+            count: ConfigService.pageSize(),
             sorting: {
                 'debut.date': 'asc'     // initial sorting
             }

@@ -7,7 +7,7 @@
     /* Controllers */
     // Contrôleur principal de la gestion des utilisateurs
     this.register('UsersMain', ['$scope', '$rootScope', '$dialog', 'UsersService', UsersMain]);
-    this.register('UsersGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'UsersService', UsersGrid]);
+    this.register('UsersGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'UsersService', 'ConfigService', UsersGrid]);
     this.register('DialogHistory', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'dialog', 'HistoryService', DialogHistory]);
 
     function UsersMain($scope, $rootScope, $dialog, UsersService) {
@@ -156,7 +156,7 @@
     }
 
     // Contrôleur de la grille des utilisateurs
-    function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, UsersService) {
+    function UsersGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, UsersService, ConfigService) {
         $scope.filterOptions = {
             filterText: "",
             useExternalFilter: false
@@ -182,7 +182,7 @@
         $scope.tableParamsUser = new ngTableParams({
             page: 1,            // show first page
             //total: 0, // length of data
-            count: 10,           // count per page
+            count: ConfigService.pageSize(),           // count per page
             sorting: {
                 id: 'asc'     // initial sorting
             }

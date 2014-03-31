@@ -6,7 +6,7 @@
     this.register('CongesMain', ['$scope', '$rootScope', '$dialog', 'UsersService', 'CongesService', CongesMain]);
     this.register('DialogAideConges', ['$scope', 'dialog', DialogAideConges]);
     this.register('CongesGauges', ['$scope', '$rootScope', CongesGauges]);
-    this.register('CongesGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesService', '$timeout', CongesGrid]);
+    this.register('CongesGrid', ['$scope', '$rootScope', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesService', '$timeout', 'ConfigService', CongesGrid]);
 
 function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
     $scope.edition = 0;
@@ -187,7 +187,7 @@ function CongesGauges($scope, $rootScope) {
 }
 
 // Contrôleur de la grille des congés
-function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, CongesService, $timeout) {
+function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, CongesService, $timeout, ConfigService) {
 
     $scope.filterOptions = {
         filterText: "",
@@ -213,7 +213,7 @@ function CongesGrid($scope, $rootScope, $filter, ngTableParams, ngTableFilter, C
 
     $rootScope.tableParamsConges = new ngTableParams({
         page: 1,            // show first page
-        count: 10,
+        count: ConfigService.pageSize(),
         sorting: {
             'debut.date': 'asc'     // initial sorting
         },

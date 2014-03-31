@@ -6,6 +6,22 @@
 // In this case it is a simple value service.
 angular.module('inside.services', ['ngResource']).
   value('version', '0.1').
+  factory('ConfigService', [function() {
+      var keySize = "pageSize", pageSize = 100, loaded = false;
+      return {
+          pageSize: function() {
+              if(!window.localStorage || !window.localStorage[keySize] || loaded) return pageSize;
+              loaded = true;
+              pageSize = parseInt(window.localStorage[keySize])
+              return pageSize;
+          },
+          setPageSize: function(count) {
+              pageSize = count;
+              if(!window.localStorage) return;
+              window.localStorage[keySize] = pageSize;
+          }
+      };
+  }]).
   factory('LoginService', ['$resource', '$http', '$q', '$rootScope', function($resource, $http, $q, $rootScope) {
       return {
           login: function(email, pwd, options, callback) {

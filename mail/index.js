@@ -10,7 +10,7 @@
 
 moment.lang('fr');
 
-var URL = "https://extranet.inside-groupe.com";
+var URL = "https://sami.insidegroup.fr";
 
 var email = nodemailer.createTransport("SMTP", config);
 

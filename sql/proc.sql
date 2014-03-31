@@ -559,15 +559,17 @@ DELIMITER $$
 
 CREATE PROCEDURE `RemoveConges` (idconges INT, OUT retour VARCHAR(1000) CHARACTER SET utf8)
 ThisSP:BEGIN
-DECLARE user INT;
+DECLARE user, etat INT;
 DECLARE duree FLOAT;
 DECLARE motif VARCHAR(10) CHARACTER SET utf8;
 SET duree = 0;
 
-SELECT conges.user, conges.duree, conges.motif INTO user, duree, motif FROM conges WHERE conges.id = idconges;
+SELECT conges.user, conges.etat, conges.duree, conges.motif INTO user, etat, duree, motif FROM conges WHERE conges.id = idconges;
 
 -- IF (SELECT count(*) FROM conges_compteurs WHERE conges_compteurs.user = user AND conges_compteurs.motif = motif) THEN
+IF etat <> 3 THEN
 	UPDATE conges_compteurs SET compteur = compteur + duree WHERE conges_compteurs.user = user AND conges_compteurs.motif = motif;
+END IF;
 -- END IF;
 
 DELETE FROM conges WHERE id = idconges;
