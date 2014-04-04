@@ -60,16 +60,19 @@ INSERT INTO `conges_motifs` (`id`, `libelle`, `shortlibelle`, `min`, `ordre`) VA
 -- ('RCE', 'RC employeur', 'RTT Empl.', 2),
 ('RTT', 'RTT', null, -2, 3),
 ('CP_ANT', 'CP Anticipé', 'CP ant.', 0, 4),
-('MA', 'Maladie', null, 0, 5),
-('ENF', 'Enfant malade (3 jours par an)', 'Enfant malade', 0, 6),
-('NAI', 'Naissance (3 jours)', 'Naissance', 0, 7),
-('PAT', 'Paternité (9 jours ouvrés)', 'Paternité', 0, 8),
-('CS', 'Sans solde', null, 0, 9),
-('DEM', 'Déménagement (1 jour par an)', 'Déménagement', 0, 10),
-('MAR', 'Mariage', null, 0, 11),
+('CS', 'Sans solde', null, 0, 5),
+('MA', 'Maladie', null, 0, 6),
+('ENF', 'Enfant malade (3 jours par an)', 'Enfant malade', 0, 7),
+('DEL', 'Délégation DP, CE', 0, 8),
+('MAR', 'Mariage', null, 0, 9),
+('NAI', 'Naissance (3 jours)', 'Naissance', 0, 10),
+('PAT', 'Paternité (9 jours ouvrés)', 'Paternité', 0, 11),
 ('MAT', 'Maternité', null, 0, 12),
-('DC', 'Décès ascendants, descendants, collatéraux', 'Décès', 0, 13),
-('AU', 'Autres (à justifier)', 'Autres', 0, 14);
+('DEM', 'Déménagement (1 jour par an)', 'Déménagement', 0, 13),
+('PAO', 'Congés pathologique', null, 0, 14),
+('DC', 'Décès ascendants, descendants, collatéraux', 'Décès', 0, 15),
+('REC', 'Récupération', 'Récup.', 0, 16);
+-- ('AU', 'Autres (à justifier)', 'Autres', 0, 15);
 
 CREATE TABLE IF NOT EXISTS `conges_compteurs` (
   `user` MEDIUMINT NOT NULL,
