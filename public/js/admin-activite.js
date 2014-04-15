@@ -30,7 +30,7 @@
             page: 1,            // show first page
             count: ConfigService.pageSize(),
             sorting: {
-                mois: 'asc'     // initial sorting
+                'user.nom': 'asc'     // initial sorting
             }
         },
     {
@@ -38,6 +38,7 @@
             var options = angular.copy($scope.selection);
             options.mois = $scope.lstMois.indexOf(options.mois);
             ActiviteAdminService.list(options).then(function(result) {
+                $scope.activites_ = result;
                 $scope.activites = ngTableFilter(result, params);
                 $defer.resolve($scope.activites);
             });
@@ -47,7 +48,7 @@
             page: 1,            // show first page
             count: ConfigService.pageSize(),
             sorting: {
-                mois: 'asc'     // initial sorting
+                nom: 'asc'     // initial sorting
             }
         },
     {

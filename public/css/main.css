@@ -119,6 +119,10 @@ table td.cell > div {
           text-overflow: ellipsis;
           white-space: nowrap;
 }
+
+table tr.total{
+    font-weight: bold;
+}
 /* Colonne nom */
 #usersGrid .cell:nth-child(2) > *{
       max-width: 90px;

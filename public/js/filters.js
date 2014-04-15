@@ -83,7 +83,7 @@ filter('detailsAutreActivite', ['$filter', function($filter) {
         if (!activites) return;
         var details = "", act;
         for (act in activites) {
-            if ('AU,CS,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT'.split(',').indexOf(act) > -1) {
+            if ('AU,CS,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT,REC'.split(',').indexOf(act) > -1) {
                 details += $filter('motifConges')(act) + " : " + activites[act] + " jour(s) <br />";
             }
         }
@@ -98,6 +98,35 @@ filter('detailsHeures', function() {
             details += "Le " + moment(array[i].jour).format("DD/MM/YYYY") + " : " + array[i].nb + " heure(s) <br />";
         }
         return details;
+    };
+}).
+filter('total', function() {
+    return function(array, prop) {
+        if (!array || array.length == 0) return;
+        var parts = prop.split(','), args, total = 0;
+        angular.forEach(parts, function(part){
+            args = part.split('.');
+            var i = 0, l = array.length, item;
+            for (; i < l; i++) {
+                item = array[i];
+                var j = 0, k = args.length;
+                for (; j < k; j++) {
+                    if(item[args[j]]){
+                        item = item[args[j]];
+                    }
+                }
+                if(!isNaN(item)){
+                    total += item;
+                }
+            }
+        });
+        return total;
+    };
+}).
+filter('toFixed', function() {
+    return function(num, nb) {
+          if(isNaN(num)) return;
+          return num.toFixed(nb);
     };
 });
 

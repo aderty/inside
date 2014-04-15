@@ -32,6 +32,9 @@
                         <td data-title="'RTT'" sortable="rtt"> 
                         {{user.rtt}} 
                         </td>
+                        <td data-title="'ENF'" sortable="enf">
+                            {{user.enf}}
+                        </td>
                         <td> 
                             <a href="" title="Modifier" ng-click="edit(user)"><i class="icon-pencil"></i></a>
                         </td>
@@ -41,7 +44,45 @@
                         <td> 
                             <a href="" title="Supprimer" ng-click="delete(user)"><i class="icon-trash"></i></a>
                         </td>
-                    </tr> 
+                    </tr>
+                    <tr class="info total">
+                        <td>
+                            Totaux
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            {{users_ | total:'cp' | toFixed:2}}
+                        </td>
+                        <td>
+                            {{users_ | total:'cp_ant' | toFixed:2}}
+                        </td>
+                        <td>
+                            {{users_ | total:'rtt' | toFixed:2}}
+                        </td>
+                        <td>
+                            {{users_ | total:'enf' | toFixed:2}}
+                        </td>
+                        <td>
+    
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
                 </table> 
             </div>
 

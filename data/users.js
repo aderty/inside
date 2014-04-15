@@ -95,7 +95,7 @@ var data = {
     // Lecture, via GET
     listUsers: function(fn) {
         //db.query('SELECT * FROM users JOIN conges_compteurs ON users.id = conges_compteurs.user WHERE id <> 999999 AND etat=1', function (err, ret) {
-        db.query('SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ANT" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RTT" ) AS rtt FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.id <> 999999 AND u1.etat=1', function(err, ret) {
+        db.query('SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ANT" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RTT" ) AS rtt,  (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "ENF" ) AS enf FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.id <> 999999 AND u1.etat=1', function(err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);
                 return fn("Erreur lors de la récupération des utilisateurs.");

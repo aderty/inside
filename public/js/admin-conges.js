@@ -295,7 +295,8 @@
             page: 1,            // show first page
             count: ConfigService.pageSize(),
             sorting: {
-                'debut.date': 'asc'     // initial sorting
+                'user.nom': 'asc'
+                //'debut.date': 'asc'     // initial sorting
             }
         },
     {
@@ -310,7 +311,8 @@
             page: 1,            // show first page
             count: ConfigService.pageSize(),
             sorting: {
-                'debut.date': 'asc'     // initial sorting
+                'user.nom': 'asc'
+                //'debut.date': 'asc'     // initial sorting
             }
         },
     {
@@ -325,7 +327,8 @@
             page: 1,            // show first page
             count: ConfigService.pageSize(),
             sorting: {
-                'debut.date': 'asc'     // initial sorting
+                'user.nom': 'asc'
+                //'debut.date': 'asc'     // initial sorting
             }
         },
     {

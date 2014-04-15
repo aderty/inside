@@ -12,7 +12,7 @@
                                  <div loading-container="loading"> 
                                     <table id="congesAdminGrid" ng-table="tableParamsCongesAValider" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesAvalider"> 
-                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                            <td data-title="'Utilisateur'" sortable="user.nom"> 
                                                 <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
                                             </td> 
                                             <td data-title="'Date de début'" sortable="debut.date"> 
@@ -50,7 +50,7 @@
                                 <div loading-container="loading"> 
                                     <table id="congesAdminGridVal" ng-table="tableParamsValider" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesValider"> 
-                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                            <td data-title="'Utilisateur'" sortable="user.nom"> 
                                                 <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
                                             </td> 
                                             <td data-title="'Date de début'" sortable="debut.date"> 
@@ -88,7 +88,7 @@
                                     <div loading-container="loading"> 
                                     <table id="congesAdminGridRef" ng-table="tableParamsRefuser" show-filter="false" class="table table-bordered table-hover"> 
                                         <tr ng-repeat="conge in congesRefuser"> 
-                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                            <td data-title="'Utilisateur'" sortable="user.nom"> 
                                                 <div class="ngCellText matriculeCell" data-toggle="tooltip" title="{{conge.user.nom}} {{conge.user.prenom}}">{{conge.user.nom}} {{conge.user.prenom}}</div>
                                             </td> 
                                             <td data-title="'Date de début'" sortable="debut.date"> 

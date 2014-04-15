@@ -184,7 +184,7 @@
             //total: 0, // length of data
             count: ConfigService.pageSize(),           // count per page
             sorting: {
-                id: 'asc'     // initial sorting
+                nom: 'asc'     // initial sorting
             }
         },
         {
@@ -205,6 +205,7 @@
                             delete $rootScope.users[i].adminPrenom;
                         }
                     }
+                    $rootScope.users_ = $rootScope.users;
                     $rootScope.users = ngTableFilter($rootScope.users, params);
                     // use build-in angular filter
                     $defer.resolve($rootScope.users);

@@ -31,7 +31,7 @@
                                             <td data-title="'Mois'" sortable="mois"> 
                                                 <div class="moisCell">{{activite.mois | moment:'MMMM'}}</div>
                                             </td> 
-                                            <td data-title="'Utilisateur'" sortable="user.id"> 
+                                            <td data-title="'Utilisateur'" sortable="user.nom"> 
                                                 <div class="matriculeCell" data-toggle="tooltip" title="{{activite.user.nom}} {{activite.user.prenom}}">{{activite.user.nom}} {{activite.user.prenom}}</div>
                                             </td>
                                             <td class="travail" data-title="'M1'" sortable="JT1"> 
@@ -43,23 +43,26 @@
                                             <td class="travail" data-title="'M3'" sortable="JT3"> 
                                             {{activite.JT3}} 
                                             </td>
-                                            <td class="travail" data-title="'FOR'" sortable="FOR"> 
-                                            {{activite.FOR}} 
-                                            </td>
                                             <td class="travail" data-title="'INT'" sortable="INT"> 
                                             {{activite.INT}} 
                                             </td>
-                                            <td class="conges" data-title="'CP'" sortable="CP"> 
-                                            {{activite.CP}} 
+                                            <td class="travail" data-title="'FOR'" sortable="FOR">
+                                            {{activite.FOR}}
                                             </td>
-                                            <td class="conges" data-title="'CP ant'" sortable="CP_ANT"> 
-                                            {{activite.CP_ANT}} 
+                                            <td class="conges" data-title="'CP'" sortable="CP"> 
+                                            {{activite.CP + activite.CP_ANT}} 
+                                            </td>
+                                            <td class="conges" data-title="'Sans solde'" sortable="CS"> 
+                                            {{activite.CS}} 
                                             </td>
                                             <td class="conges" data-title="'RTT'" sortable="RTT"> 
                                             {{activite.RTT}} 
                                             </td>
+                                            <td class="conges" data-title="'Maladie'" sortable="MA">
+                                            {{activite.MA}}
+                                            </td>
                                             <td class="conges" data-title="'Autre'" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite | detailsAutreActivite}}" > 
-                                            {{activite.AU + activite.CS + activite.DC + activite.DEM + activite.ENF + activite.MA + activite.MAR + activite.MAT + activite.NAI + activite.PAT}} 
+                                            {{activite.AU + activite.DC + activite.DEM + activite.ENF + activite.MA + activite.MAR + activite.MAT + activite.NAI + activite.PAT + activite.REC}} 
                                             </td>
                                             <td class="heures" data-title="'HS'" sortable="heuresSup" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresSup.details | detailsHeures}}"> 
                                             {{activite.heuresSup.total}} 
@@ -81,6 +84,64 @@
                                             </td>
                                             <td style="width:15px;"> 
                                                 <a href="" title="Supprimer" ng-show="isEditable(activite)" ng-click="delete(activite)"><i class="icon-trash"></i></a>
+                                            </td>
+                                        </tr> 
+                                        <tr class="info total">
+                                            <td>
+                                                Totaux
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'JT1' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'JT2' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'JT3' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'INT' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'FOR' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'CP,CP_ANT' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'CS' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'RTT' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'MA' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'AU,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT,REC' | toFixed:1}} 
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'heuresSup.total' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'heuresNuit.total' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'heuresAstreinte.total' | toFixed:1}}
+                                            </td>
+                                            <td>
+                                                {{activites_ | total:'heuresInt.total' | toFixed:1}}
+                                            </td>
+                                            <td style="width:15px;">
+                                            </td>
+                                            <td style="width:15px;">
+                                            </td>
+                                            <td style="width:15px;">
                                             </td>
                                         </tr> 
                                     </table> 
