@@ -103,7 +103,8 @@
             keyboard: true,
             backdropClick: true,
             template: $.trim($("#showActiviteTmpl").html()),
-            controller: 'DialogShowActivite'
+            controller: 'DialogShowActivite',
+            dialogClass: 'modal modal-large'
         };
 
         $scope.visualiser = function(row) {
@@ -415,6 +416,7 @@
 
     // Contrôleur de la popup de modification de password
     function DialogShowActivite($scope, $rootScope, $timeout, $compile, dialog, ActiviteAdminService) {
+        window.scrollTo(0, 0);
         $rootScope.error = "";
         $scope.user = $scope.$parent.currentActivite.user;
         $scope.eventSources = $scope.$parent.eventSources;

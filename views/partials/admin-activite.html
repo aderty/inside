@@ -14,6 +14,10 @@
                             <label for="inputMois">Mois</label>
                             <select id="inputMois" name="inputMois" ng-model="selection.mois" ng-options="mois for mois in lstMois"></select>
                          </div>
+                        <div style="float:right" authenticate="4" ng-if='!fullYear'>
+                            <label for="inputMois">Chèques déjeuner</label>
+                            <a target="_top" href="/data-admin-activite/files/cheques-resto?annee={{selection.annee}}&mois={{lstMois.indexOf(selection.mois)}}" class="btn"><i class="icon-download"></i> Générer</a>
+                        </div>
                       </fieldset>
                 </div>
             </div><!--<div class="row-fluid">-->
@@ -62,19 +66,19 @@
                                             {{activite.MA}}
                                             </td>
                                             <td class="conges" data-title="'Autre'" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite | detailsAutreActivite}}" > 
-                                            {{activite.AU + activite.DC + activite.DEM + activite.ENF + activite.MA + activite.MAR + activite.MAT + activite.NAI + activite.PAT + activite.REC}} 
+                                            {{activite.AU + activite.DC + activite.DEM + activite.ENF + activite.MAR + activite.MAT + activite.NAI + activite.PAT + activite.REC}} 
                                             </td>
-                                            <td class="heures" data-title="'HS'" sortable="heuresSup" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresSup.details | detailsHeures}}"> 
-                                            {{activite.heuresSup.total}} 
+                                            <td class="heures" data-title="'HS'" sortable="heuresSup">
+                                                <detailspopup ng-if="activite.heuresSup && activite.heuresSup.total" content="detailsHeuresTmpl" heures="activite.heuresSup" titre="Détails des heures supplémentaires de {{activite.user.nom}} {{activite.user.prenom}}" placement="left">{{activite.heuresSup.total}}</detailspopup>
                                             </td>
-                                            <td class="heures" data-title="'HN'" sortable="heuresNuit" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresNuit.details | detailsHeures}}"> 
-                                            {{activite.heuresNuit.total}} 
-                                             </td>
-                                            <td class="heures" data-title="'HA'" sortable="heuresAstreinte" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresAstreinte.details | detailsHeures}}"> 
-                                            {{activite.heuresAstreinte.total}} 
+                                            <td class="heures" data-title="'HN'" sortable="heuresNuit">
+                                                <detailspopup ng-if="activite.heuresNuit && activite.heuresNuit.total" content="detailsHeuresTmpl" heures="activite.heuresNuit" titre="Détails des heures de nuit de {{activite.user.nom}} {{activite.user.prenom}}" placement="left">{{activite.heuresNuit.total}}</detailspopup>
                                             </td>
-                                            <td class="heures" data-title="'HI'" sortable="heuresInt" data-tooltip-append-to-body="true" data-tooltip-placement="bottom" data-tooltip-html-unsafe="{{activite.heuresInt.details | detailsHeures}}"> 
-                                            {{activite.heuresInt.total}} 
+                                            <td class="heures" data-title="'HA'" sortable="heuresAstreinte"> 
+                                                <detailspopup ng-if="activite.heuresAstreinte && activite.heuresAstreinte.total" content="detailsHeuresTmpl" heures="activite.heuresAstreinte" titre="Détails des heures d'astreintes de {{activite.user.nom}} {{activite.user.prenom}}" placement="left">{{activite.heuresAstreinte.total}}</detailspopup>
+                                            </td>
+                                            <td class="heures" data-title="'HI'" sortable="heuresInt"> 
+                                                <detailspopup ng-if ="activite.heuresInt && activite.heuresInt.total" content="detailsHeuresTmpl" heures="activite.heuresInt" titre="Détails des heures d'intervention de {{activite.user.nom}} {{activite.user.prenom}}" placement="left">{{activite.heuresInt.total}}</detailspopupng-if>
                                             </td>
                                             <td sortable="etat" style="width:15px;"> 
                                                 <a href="" title="Valider le CRA" ng-show="activite.etat == 1" ng-click="valider(activite)"><i class="icon-ok"></i></a>
@@ -123,7 +127,7 @@
                                                 {{activites_ | total:'MA' | toFixed:1}}
                                             </td>
                                             <td>
-                                                {{activites_ | total:'AU,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT,REC' | toFixed:1}} 
+                                                {{activites_ | total:'AU,DC,DEM,ENF,MAR,MAT,NAI,PAT,REC' | toFixed:1}} 
                                             </td>
                                             <td>
                                                 {{activites_ | total:'heuresSup.total' | toFixed:1}}
@@ -280,9 +284,9 @@
           <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
           <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
           <p ng-if="hasHeuresAstreinte(data);">Nombre d'heures d'astreinte</p>
-          <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
+          <input ng-if="hasHeuresAstreinte(data);" id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="24" step="0.5" ng-model="data.heuresAstreinte"></input>
           <p>Nombre d'heures d'intervention</p>
-          <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
+          <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="24" step="0.5" ng-model="data.heuresInt"></input>
       </accordion-group>
       <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT' || data.type == 'WK' || data.type == 'JF'">
           <p>Remarques...</p>
@@ -293,4 +297,22 @@
       <button class="btn btn-primary" ng-click="valid(currentEvent);">Valider</button>
     <button class="btn" ng-click="cancel();">Annuler</button>
   </div>
+</script>
+<script type="text/x-handlebars-template" id="detailsHeuresTmpl">
+    <accordion close-others="true">
+        <accordion-group heading="Par semaines" is-open="true">
+            <ul>
+                <li ng-repeat="week in weeks">
+                    Semaine {{week.week}} : {{week.nb}} heure(s)
+                </li>
+            </ul>
+        </accordion-group>
+        <accordion-group heading="Détails">
+            <ul>
+                <li ng-repeat="heure in heures.details | orderBy: 'jour'">
+                    {{heure.jour | moment:"dddd DD/MM/YYYY"}} : {{heure.nb}} heure(s)
+                </li>
+            </ul>
+        </accordion-group>
+    </accordion>
 </script>

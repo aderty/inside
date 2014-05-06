@@ -360,6 +360,9 @@ angular.module('inside.services', ['ngResource']).
               conges.prenom = conges.user.prenom;
               conges.user = conges.user.id;
           }
+          if (conges.admin && conges.admin.id) {
+              conges.admin = conges.admin.id;
+          }
           return conges;
       }
       return {
@@ -387,6 +390,16 @@ angular.module('inside.services', ['ngResource']).
                           delete conges[i].nom;
                           delete conges[i].prenom;
                           conges[i].typeuser = conges[i].user.id == 999999 ? 2 : 1;
+                      }
+                      if (conges[i].admin_id) {
+                          conges[i].admin = {
+                              nom: conges[i].admin_nom,
+                              prenom: conges[i].admin_prenom,
+                              id: conges[i].admin_id
+                          }
+                          delete conges[i].admin_id;
+                          delete conges[i].admin_nom;
+                          delete conges[i].admin_prenom;
                       }
                   }
                   defered.resolve(conges);
@@ -419,6 +432,13 @@ angular.module('inside.services', ['ngResource']).
           },
           remove: function(conges) {
               var defered = $q.defer();
+              delete conges.$create;
+              delete conges.$delete;
+              delete conges.$get;
+              delete conges.$query;
+              delete conges.$remove;
+              delete conges.$save;
+              delete conges.$updateEtat;
               resource.remove(beforeSendConges(conges), function (reponse) {
                   if (reponse.error) {
                       $rootScope.error = reponse.error;

@@ -1,0 +1,19 @@
+﻿<% _.each(cheques, function( cheque, index ){ %>41<%=format(code_client, 5)%><%=format(code_sucursale, 3)%><%=format(code_interne, 8)%><%=format(cheque.user, 11)%><%=format(index + 1, 6, false, true)%><%=format(cheque.nom + " " + cheque.prenom, 20, true)%><%=format(cheque.nb, 2, false, true)%>0<%=format(valeur, 4)%><%=format(participation, 4)%>00<%=format("", 2)%><%=format("", 10)%>
+<% }); %><%
+function format(value, nb, reverse, num){
+    value = value.toString();
+    var len = value.length;
+    if(len == nb) return value;
+    if(len > nb) return value.substring(0,nb);
+    var i = 0, l = nb - len, char = num ? "0" : " ";
+    for(;i<l;i++){
+        if(reverse){
+            value= value + char;
+        }
+        else{
+            value=char + value;
+        }
+    }
+    return value;
+}
+ %>

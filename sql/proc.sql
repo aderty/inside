@@ -872,5 +872,33 @@ ORDER BY activite.mois;
 END $$
 DELIMITER ;
 
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- CALL GenererChequesResto(2013, 11);
+-- --------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS GenererChequesResto; 
+DELIMITER $$
+
+CREATE PROCEDURE `GenererChequesResto` (annee INT, mois INT)
+ThisSP:BEGIN
+
+-- Sélection des jours
+SELECT count(*) as nb, user, users.nom, users.prenom FROM activite_jour JOIN users on activite_jour.user = users.id 
+WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee
+AND MONTH(activite_jour.jour) = mois 
+and (
+activite_jour.type = 'JT1' or 
+activite_jour.type = 'JT2' or 
+activite_jour.type = 'JT3' or 
+activite_jour.type = 'FOR' or 
+activite_jour.type = 'INT'
+)
+group by user;
+
+
+END $$
+DELIMITER ;
+
 -- Génération des jours fériés
 CALL GenererJourFerie();

@@ -107,6 +107,7 @@
     <Content Include="bin\inside.pdb" />
     <Content Include="bin\inside.xml" />
     <Content Include="config.json" />
+    <Content Include="extra\cheques_dejeuner.html" />
     <Content Include="inside.vbproj" />
     <Content Include="inside.vbproj.user" />
     <Content Include="mail\templates\ajoutUser.html" />
@@ -208,6 +209,7 @@
     <Folder Include="bin\" />
     <Folder Include="data\" />
     <Folder Include="data\models\" />
+    <Folder Include="extra\" />
     <Folder Include="history\" />
     <Folder Include="mail\" />
     <Folder Include="mail\templates\" />

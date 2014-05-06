@@ -1,5 +1,9 @@
 ﻿var data = require('../data')
-    , history = require('../history').history;
+    , history = require('../history').history
+    , fs = require('fs')
+    , path = require('path')
+    , moment = require('moment')
+    ,_ = require('underscore');
 
 /// Routes
 function dataCallback(res) {
@@ -80,6 +84,9 @@ var routesAdmin = {
     // Ajout ou Mise à jour via POST
     save: function(req, res) {
         var activite = req.body;
+
+        activite.mois = new Date(activite.mois);
+
         if (req.query.etat) {
             data.activite.updateEtatActivite(activite, dataCallback(res));
             history.log(req, activite.user, "[Admin " + req.session.username + "] Modification de l'état du CRA de " + activite.mois + " : Etat " + req.query.etat);
@@ -87,7 +94,6 @@ var routesAdmin = {
         }
         // Création / modification d'activité
         activite.etat = 1;
-        activite.mois = new Date(activite.mois);
         if (activite.create) {
             delete activite.create;
             data.activite.addActiviteUser(activite.user, activite, false, dataCallback(res));
@@ -102,8 +108,34 @@ var routesAdmin = {
         activite.mois = new Date(activite.mois);
         data.activite.removeActivite(activite, dataCallback(res));
         history.log(req, activite.user, "[Admin " + req.session.username + "] Suppression du CRA de " + activite.mois);
+    },
+    generateChequesResto: function(req, res){
+        var options = {
+            annee: req.query.annee,
+            mois: req.query.mois,
+        };
+        data.activite.genererChequesResto(options, function(err, result){
+            if(!templateCheques){
+                templateCheques = fs.readFileSync(path.join(__dirname, '../extra/cheques_dejeuner.html'), "utf8");
+            }
+            var dateMois = moment(options.annee + " " + options.mois, "YYYY MM");
+           res.attachment("export-cheques-"+ dateMois.format("MMMM-YYYY")  +".txt");
+           var data = {
+                cheques: result,
+                code_client: "99999",
+                code_sucursale: "001",
+                code_interne: "toulouse",
+                valeur: "0960",
+                participation: "0480"
+           }
+           //res.set({"Content-Disposition":"attachment; filename=\"export-cheques-"+ req.query.annee + "-" + req.query.mois  +".txt\""});
+           //res.setHeader('Content-type', 'application/download');
+           //res.write("test");
+           res.send(_.template(templateCheques, data));
+       });
     }
 };
+var templateCheques;
 
 exports.routes = routes;
 exports.routesAdmin = routesAdmin;

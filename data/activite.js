@@ -304,6 +304,17 @@ var data = {
             }
             fn(null, ret);
         });
+    },
+    genererChequesResto: function(options, fn) {
+
+        db.query("CALL GenererChequesResto(?, ?)", [options.annee, options.mois], function(err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la génération des chéques déjeuner du mois " + options.mois + "/" + options.annee + ".");
+            }
+            //console.log(ret);
+            fn(null, ret[0]);
+        });
     }
 };
 exports.data = data;
