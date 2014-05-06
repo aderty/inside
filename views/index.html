@@ -54,7 +54,7 @@
                     </ul>
                     <ul class="nav pull-right">
                         <form class="navbar-search pull-left" ng-class="{masquer: !searcher}" action="">
-                          <input id="search" name="search" type="text" class="search-query span15" ui-event="{keyup: 'search(search)'}" placeholder="Rechercher...">
+                            <input id="search" name="search" type="text" class="search-query span15" ng-model="search" ui-event="{keyup: 'research(search)'}" placeholder="Rechercher...">
                         </form>
                       <li class="divider-vertical"></li>
                       <li authenticate class="dropdown">

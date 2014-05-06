@@ -118,6 +118,48 @@ directive('appVersion', ['version', function(version) {
         }
     };
 })
+.directive('detailspopup', ["$compile", "$timeout", "$filter",function($compile, $timeout, $filter) {
+    return {
+        restrict: 'EA',
+        scope: { titre:'@', content: '@', heures: '=', placement: '@', animation: '&', isOpen: '&' , scope: '='},
+        template: '<span rel="popover"><span ng-transclude></span></span>',
+        transclude: true,
+        replace: true,
+        link: function($scope, elem, attr, ctrl) {
+            if(!$scope.heures || !$scope.heures.total) return;
+            var w = elem.width();
+            var pw = elem.parent().width();
+            $scope.cancel = function(){
+                elem.popover('hide');
+            }
+            $scope.weeks = $filter("weeksHeures")($scope.heures.details);
+
+            elem.attr("rel", "popover").popover({
+                html: true,
+                title: $scope.titre,
+                placement: attr.placement,
+                content: function(){
+                    return $compile($.trim($('#'+ attr.content).html()))($scope);
+                }
+            }).click(function(e) {
+                var elm = $(this);
+                $(".popover.in").prev().each(function(i) {
+                    var $this = $(this);
+                    if (!$this.is(elm)) {
+                        $this.scope().cancel();
+                        $this.popover('hide');
+                    }
+                });
+                $scope.$apply(function(){
+                        //elem.popover('show');
+                });
+            });/*.on({
+                show: function (e) {
+                     
+                });*/
+         }
+    };
+}])
 .directive('autocompleteUser', ['$compile', function(compile) {
     return {
         restrict: 'A',

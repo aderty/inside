@@ -256,12 +256,14 @@
                     $scope.indexEvents[current.date()] = $scope.events.length - 1;
                 }
                 if ($scope.activite.etat > 0 && $scope.activite.activite.length > 0) {
+                    $scope.isSaved = true;
                     for (var i = 0, l = $scope.activite.activite.length; i < l; i++) {
                         $scope.events.push({ title: $scope.activite.activite[i].type, start: $scope.activite.activite[i].jour.date, data: $scope.activite.activite[i] });
                         $scope.indexEvents[$scope.activite.activite[i].jour.date] = $scope.events.length - 1;
                     }
                 }
                 else {
+                    $scope.isSaved = false;
                     $scope.conges = $scope.activite.activite;
                     var cong = $scope.conges.shift();
                     var lastCong;
@@ -506,6 +508,7 @@
                     $scope.isDirty = false;
                     $scope.successOperation = "Activité enregistrée";
                     $scope.activite.etat = 1;
+                    $scope.isSaved = true;
                 }
             }, function() {
                 $scope.saving = false;

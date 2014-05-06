@@ -48,6 +48,7 @@
         };
 
         $scope.edit = function(row) {
+            window.scrollTo(0, 0);
             $scope.error = null;
             $scope.currentUser = row;
             $scope.editUser.$setPristine();
@@ -164,10 +165,10 @@
         var filterTimer;
         $scope.$on('search', function(event, data) {
             if (data.searcher == "users") {
-                $scope.filterOptions = {
+                /*$scope.filterOptions = {
                     filterText: data.search,
                     useExternalFilter: false
-                };
+                };*/
                 $scope.tableParamsUser.$params.filter = data.search;
             }
         });

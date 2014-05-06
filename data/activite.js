@@ -289,7 +289,7 @@ var data = {
         }*/
     },
     listUserSansActivites: function(options, fn) {
-        var query = "SELECT users.id, users.nom, users.prenom, DATE('" + options.annee + "-" + options.mois + "-1') AS mois FROM users WHERE users.id <> 0 AND users.id <> 999999 AND users.etat = 1 " +
+        var query = "SELECT users.id, users.nom, users.prenom, DATE('" + options.annee + "-" + options.mois + "-1') AS mois FROM users WHERE users.id <> 0 AND users.id <> 999999 AND users.id <> 111111 AND users.etat = 1 " +
                     " AND ((YEAR(users.creation) = ? AND MONTH(users.creation) <= ?) OR YEAR(users.creation) < ?) AND " +
                     " users.id NOT IN(SELECT activite.user FROM activite WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?) ";
         values = [options.annee, options.mois, options.annee, options.annee, options.mois];

@@ -99,7 +99,11 @@ var routesAdmin = {
             data.conges.listCongesEtat(req.query.etat, superAdmin ? -1 : req.session.username, options.past, dataCallback(res));
         }
         else {
-            
+            if (req.query.user) {
+                options.quantity = req.query.quantity;
+                data.conges.listHistoConges(superAdmin ? -1 : req.session.username, req.query.user, options, dataCallback(res));
+                return;
+            }
             data.conges.listToutConges(superAdmin ? -1 : req.session.username, options.past, dataCallback(res));
         }
     },

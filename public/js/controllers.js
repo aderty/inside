@@ -98,6 +98,7 @@ app.run(["$rootScope", "MotifsService", function($rootScope, MotifsService) {
             $rootScope.typeActivite.pop();
             $rootScope.typeActivite.pop();
             $rootScope.typeActivite.pop();
+            $rootScope.typeActivite.push({ id: 'NS', libelle: 'Non salarié', ordre: 0 });
         });
     }
 
@@ -113,6 +114,7 @@ app.controller('appController', ['$scope', '$routeParams', '$rootScope', functio
         $rootScope.idpage = id.substring(1);
         $rootScope.page = $rootScope.pages[id.substring(1)].name;
         $rootScope.searcher = $rootScope.pages[id.substring(1)].searcher;
+        $rootScope.search = "";
     }
 }
 ]).
@@ -123,7 +125,7 @@ controller('NavBar', ['$scope', '$rootScope', 'LoginService', '$dialog', functio
             $rootScope.connected = false;
         });
     }
-    $scope.search = function() {
+    $scope.research = function() {
         $rootScope.$broadcast("search", {
             searcher: $rootScope.searcher,
             search: search.value

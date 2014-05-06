@@ -72,7 +72,8 @@
                     <span class="titre">Actions</span>
                     <hr />
                     <p ng-if="activite.etat <= 1 && !future">
-                        <button class="btn btn-large btn-success" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Enregistrer mon activité</button>
+                        <button ng-if="!isSaved" class="btn btn-large btn-success" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Enregistrer mon activité</button>
+                        <button ng-if="isSaved" class="btn btn-large btn-info" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Modifier mon activité déjà enregistrée</button>
                     </p>
                     <p ng-if="activite.etat <= 1 && !future && isDirty">
                         <button class="btn btn-warning" type="button" ng-click="refresh();"><i class="icon-refresh icon-white"></i> Annuler les modifications</button>
@@ -113,13 +114,13 @@
     </accordion-group>
     <accordion-group heading="Heures supl./nuit, astreintes, int." ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'WK' || data.type == 'JF'">
       <p>Nombre d'heures suplémentaires</p>
-      <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span3" min="0" max="8" ng-model="data.heuresSup"></input>
+      <input id="inputHeuresSup" type="number" name="inputHeuresSup" class="span4" min="0" max="8" ng-model="data.heuresSup"></input>
       <p>Nombre d'heures de nuit (entre 22h et 6h)</p>
-      <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span3" min="0" max="8" ng-model="data.heuresNuit"></input>
+        <input id="inputHeuresNuit" type="number" name="inputHeuresNuit" class="span4" min="0" max="8" ng-model="data.heuresNuit"></input>
       <p>Nombre d'heures d'astreinte</p>
-      <input id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span3" min="0" max="8" ng-model="data.heuresAstreinte"></input>
+        <input id="inputheuresAstreinte" type="number" name="inputheuresAstreinte" class="span4" min="0" max="24" step="0.5" ng-model="data.heuresAstreinte"></input>
       <p>Nombre d'heures d'intervention</p>
-      <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span3" min="0" max="8" ng-model="data.heuresInt"></input>
+        <input id="inputHeuresInt" type="number" name="inputHeuresInt" class="span4" min="0" max="24" step="0.5" ng-model="data.heuresInt"></input>
     </accordion-group>
     <accordion-group heading="Informations complémentaires" ng-if="data.type == 'JT1' || data.type == 'JT2' || data.type == 'JT3' || data.type == 'FOR' || data.type == 'INT'  || data.type == 'WK' || data.type == 'JF'">
       <p>Remarques...</p>

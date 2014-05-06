@@ -133,27 +133,30 @@ DELIMITER $$
 CREATE PROCEDURE `CalculCongesAcquis` ()
 BEGIN
 
+DECLARE nbMoisMin INT;
+SET nbMoisMin = 1;
+
 -- Log avant calcul
 INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Valeurs avant calcul des congès acquis -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
-WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0
+WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin
 GROUP BY users.id;
 
 -- maj des CP (+ 2.08) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 2.08 
 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999 
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0;
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin;
 -- maj des RTT (+ 0.75) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 0.75 
-WHERE tab1.motif = 'RTT' and tab1.user <> 999999 
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0;
+WHERE tab1.motif = 'RTT' and tab1.user <> 999999 and users.hasRtt = 1
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin;
 	
 -- Log du calcul
 INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Calcul des congès acquis effectué -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
-WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > 0
+WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin
 GROUP BY users.id;
 
 END $$
@@ -686,7 +689,12 @@ DELIMITER $$
 CREATE PROCEDURE `GetJoursChomes` (user INT, startDate DATE, endDate DATE)
 ThisSP:BEGIN
 DECLARE exist_activite, exist_declaration INT;
-
+-- On récupère d'abord les jours fériés non travaillés pour bug mise en forme côté JS
+SELECT CAST(jour as datetime) as debut, CAST(jour as datetime) as fin, 'JF' as type, 2 as etat, '' as information FROM JoursFeries WHERE
+JoursFeries.chome = 1
+AND DATEDIFF(startDate, JoursFeries.jour) <= 0 
+AND DATEDIFF(JoursFeries.jour, endDate) <= 0
+UNION
 SELECT conges.debut, conges.fin, conges.motif AS type, conges.etat as etat, conges.justification as information FROM conges WHERE (conges.user = user OR conges.user = 999999) 
 AND conges.etat <> 3
 AND (
@@ -714,10 +722,7 @@ AND HOUR(endDate) > HOUR(conges.debut))
 		Or 
 (DATEDIFF(conges.fin, endDate) = 0
 AND HOUR(endDate) <= HOUR(conges.fin)))
-UNION
-SELECT CAST(jour as datetime) as debut, CAST(jour as datetime) as fin, 'JF' as type, 2 as etat, '' as information FROM JoursFeries WHERE
-DATEDIFF(startDate, JoursFeries.jour) <= 0 
-AND DATEDIFF(JoursFeries.jour, endDate) <= 0
+
 -- AND DAYOFWEEK(JoursFeries.jour) NOT IN(7,1)
 ORDER BY debut;
 

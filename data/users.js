@@ -110,23 +110,26 @@ var data = {
         fn(null, cleanUsers(ret));
         });*/
     },
-    search: function(search, fn) {
+    search: function(admin, search, fn) {
+        var query, values = [];
         if (search.type == "id") {
-            db.query('SELECT * FROM users WHERE id= ? AND etat=1', [search.search], function(error, ret) {
+            query = 'SELECT * FROM users WHERE id= ? AND etat=1';
+            values = [search.search];
+            
+        }
+        else{
+            query = 'SELECT * FROM users WHERE id <> 999999 AND (nom LIKE "%' + db.escape(search.search) + '%" OR prenom LIKE "%' + db.escape(search.search) + '%")';
+        }
+        if (admin > 0) {
+                query += ' AND admin = ?';
+                values.push(admin);
+        }
+        db.query(query, values, function(error, ret) {
                 if (error) {
                     console.log('ERROR: ' + error);
                     return fn("Erreur lors de la tentative de login.");
                 }
                 return fn(null, cleanUsers(ret));
-            });
-            return;
-        }
-        db.query('SELECT * FROM users WHERE id <> 999999 AND (nom LIKE "%' + db.escape(search.search) + '%" OR prenom LIKE "%' + db.escape(search.search) + '%")', function(error, ret) {
-            if (error) {
-                console.log('ERROR: ' + error);
-                return fn("Erreur lors de la tentative de login.");
-            }
-            return fn(null, cleanUsers(ret));
         });
     },
     getUser: function(id, fn) {
@@ -170,6 +173,9 @@ var data = {
         if (typeof user.rtt != "undefined") {
             rtt = user.rtt;
             delete user.rtt;
+        }
+        if (typeof user.enf != "undefined") {
+            delete user.enf;
         }
         if (user.last_connection) {
             delete user.last_connection;

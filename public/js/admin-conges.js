@@ -6,6 +6,7 @@
     this.register('CongesAdmin', ['$scope', '$rootScope', '$dialog', 'CongesAdminService', 'UsersService', CongesAdmin]);
     this.register('DialogConges', ['$scope', '$rootScope', 'dialog', DialogConges]);
     this.register('DialogAideConges', ['$scope', 'dialog', DialogAideConges]);
+    this.register('CongesAdminHisto', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', 'ConfigService', CongesAdminHisto]);
     this.register('CongesAdminGrid', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', 'ConfigService', CongesAdminGrid]);
 
     /* Controllers */
@@ -15,6 +16,7 @@
         $scope.lblMode = "";
         $scope.currentConges = {};
         $scope.currentCongesSaved = null;
+        $scope.showConfHisto = false
 
         UsersService.getCurrent().then(function(user) {
             $scope.user = user;
@@ -38,6 +40,10 @@
         $scope.$watch('currentConges.debut.date', function(newValue) {
             $scope.dateOptionsFin.minDate = newValue;
         });
+
+        $scope.toggleConfHisto = function(){
+            $scope.showConfHisto = !$scope.showConfHisto;
+        }
 
         $scope.accepter = function(row) {
             $scope.currentConges = row;
@@ -135,6 +141,7 @@
         }
 
         $scope.edit = function(row) {
+            window.scrollTo(0, 0);
             $rootScope.error = null;
             $scope.currentConges = row;
             $scope.editConges.$setPristine();
@@ -168,6 +175,12 @@
                                 if (index > -1) {
                                     $rootScope.congesRefuser.splice(index, 1);
                                 }
+                            }
+                        }
+                        if($rootScope.congesHisto && $rootScope.congesHisto.length){
+                            index = $rootScope.congesHisto.indexOf(row);
+                            if (index > -1) {
+                                $rootScope.congesHisto.splice(index, 1);
                             }
                         }
                     });
@@ -262,6 +275,33 @@
         };
     }
 
+    function CongesAdminHisto($scope, $rootScope, $timeout, $filter, ngTableParams, ngTableFilter, CongesAdminService, ConfigService) {
+        $scope.optionsHisto = {
+            quantity: "3",
+        }
+
+        $scope.getHisto = function(options){
+            $scope.optionsHisto = options;
+            CongesAdminService.list({ user: options.user.id, quantity: options.quantity }).then(function(conges) {
+                $rootScope.congesHisto = conges;
+            });
+        }
+        $rootScope.tableParamsHisto = new ngTableParams({
+            page: 1,            // show first page
+            count: ConfigService.pageSize(),
+            sorting: {
+                'debut.date': 'asc'     // initial sorting
+            }
+        },
+        {
+            getData: function($defer, params) {
+                $rootScope.congesHisto = ngTableFilter($rootScope.congesHisto, params);
+                $defer.resolve($rootScope.congesHisto);
+               //return $rootScope.congesHisto;
+            }
+        });
+    }
+
     // Contrôleur de la grille des congés
     function CongesAdminGrid($scope, $rootScope, $timeout, $filter, ngTableParams, ngTableFilter, CongesAdminService, ConfigService) {
 
@@ -289,7 +329,6 @@
             type: 1
         };
         var scope = $scope;
-
 
         $rootScope.tableParamsCongesAValider = new ngTableParams({
             page: 1,            // show first page

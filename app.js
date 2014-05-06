@@ -190,7 +190,7 @@ app.get('/logout', routes.users.logout);
 
  
 // Lecture, via GET
-app.get('/data-users', [dataLogin, dataSuperAdmin], routes.users.list);
+app.get('/data-users', [dataLogin, dataRh], routes.users.list);
 app.get('/data-users/:id', [dataLogin], routes.users.get);
  
 // Mise à jour via POST
@@ -257,6 +257,8 @@ app.get('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.ge
 // Ajout via POST
 app.post('/data-admin-activite/:id', [dataLogin, dataRh], routes.activiteAdmin.save);
 app.post('/data-admin-activite', [dataLogin, dataRh], routes.activiteAdmin.save);
+
+app.get('/data-admin-activite/files/cheques-resto', [dataLogin, dataSuperAdmin], routes.activiteAdmin.generateChequesResto);
 
 app.post('/data-history', [dataLogin, dataSuperAdmin], history.routes.list);
 

@@ -60,6 +60,28 @@ var data = {
             fn(null, cleanConges(ret));
         });
     },
+    listHistoConges: function (admin, matricule, options, fn) {
+        var query, values = [];
+        if(options.quantity > -1){
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE (conges.user = 999999 OR conges.user = ?) AND period_diff(date_format(current_timestamp, "%Y%m"), date_format(conges.debut, "%Y%m")) < ? ORDER BY debut DESC;'
+            values = [matricule, options.quantity];
+        }
+        else{
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE (conges.user = 999999 OR conges.user = ?) ORDER BY debut DESC;';
+            values = [matricule];
+        }
+        if (admin > 0) {
+            query += ' AND users.admin = ?';
+            values.push(admin);
+        }
+        db.query(query, values, function (err, ret) {
+            if (err) {
+                console.log('ERROR: ' + err);
+                return fn("Erreur lors de la récupération des congès.");
+            }
+            fn(null, cleanConges(ret));
+        });
+    },
     listConges: function (matricule, options, fn) {
         if (!options.past) {          
             if (options.start && options.end) {
@@ -99,16 +121,16 @@ var data = {
     listCongesEtat: function (etat, admin, past, fn) {
         var query, values = [etat];
         if (!past) {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? AND fin > NOW() ';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE conges.etat = ? AND fin > NOW() ';
         }
         else {
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type FROM conges JOIN users on conges.user = users.id WHERE conges.etat = ? ';
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE conges.etat = ? ';
         }
         if (admin > -1) {
             query += ' AND users.admin = ? ';
             values.push(admin);
         }
-        query += ' ORDER BY conges.debut DESC';
+        query += ' ORDER BY conges.debut ASC';
         db.query(query, values, function (err, ret) {
             if (err) {
                 console.log('ERROR: ' + err);

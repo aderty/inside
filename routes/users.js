@@ -85,7 +85,11 @@ var routes = {
     list: function(req, res) {
         res.header('Cache-Control', 'no-cache');
         if (req.query.search) {
-            return data.users.search({ type: req.query.type, search: req.query.search }, dataCallback(res));
+            var superAdmin = false;
+            if (req.session.role == 4) {
+                superAdmin = true;
+            }
+            return data.users.search(superAdmin ? -1 : req.session.username, { type: req.query.type, search: req.query.search }, dataCallback(res));
         }
         data.users.listUsers(dataCallback(res));
     },

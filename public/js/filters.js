@@ -83,7 +83,7 @@ filter('detailsAutreActivite', ['$filter', function($filter) {
         if (!activites) return;
         var details = "", act;
         for (act in activites) {
-            if ('AU,CS,DC,DEM,ENF,MA,MAR,MAT,NAI,PAT,REC'.split(',').indexOf(act) > -1) {
+            if ('AU,DC,DEM,ENF,MAR,MAT,NAI,PAT,REC'.split(',').indexOf(act) > -1) {
                 details += $filter('motifConges')(act) + " : " + activites[act] + " jour(s) <br />";
             }
         }
@@ -96,6 +96,23 @@ filter('detailsHeures', function() {
         var i = 0, l = array.length, details = "";
         for (; i < l; i++) {
             details += "Le " + moment(array[i].jour).format("DD/MM/YYYY") + " : " + array[i].nb + " heure(s) <br />";
+        }
+        return details;
+    };
+}).
+filter('weeksHeures', function() {
+    return function(array) {
+        if (!array || array.length == 0) return [];
+        var i = 0, l = array.length, details = [],
+        weeks = {};
+        for (; i < l; i++) {
+            if(weeks[moment(array[i].jour).week()] == undefined){
+                    weeks[moment(array[i].jour).week()] = 0;
+            }
+            weeks[moment(array[i].jour).week()] += array[i].nb;
+        }
+        for(var week in weeks){
+            details.push({week: week, nb: weeks[week]});
         }
         return details;
     };
@@ -126,7 +143,7 @@ filter('total', function() {
 filter('toFixed', function() {
     return function(num, nb) {
           if(isNaN(num)) return;
-          return num.toFixed(nb);
+          return parseFloat(num.toFixed(nb));
     };
 });
 

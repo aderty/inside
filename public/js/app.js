@@ -106,28 +106,44 @@
                                             $filter('orderBy')(data, params.orderBy()) :
                                             data;
             orderedData = orderedData || [];
-            orderedData = params.filter() ?
+            /*orderedData = params.filter() ?
                                     $filter('filter')(orderedData, params.filter()) :
-                                    orderedData;
-            if (params.filterText && params.filterText != "") {
-                var result = [], found = false;
+                                    orderedData;*/
+            if (params.filter() && params.filter() != "" && typeof params.filter() == "string") {
+                var result = [], found = false, search = params.filter().split(";"), tmp = [];
+                angular.forEach(search, function(item) {
+                    item = item.trim().toLowerCase();
+                });
+                /*angular.forEach(search, function(item) {
+                            if(item == "") return;
+                            tmp = $filter('filter')(orderedData, params.filter());
+                            angular.forEach(tmp, function(res) {
+                                if(!res) return;
+                                if(result.indexOf(res) > -1) return;
+                                result.push(res);
+                            });
+                });*/
 
                 angular.forEach(orderedData, function(datarow) {
                     found = false;
                     angular.forEach(datarow, function(col) {
                         if (found) return;
-                        if (typeof col == "string" && col.toLowerCase().indexOf(params.filterText.toLowerCase()) > -1) {
-                            found = true;
-                            result.push(datarow);
-                            return;
-                        }
-                        if (typeof col == "number" && col.toString().indexOf(params.filterText.toLowerCase()) > -1) {
-                            found = true;
-                            result.push(datarow);
-                            return;
-                        }
+                        angular.forEach(search, function(item) {
+                            if(item == "") return;
+                            if (typeof col == "string" && col.toLowerCase().indexOf(item) > -1) {
+                                found = true;
+                                result.push(datarow);
+                                return;
+                            }
+                            if (typeof col == "number" && col.toString().indexOf(item) > -1) {
+                                found = true;
+                                result.push(datarow);
+                                return;
+                            }
+                        });
                     });
                 });
+                orderedData = result;
             }
             params.total(orderedData.length);
             return orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());

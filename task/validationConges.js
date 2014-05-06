@@ -9,11 +9,16 @@ data.events.once('connected', function (result) {
     console.log("TASK 1 : " + new moment().format("DD/MM/YYYY HH:mm"));
     console.log("TASK 1 : Début envois des congès à valider");
     var toExec = [];
-    toExec.push(doRecapConges(-1, config.admin));
+
+    // Envois du mail à l'admin global uniquement les lundis de chaque semaines
+    if(moment().day() == 1){
+        toExec.push(doRecapConges(-1, config.admin));
+    }
 
     db.query("SELECT DISTINCT userAdmin.id, userAdmin.email FROM users As users1 JOIN users AS userAdmin ON users1.admin = userAdmin.id JOIN conges ON conges.user = users1.id WHERE conges.etat = 1  AND conges.fin > NOW();", function(err, result){
         if (err) {
-            console.log('TASK 1 : ERROR: ' + err);
+            console.log( 'TASK 1 : ERROR: ' + err );
+            process.exit(1);
             return;
         }
         var i = 0, l = result.length;
@@ -24,7 +29,7 @@ data.events.once('connected', function (result) {
             // results is now equal to ['one', 'two']
             process.exit(0);
         });
-    }); 
+    });
 });
 
 function doRecapConges(admin, email){

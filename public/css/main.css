@@ -104,6 +104,7 @@ table th > i
 
 .table th, .table td {
     text-align: center;
+    vertical-align: middle;
 }
 
 table td.cell {
@@ -315,6 +316,7 @@ select+.input-help {
 select.ng-invalid + .input-help,
 input.ng-invalid + .input-help {
   display: block;
+  position:absolute;
 }
 /* Always hide the input help when it's pristine */
 select.ng-pristine + .input-help,
@@ -478,6 +480,10 @@ input.ng-pristine + .input-help {
         overflow-x: hidden;
 }
 
+#adminConges .btn-action-histo{
+    margin-bottom: 20px;
+}
+
 /*#congesAdminGrid {
     height: 80%;
 }*/
@@ -545,6 +551,9 @@ input.ng-pristine + .input-help {
     width: 5rem;
 }
 
+#adminConges .empty > p{
+    margin: 0;
+}
 
 #mainActivite ul.compteurs
 {
@@ -574,6 +583,13 @@ input.ng-pristine + .input-help {
 /* Popover du calendrier : la flèche reste statique avec l'agrandissement de l'accordion */
 .popover.in .arrow{
         top: 85px;
+}
+#adminActivite td.heures > span{
+    cursor: hand;
+}
+
+#adminActivite .popover.in .arrow{
+        top: 37px;
 }
 /* Cas normal */
 .tooltip.bottom {
@@ -738,7 +754,7 @@ background: -webkit-gradient( linear, left top, left bottom, from(rgb(179, 165, 
 {
 	line-height: 13px;
 }
-.admin-activite .modal {
+.admin-activite .modal-large {
     top: 5%;
 	width: 700px;
     margin-left: -350px;

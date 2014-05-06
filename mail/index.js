@@ -48,6 +48,11 @@ function generateFormTemplate(path, data) {
     return _.template(templates[path], data);
 }
 
+function ouputHtml(mailOptions){
+    var to = __dirname + '/output.html';
+    fs.writeFile(to, mailOptions.html, function (err) {});
+}
+
 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 var Mail = {
@@ -65,7 +70,7 @@ var Mail = {
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
-            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            from: config.defaultFromAddress, // sender address
             to: user.email, // list of receivers
             subject: "[Inside] Création de votre compte !",
             html: generateFormTemplate(path.join(dirTemplate, 'ajoutUser.html'),{
@@ -117,7 +122,7 @@ var Mail = {
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
-            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            from: config.defaultFromAddress, // sender address
             to: user.email, // list of receivers
             subject: subject,
             html: generateFormTemplate(path.join(dirTemplate, conges.etat == 2 ? 'validationConges.html' : 'refusConges.html'), {
@@ -161,7 +166,7 @@ var Mail = {
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
-            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            from: config.defaultFromAddress, // sender address
             to: user.email, // list of receivers
             subject: subject,
             html: generateFormTemplate(path.join(dirTemplate, 'passwordLost.html'), {
@@ -185,7 +190,6 @@ var Mail = {
         });
     },
     recapConges: function (email_admin, conges, fn) {
-        //return fn(null);
         if (!email_admin) return fn("Pas d'email");
         if (!conges) return fn("Congés invalide");
         if (!re.test(email_admin)) {
@@ -206,13 +210,49 @@ var Mail = {
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
-            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            from: config.defaultFromAddress, // sender address
             to: email_admin, // list of receivers
             subject: subject,
             html: generateFormTemplate(path.join(dirTemplate, 'recapConges.html'), {
                 "date": moment(new Date()).format('D MMMM YYYY'),
                 "conges": conges,
-                "nom": ""
+                "nom": "",
+                "url": URL
+            })
+        }
+        email.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                console.log(error);
+                if (fn) fn(error);
+            } else {
+                console.log("Message sent: " + response.message);
+                if (fn) fn(null, response.message);
+            }
+            // if you don't want to use this transport object anymore, uncomment following line
+            //smtpTransport.close(); // shut down the connection pool, no more messages
+        });
+    },
+    relanceActivite: function (adresse_email, annee, mois, prenom, fn) {
+        //return fn(null);
+        if (!adresse_email) return fn("Pas d'email");
+        if (!re.test(adresse_email)) {
+            return fn("Email utilisateur invalide");
+        }
+
+        console.log("envois de l'email à : " + adresse_email);
+
+        var subject = "[Inside] Validation de votre activité du mois.";
+
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: config.defaultFromAddress, // sender address
+            to: adresse_email, // list of receivers
+            subject: subject,
+            html: generateFormTemplate(path.join(dirTemplate, 'relanceActivite.html'), {
+                "annee": annee,
+                "mois": mois,
+                "prenom": prenom,
+                "url": URL
             })
         }
         email.sendMail(mailOptions, function (error, response) {
@@ -241,7 +281,7 @@ var Mail = {
 
         // setup e-mail data with unicode symbols
         var mailOptions = {
-            from: config.defaultFromAddress, //"footmap@laposte.net", // sender address
+            from: config.defaultFromAddress, // sender address
             to: email_admin, // list of receivers
             subject: subject,
             html: generateFormTemplate(path.join(dirTemplate, 'contact.html'), {
