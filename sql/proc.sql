@@ -884,9 +884,9 @@ CREATE PROCEDURE `GenererChequesResto` (annee INT, mois INT)
 ThisSP:BEGIN
 
 -- Sélection des jours
+SELECT sum(t.nb) as nb, t.user, t.nom, t.prenom from (
 SELECT count(*) as nb, user, users.nom, users.prenom FROM activite_jour JOIN users on activite_jour.user = users.id 
-WHERE HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee
-AND MONTH(activite_jour.jour) = mois 
+WHERE user <> 999999 and user <> 111111 and HOUR(jour) = 0 AND YEAR(activite_jour.jour) = annee AND MONTH(activite_jour.jour) = mois 
 and (
 activite_jour.type = 'JT1' or 
 activite_jour.type = 'JT2' or 
@@ -894,8 +894,31 @@ activite_jour.type = 'JT3' or
 activite_jour.type = 'FOR' or 
 activite_jour.type = 'INT'
 )
+group by user
+UNION ALL
+SELECT count(*) as nb, user, users.nom, users.prenom FROM activite_jour as act1 JOIN users on act1.user = users.id 
+WHERE act1.user <> 999999 and user <> 111111 and HOUR(act1.jour) = 8 AND YEAR(act1.jour) = annee AND MONTH(act1.jour) = mois 
+and (
+act1.type = 'JT1' or 
+act1.type = 'JT2' or 
+act1.type = 'JT3' or 
+act1.type = 'FOR' or 
+act1.type = 'INT'
+)
+and DATE(act1.jour) IN (
+SELECT DATE(act2.jour) FROM activite_jour as act2 JOIN users on act2.user = users.id 
+WHERE act2.user = act1.user and HOUR(act2.jour) = 16 AND YEAR(act2.jour) = annee AND MONTH(act2.jour) = mois 
+and (
+act2.type = 'JT1' or 
+act2.type = 'JT2' or 
+act2.type = 'JT3' or 
+act2.type = 'FOR' or 
+act2.type = 'INT'
+)
+)
+group by user
+) as t
 group by user;
-
 
 END $$
 DELIMITER ;

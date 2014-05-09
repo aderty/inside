@@ -122,9 +122,9 @@ var routesAdmin = {
            res.attachment("export-cheques-"+ dateMois.format("MMMM-YYYY")  +".txt");
            var data = {
                 cheques: result,
-                code_client: "99999",
+                code_client: "15166",
                 code_sucursale: "001",
-                code_interne: "toulouse",
+                code_interne: "INSIDE TOULOUSE",
                 valeur: "0960",
                 participation: "0480"
            }

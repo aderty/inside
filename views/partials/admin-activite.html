@@ -299,20 +299,30 @@
   </div>
 </script>
 <script type="text/x-handlebars-template" id="detailsHeuresTmpl">
-    <accordion close-others="true">
-        <accordion-group heading="Par semaines" is-open="true">
-            <ul>
-                <li ng-repeat="week in weeks">
-                    Semaine {{week.week}} : {{week.nb}} heure(s)
-                </li>
-            </ul>
-        </accordion-group>
-        <accordion-group heading="Détails">
-            <ul>
-                <li ng-repeat="heure in heures.details | orderBy: 'jour'">
-                    {{heure.jour | moment:"dddd DD/MM/YYYY"}} : {{heure.nb}} heure(s)
-                </li>
-            </ul>
-        </accordion-group>
-    </accordion>
+        <div class="accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading"><a class="accordion-toggle">Par semaines</a></div>
+                <div class="accordion-body">
+                    <div class="accordion-inner">
+                        <ul>
+                            <li ng-repeat="week in weeks">
+                                Semaine {{week.week}} : {{week.nb}} heure(s)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-group">
+                <div class="accordion-heading"><a class="accordion-toggle">Détails</a></div>
+                <div class="accordion-body">
+                    <div class="accordion-inner">
+                        <ul>
+                            <li ng-repeat="heure in heures.details | orderBy: 'jour'">
+                                {{heure.jour | moment:"dddd DD/MM/YYYY"}} : {{heure.nb}} heure(s)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 </script>
