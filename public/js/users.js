@@ -15,6 +15,7 @@
             $rootScope.nextId = max;
         }
 
+        $scope.placeholderDate = moment().format("DD/MM/YYYY");
         $scope.edition = 0;
         $scope.mode = "";
         $scope.lblMode = "";
@@ -31,6 +32,7 @@
                     id: 0,
                     nom: 'Admin'
                 },
+                dateDebut: new Date(),
                 hasRtt: true,
                 cp: 0,
                 cp_ant: 0,
@@ -173,6 +175,10 @@
             }
         });
 
+        $scope.$watch('showInactif', function(newValue) {
+            $scope.tableParamsUser.reload();
+        });
+
         $scope.pagingOptions = {
             pageSizes: [25, 50, 100],
             pageSize: 50,
@@ -191,23 +197,21 @@
         {
             getData: function($defer, params) {
                 // use build-in angular filter
-                $rootScope.users = UsersService.query(function() {
-                    // GET: /user/123/card
-                    // server returns: [ {id:456, number:'1234', name:'Smith'} ];
-                    for (var i = 0, l = $rootScope.users.length; i < l; i++) {
-                        $rootScope.users[i].dateNaissance = new Date($rootScope.users[i].dateNaissance);
-                        if (typeof $rootScope.users[i].admin != "undefined") {
-                            $rootScope.users[i].admin = {
-                                id: $rootScope.users[i].admin,
-                                nom: $rootScope.users[i].adminNom,
-                                prenom: $rootScope.users[i].adminPrenom
-                            };
-                            delete $rootScope.users[i].adminNom;
-                            delete $rootScope.users[i].adminPrenom;
-                        }
+                UsersService.list().then(function(users) {
+                    $rootScope.users_ = [];
+                    if(!$scope.showInactif){
+                        angular.forEach(users, function(user){
+                            if(user.isActif()){
+                                $rootScope.users_.push(user);
+                           }
+                        });
                     }
-                    $rootScope.users_ = $rootScope.users;
-                    $rootScope.users = ngTableFilter($rootScope.users, params);
+                    else{
+                        $rootScope.users_ = users;
+                    }
+
+                    //$rootScope.users_ = users;
+                    $rootScope.users = ngTableFilter($rootScope.users_, params);
                     // use build-in angular filter
                     $defer.resolve($rootScope.users);
                 });

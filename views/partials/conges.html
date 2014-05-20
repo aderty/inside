@@ -1,13 +1,13 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="mainConges" ng-controller="CongesMain">
     <div class="row-fluid">
-        <div class="span2" ng-controller="CongesGauges">
+        <div id="sidePanel" class="span2" ng-controller="CongesGauges">
             <div class="row-fluid">
                 <div class="span12 well">
                     <!--Sidebar content-->
                     <div>
-                         <h4>{{user.nom}} {{user.prenom}}</h4>
-                         <span class="titre"><h4>{{user.id | matricule}}</h4></span>
+                        <h4>{{user.nom}} {{user.prenom}}</h4>
+                        <span class="titre"><h4>{{user.id | matricule}}</h4></span>
                     </div>
                 </div>
             </div>

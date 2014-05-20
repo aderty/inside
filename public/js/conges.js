@@ -175,7 +175,7 @@ function CongesMain($scope, $rootScope, $dialog, UsersService, CongesService) {
 
 // Contrôleur de la popup de modification de password
 function DialogAideConges($scope, dialog) {
-    $scope.close = function () {
+    $scope.closeAide = function () {
         dialog.close();
     };
 }

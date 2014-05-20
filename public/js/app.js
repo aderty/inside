@@ -93,8 +93,12 @@
                     location.href = "/logout";
                 }
             });
-        } ]);
-
+        } ])
+        .config(['$compileProvider', function($compileProvider) {
+            // allow data links
+            //$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
+            $compileProvider.urlSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
+        }])
     window.app.factory("ngTableFilter", ["$filter", "ConfigService", function($filter, ConfigService) {
         var isNumber, ngTableParams, ngTableFilter;
         isNumber = function(n) {
@@ -130,15 +134,9 @@
                         if (found) return;
                         angular.forEach(search, function(item) {
                             if(item == "") return;
-                            if (typeof col == "string" && col.toLowerCase().indexOf(item) > -1) {
+                            if(find(col, item)) {
                                 found = true;
                                 result.push(datarow);
-                                return;
-                            }
-                            if (typeof col == "number" && col.toString().indexOf(item) > -1) {
-                                found = true;
-                                result.push(datarow);
-                                return;
                             }
                         });
                     });
@@ -148,7 +146,22 @@
             params.total(orderedData.length);
             return orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
         }
-
+        function find(obj, search){
+            if (typeof obj == "string" && obj.toLowerCase().indexOf(search) > -1) {
+                 return true;
+            }
+            if (typeof obj == "number" && obj.toString().indexOf(search) > -1) {
+                 return true;
+            }
+            if (typeof obj == "object") {
+                 for(var prop in obj){
+                     if(find(obj[prop], search)){
+                         return true;
+                     }
+                 }
+            }
+            return false;
+        }
         return ngTableFilter;
     } ]);
 

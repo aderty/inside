@@ -1,13 +1,15 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="adminConges" ng-controller="CongesAdmin">
     <div class="row-fluid">
-        <div class="span8">
+        <div class="span12">
             <!--Sidebar content-->
             <div class="row-fluid">
                 <div class="span12">
+                    
                     <button ng-if="!showConfHisto" class="btn btn-action-histo" type="button" ng-click="toggleConfHisto();"><i class="icon-zoom-in"></i> Historique d'un utilisateur</button>
                     <button ng-if="showConfHisto" class="btn btn-action-histo" type="button" ng-click="toggleConfHisto();"><i class="icon-arrow-left"></i> Retour</button>
-                    
+                    <button authenticate="4" type="button" class="btn btn-primary  btn-action-histo" ng-if="edition == 0" ng-click="create();"><i class="icon-plus icon-white"></i> Créer une absence</button>
+
                     <div ng-if="showConfHisto" ng-controller="CongesAdminHisto">
                         <div class="alert alert-block alert-info">
                             <h4>Historique des absences d'un utilisateur</h4>
@@ -233,33 +235,6 @@
             <!--<div class="row-fluid">-->
         </div>
         <!--<div class="span6">-->
-        <div class="span4">
-            <!--Body content-->
-            <div class="row">
-                <div class="span12">
-                    <button authenticate="4" type="button" class="btn btn-primary" ng-if="edition == 0" ng-click="create();"><i class="icon-plus icon-white"></i> Créer une absence de régulation</button>
-                    <div class="alert alert-block alert-info" ng-if="edition == 1">
-                        <h4>{{lblMode}}</h4>
-                    </div>
-                    <div class="alert alert-block alert-warning" ng-if="edition == 2">
-                        <h4>{{lblMode}}</h4>
-                    </div>
-                </div>
-                <!-- <div class="span12">-->
-            </div>
-            <!-- <div class="row">-->
-            <!--Row edit-->
-            <div class="row">
-                <div class="span12">
-                    <!--Formulaire modification utilisateurs-->
-                    <% include ../forms/conges.html %>
-        
-                </div>
-                <!--<div class="span12">-->
-            </div>
-            <!--<div class="span9">-->
-        </div>
-        <!--<div class="row-fluid">-->
     </div>
 </div>
 <!--</div class="container-fluid">-->
@@ -310,5 +285,19 @@
     <div class="modal-footer">
         <button ng-click="close('yes')" class="btn btn-primary" >Oui</button>
         <button ng-click="close('no')" class="btn" >Non</button>
+    </div>
+</script>
+
+<script type="text/x-handlebars-template" id="congesAdmin">
+    <div ng-show="!aide">
+        <!--Body content-->
+        <div class="modal-header">
+            <h1>{{lblMode}}</h1>
+        </div>
+        <!-- <div class="row">-->
+        <% include ../forms/conges.html %>
+    </div>
+    <div ng-show="aide">
+        <% include ../../public/templates/aide-conges.html %>
     </div>
 </script>

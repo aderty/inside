@@ -3,20 +3,23 @@
 (function() {
     /* Controllers */
     // Contrôleur principal de la gestion des utilisateurs
-    this.register('CongesAdmin', ['$scope', '$rootScope', '$dialog', 'CongesAdminService', 'UsersService', CongesAdmin]);
+    this.register('CongesAdmin', ['$scope', '$rootScope', '$dialog', '$templateCache', 'CongesAdminService', 'UsersService', CongesAdmin]);
+    this.register('DialogEditConges', ['$scope', '$rootScope', '$dialog', 'dialog', 'CongesAdminService', 'UsersService', DialogEditConges]);
     this.register('DialogConges', ['$scope', '$rootScope', 'dialog', DialogConges]);
     this.register('DialogAideConges', ['$scope', 'dialog', DialogAideConges]);
     this.register('CongesAdminHisto', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', 'ConfigService', CongesAdminHisto]);
     this.register('CongesAdminGrid', ['$scope', '$rootScope', '$timeout', '$filter', 'ngTableParams', 'ngTableFilter', 'CongesAdminService', 'ConfigService', CongesAdminGrid]);
 
     /* Controllers */
-    function CongesAdmin($scope, $rootScope, $dialog, CongesAdminService, UsersService) {
+    function CongesAdmin($scope, $rootScope, $dialog, $templateCache, CongesAdminService, UsersService) {
         $scope.edition = 0;
         $scope.mode = "";
         $scope.lblMode = "";
         $scope.currentConges = {};
         $scope.currentCongesSaved = null;
-        $scope.showConfHisto = false
+        $scope.showConfHisto = false;
+
+        $templateCache.put("template/forms/congesAdmin.html",$.trim($("#congesAdmin").html()));
 
         UsersService.getCurrent().then(function(user) {
             $scope.user = user;
@@ -116,22 +119,23 @@
             });
         };
 
+        $scope.optsConges = {
+            backdrop: true,
+            keyboard: true,
+            backdropClick: true,
+            //template: $.trim($("#congesAdmin").html()),
+            templateUrl: 'template/forms/congesAdmin.html',
+            controller: 'DialogEditConges'
+        };
+
         $scope.create = function() {
             $rootScope.error = null;
-            $scope.editConges.$setPristine();
-            $scope.currentConges = {
-                typeuser: 1,
-                etat: 2,
-                debut: {
-                    type: 0
-                },
-                fin: {
-                    type: 1
+            $scope.optsConges.currentConges = null;
+            var msgbox = $dialog.dialog($scope.optsConges);
+            msgbox.open().then(function(result) {
+                if (result === 'yes') {
                 }
-            };
-            $scope.edition = 1;
-            $scope.mode = "Création";
-            $scope.lblMode = "Nouvelle absence de régulation";
+            });
         }
 
         $scope.cancel = function() {
@@ -141,15 +145,13 @@
         }
 
         $scope.edit = function(row) {
-            window.scrollTo(0, 0);
-            $rootScope.error = null;
-            $scope.currentConges = row;
-            $scope.editConges.$setPristine();
-            $scope.currentCongesSaved = angular.copy($scope.currentConges);
-            $scope.edition = 2;
-            $scope.mode = "Edition";
-            $scope.lblMode = "Modification d'une absence";
-            $scope.dateOptionsFin.minDate = $scope.currentConges.debut.date;
+             $rootScope.error = null;
+            $scope.optsConges.currentConges = row;
+            var msgbox = $dialog.dialog($scope.optsConges);
+            msgbox.open().then(function(result) {
+                if (result === 'yes') {
+                }
+            });
         }
 
         $scope['delete'] = function(row) {
@@ -192,6 +194,90 @@
             return currentConges.etat != 3;
         };
 
+        $scope.selectUserOptions = {
+            placeholder: "Rechercher un utilisateur",
+            minimumInputLength: 1,
+            query: function(options) {
+                var type = isNaN(options.term) ? "text" : "id";
+                $rootScope.$apply(function() {
+                    UsersService.search({ type: type, search: options.term }).then(function(result) {
+                        options.callback({
+                            more: false,
+                            results: result
+                        });
+                    });
+                });
+            },
+            data: [{ id: 2, nom: "tous", prenom: ""}],
+            initSelection: function(element, callback, f) {
+                callback($(element).data('$ngModelController').$modelValue);
+            },
+            formatResult: format, // omitted for brevity, see the source of this page
+            formatSelection: format, // omitted for brevity, see the source of this page
+            dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+            escapeMarkup: function(m) { return m; } // we do not want to escape markup since we are displaying html in results
+        };
+
+        function format(user) {
+            return user.nom.toLowerCase() + " " + user.prenom;
+        }
+
+    }
+
+    // Contrôleur de la popup de modification de password
+    function DialogEditConges($scope, $rootScope, $dialog, dialog, CongesAdminService, UsersService) {
+        $rootScope.error = null;
+        $scope.showMatricule = true;
+
+        $scope.dateOptionsDebut = {
+            dateFormat: 'dd/mm/yy',
+            changeYear: true,
+            changeMonth: true,
+            yearRange: '-2Y:+1Y'
+        };
+        $scope.dateOptionsFin = {
+            dateFormat: 'dd/mm/yy',
+            changeYear: true,
+            changeMonth: true,
+            yearRange: '-2Y:+1Y'
+        };
+
+        if (dialog.options.currentConges) {
+            $scope.currentConges = dialog.options.currentConges;
+           // $scope.editConges.$setPristine();
+            $scope.currentCongesSaved = angular.copy($scope.currentConges);
+            $scope.edition = 2;
+            $scope.mode = "Edition";
+            $scope.lblMode = "Modification d'une absence";
+            $scope.dateOptionsFin.minDate = $scope.currentConges.debut.date;
+        }
+        else{
+            //$scope.editConges.$setPristine();
+            $scope.currentConges = {
+                typeuser: 1,
+                etat: 2,
+                debut: {
+                    type: 0
+                },
+                fin: {
+                    type: 1
+                }
+            };
+            $scope.edition = 1;
+            $scope.mode = "Création";
+            $scope.lblMode = "Création d'une absence";
+        }
+
+        $scope.close = function(param) {
+            dialog.close(param);
+        };
+        $scope.cancel = function() {
+            $rootScope.error = null;
+            $scope.edition = 0;
+            $.extend($scope.currentConges, $scope.currentCongesSaved);
+            $scope.close();
+        }
+
         $scope.isUnchanged = function(currentConges) {
             $scope.haschanged = angular.equals(currentConges, $scope.currentCongesSaved);
             return
@@ -218,6 +304,7 @@
                 }
                 $scope.edition = 0;
                 $scope.currentConges = null;
+                $scope.close();
             }, function() {
                 $scope.saving = false;
             });
@@ -237,7 +324,8 @@
                 });
             },
             data: [{ id: 2, nom: "tous", prenom: ""}],
-            initSelection: function(e, d, f) {
+            initSelection: function(element, callback, f) {
+                callback($(element).data('$ngModelController').$modelValue);
             },
             formatResult: format, // omitted for brevity, see the source of this page
             formatSelection: format, // omitted for brevity, see the source of this page
@@ -250,15 +338,11 @@
         }
 
         $scope.showAide = function() {
-            var d = $dialog.dialog({
-                backdrop: true,
-                keyboard: true,
-                backdropClick: true,
-                templateUrl: '/templates/aide-conges.html?v=' + config.version,
-                controller: 'DialogAideConges'
-            });
-            d.open();
+            $scope.aide = true;
         }
+        $scope.closeAide = function() {
+            $scope.aide = false;
+        };
     }
 
     // Contrôleur de la popup de modification de password
@@ -270,7 +354,7 @@
 
     // Contrôleur de la popup de modification de password
     function DialogAideConges($scope, dialog) {
-        $scope.close = function() {
+        $scope.closeAide = function() {
             dialog.close();
         };
     }

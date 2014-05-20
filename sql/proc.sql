@@ -76,14 +76,22 @@ DELIMITER $$
 CREATE PROCEDURE `RazCompteurs` ()
 BEGIN
 
-UPDATE  conges_compteurs SET compteur = 1 WHERE motif = 'DEM';
-UPDATE  conges_compteurs SET compteur = 3 WHERE motif = 'ENF';
-UPDATE  conges_compteurs SET compteur = 4 WHERE motif = 'MAR';
-UPDATE  conges_compteurs SET compteur = 3 WHERE motif = 'NAI';
-UPDATE  conges_compteurs SET compteur = 9 WHERE motif = 'PAT';
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = 1 WHERE tab1.motif = 'DEM'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = 3 WHERE tab1.motif = 'ENF'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = 4 WHERE tab1.motif = 'MAR'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = 3 WHERE tab1.motif = 'NAI'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = 9 WHERE tab1.motif = 'PAT'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
 -- Log du transfert
-INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, 'Remise à zéro des compteurs effectué' as log FROM conges_compteurs as tab1
-WHERE tab1.user <> 999999 GROUP BY tab1.user;
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, 'Remise à zéro des compteurs effectué' as log 
+FROM conges_compteurs as tab1 JOIN users on tab1.user = users.id
+WHERE tab1.user <> 999999 
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0)
+GROUP BY tab1.user;
 
 END $$
 DELIMITER ;
@@ -109,13 +117,17 @@ GROUP BY users.id;
 
 -- CP = CP + CP_ANT
 -- Attention Round(CP_ANT, 1) : arrondi aux décimales
-UPDATE  conges_compteurs as tab1 join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' 
-SET tab1.compteur = ROUND(tab1.compteur + tab2.compteur, 2) WHERE tab1.motif = 'CP' and tab1.user <> 999999;
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id join conges_compteurs as tab2 on tab1.user = tab2.user and tab2.motif = 'CP_ANT' 
+SET tab1.compteur = ROUND(tab1.compteur + tab2.compteur, 2) WHERE tab1.motif = 'CP' and tab1.user <> 999999
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
 -- Remise à 0 de CP_ANT
-UPDATE  conges_compteurs SET compteur = 0 WHERE motif = 'CP_ANT';
+UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET compteur = 0 WHERE motif = 'CP_ANT'
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
 -- Log du transfert
-INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, CONCAT('Transfert des CP anticipés vers CP effectué : Nouvelle valeur -> CP : ', tab1.compteur)  as log FROM conges_compteurs as tab1
-WHERE tab1.motif = 'CP' and tab1.user <> 999999;
+INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, tab1.user as user, CONCAT('Transfert des CP anticipés vers CP effectué : Nouvelle valeur -> CP : ', tab1.compteur)  as log 
+FROM conges_compteurs as tab1 JOIN users on tab1.user = users.id
+WHERE tab1.motif = 'CP' and tab1.user <> 999999
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
 
 END $$
 DELIMITER ;
@@ -140,23 +152,28 @@ SET nbMoisMin = 1;
 INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Valeurs avant calcul des congès acquis -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
-WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin
+WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.debutActivite, '%Y%m')) > nbMoisMin
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0)
 GROUP BY users.id;
 
 -- maj des CP (+ 2.08) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 2.08 
 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999 
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin;
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.debutActivite, '%Y%m')) > nbMoisMin
+    and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
+
 -- maj des RTT (+ 0.75) pour les utilisateurs qui sont inscris depuis plus d'un mois.
 UPDATE  conges_compteurs as tab1 join users on tab1.user = users.id SET tab1.compteur = tab1.compteur + 0.75 
 WHERE tab1.motif = 'RTT' and tab1.user <> 999999 and users.hasRtt = 1
-	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin;
+	and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.debutActivite, '%Y%m')) > nbMoisMin
+	and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0);
 	
 -- Log du calcul
 INSERT INTO history SELECT current_timestamp as date, '127.0.0.1' as ip, users.id as user, CONCAT('Calcul des congès acquis effectué -> CP_ANT : ', tab1.cp_ant, ' et RTT : ', tab2.rtt) as log FROM users 
 	JOIN( SELECT tab1.user as user, tab1.compteur as cp_ant FROM conges_compteurs as tab1 WHERE tab1.motif = 'CP_ANT' and tab1.user <> 999999) as tab1 ON users.id = tab1.user 
 	JOIN( SELECT tab1.user as user, tab1.compteur as rtt FROM conges_compteurs as tab1 WHERE tab1.motif = 'RTT' and tab1.user <> 999999) as tab2 ON users.id = tab2.user
-WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.creation, '%Y%m')) > nbMoisMin
+WHERE users.id <> 999999 and period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.debutActivite, '%Y%m')) > nbMoisMin
+and (users.finActivite is null or period_diff(current_timestamp, users.finActivite) < 0)
 GROUP BY users.id;
 
 END $$
@@ -630,12 +647,18 @@ ThisSP:BEGIN
 DECLARE nbvalidation INT;
 DECLARE current_role, current_etat INT;
 DECLARE duree FLOAT;
+DECLARE finActivite DATE;
 DECLARE last_connection TIMESTAMP;
 DECLARE motif VARCHAR(8);
 DECLARE ret VARCHAR(1000);
 SET params = "";
 
-SELECT users.role, users.etat, users.last_connection INTO current_role, current_etat, last_connection FROM users WHERE users.id = user;
+SELECT users.role, users.etat, users.last_connection, users.finActivite INTO current_role, current_etat, last_connection, finActivite FROM users WHERE users.id = user;
+If finActivite Is not null AND date(finActivite) < date(current_timestamp)THEN
+	SET retour = "USER_INVALIDE";
+	LEAVE ThisSP;
+END IF;
+
 UPDATE users SET last_connection = NOW() WHERE users.id = user;
 
 IF current_etat <> 1 THEN

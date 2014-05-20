@@ -13,9 +13,10 @@ data.events.once('connected', function (result) {
     mois = now.month() + 1,
     values = [annee, mois, annee, annee, mois];
 
-    var query = "SELECT users.id, users.nom, users.prenom,users.email FROM users WHERE users.id <> 0 AND users.id <> 999999 AND users.etat = 1 " +
-                    " AND ((YEAR(users.creation) = ? AND MONTH(users.creation) <= ?) OR YEAR(users.creation) < ?) AND " +
-                    " users.id NOT IN(SELECT activite.user FROM activite WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?) ";
+    var query = "SELECT users.id, users.nom, users.prenom,users.email FROM users WHERE users.id <> 0 AND users.id <> 999999 AND users.id <> 111111 AND users.etat = 1 " +
+                    " AND ((YEAR(users.creation) = ? AND MONTH(users.creation) <= ?) OR YEAR(users.creation) < ?) " +
+                    " AND (users.finActivite is null or period_diff(date_format(current_timestamp, '%Y%m'), date_format(users.finActivite, '%Y%m')) <= 0) " +
+                    " AND users.id NOT IN(SELECT activite.user FROM activite WHERE YEAR(activite.mois) = ? AND MONTH(activite.mois) = ?) ";
 
     db.query(query, values, function(err, ret) {
             if (err) {

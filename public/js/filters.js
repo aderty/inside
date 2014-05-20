@@ -145,5 +145,11 @@ filter('toFixed', function() {
           if(isNaN(num)) return;
           return parseFloat(num.toFixed(nb));
     };
+}).
+filter('toCSVFixed', function() {
+    return function(num, nb) {
+          if(isNaN(num)) return;
+          return parseFloat(num.toFixed(nb)).toString().replace(".", ",");
+    };
 });
 

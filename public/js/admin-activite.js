@@ -346,51 +346,63 @@
                     var first = true;
                     var inConges = false;
                     var current = new moment($scope.start);
+                    var firstPast = false;
+                    var needExit = false;
                     if(current.date() == 1){
                         // Commencer avant le 1er pour gérer les cas 1er jour férié avec congès commencé avant.
                         current = current.add('days', -1);
                     }
-                    // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
-                    if (current.date() != 1) {
-                        while (current.date() != 1) {
-                            /*if (inConges && businessDay(current)) {
-                            inEventConges(current, true);
-                            }*/
-                            /*jgo 31/01/2014*/
-                            if (cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
-                                cong = $scope.conges.shift();
+                        // Si le calendrier commence avant le 1er -> on avance jusqu'au 1er en ajoutant les congés si présents
+                        if (current.date() != 1 || ($rootScope.currentActivite.debutActivite && current.toDate() < $rootScope.currentActivite.debutActivite)) {
+                            while (!firstPast || ($rootScope.currentActivite.debutActivite && current.toDate() < $rootScope.currentActivite.debutActivite)) {
+                                /*if (inConges && businessDay(current)) {
+                                inEventConges(current, true);
+                                }*/
+                                /*jgo 31/01/2014*/
+                                if (cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
+                                    cong = $scope.conges.shift();
+                                }
+                                /*fin jgo 31/01/2014*/
+                                if (cong && (cong.debut.date.getMonth() < current.month() || cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date())) {
+                                    startEventConges(current, true);
+                                }
+                                if (inConges && lastCong && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
+                                    endEventConges(current);
+                                }
+                                current = current.add('days', 1);
+                                if(current.date() == 1){
+                                    // Second mois arrivé sans activité à afficher -> On sort
+                                    if(firstPast) needExit = true;
+                                    firstPast = true;
+                                }
                             }
-                            /*fin jgo 31/01/2014*/
+                        }
+                        // 2 preimer du mois détecter -> Rien dans le mois
+                    if(!needExit){
+                        firstPast = false;
+                        // Traitement du 1er du mois à la fin du mois.
+                        while (!firstPast && (!$rootScope.currentActivite.finActivite || current.toDate() <= $rootScope.currentActivite.finActivite)) {
+                            first = false; // On signale qu'on a démarré
+                            if (inConges && businessDay(current)) {
+                                // Dans une période de congés.
+                                inEventConges(current);
+                            }
                             if (cong && (cong.debut.date.getMonth() < current.month() || cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date())) {
-                                startEventConges(current, true);
+                                // Au début d'une période de congés.
+                                startEventConges(current);
                             }
-                            if (inConges && lastCong && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
+                            if (inConges && lastCong && lastCong.fin.date.getMonth() <= current.month() && lastCong.fin.date.getDate() <= current.date()) {
+                                // A la fin d'une période de congés.
                                 endEventConges(current);
                             }
-                            current = current.add('days', 1);
+                            //if (!inConges && businessDay(current) && typeof $scope.indexEvents[current.date()] == "undefined") {
+                            if (typeof $scope.indexEvents[current.date()] == "undefined") {
+                                // Journée travaillée.
+                                workEvent(current);
+                            }
+                            current = current.add('days', 1); // On incrément la date courante dans le mois.
+                            if(current.date() == 1) firstPast = true;
                         }
-                    }
-                    // Traitement du 1er du mois à la fin du mois.
-                    while (current.date() != 1 || first) {
-                        first = false; // On signale qu'on a démarré
-                        if (inConges && businessDay(current)) {
-                            // Dans une période de congés.
-                            inEventConges(current);
-                        }
-                        if (cong && (cong.debut.date.getMonth() < current.month() || cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date())) {
-                            // Au début d'une période de congés.
-                            startEventConges(current);
-                        }
-                        if (inConges && lastCong && lastCong.fin.date.getMonth() <= current.month() && lastCong.fin.date.getDate() <= current.date()) {
-                            // A la fin d'une période de congés.
-                            endEventConges(current);
-                        }
-                        //if (!inConges && businessDay(current) && typeof $scope.indexEvents[current.date()] == "undefined") {
-                        if (typeof $scope.indexEvents[current.date()] == "undefined") {
-                            // Journée travaillée.
-                            workEvent(current);
-                        }
-                        current = current.add('days', 1); // On incrément la date courante dans le mois.
                     }
                 }
 

@@ -103,6 +103,8 @@ var routes = {
     save: function(req, res) {
         var user = req.body;
         var pwd = user.pwd;
+        if(user.debutActivite) user.debutActivite = new Date(user.debutActivite);
+        if(user.finActivite) user.finActivite = new Date(user.finActivite);
         data.users.saveUser(user, function(err, ret) {
             if (!err && ret && ret.create) {
                 mail.Mail.ajoutUser(user, pwd, function(err) {

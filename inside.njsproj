@@ -115,6 +115,7 @@
     <Content Include="mail\templates\passwordLost.html" />
     <Content Include="mail\templates\recapConges.html" />
     <Content Include="mail\templates\refusConges.html" />
+    <Content Include="mail\templates\relanceActivite.html" />
     <Content Include="mail\templates\src\recapConges.html" />
     <Content Include="mail\templates\validationConges.html" />
     <Content Include="maintenance_off.html" />

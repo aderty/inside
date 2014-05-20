@@ -72,7 +72,9 @@ var data = {
         // Chiffrage du pass en sha1
         var hash = crypto.createHash('sha256').update(pwd).digest("hex");
         // On test l'existance du compte
-        db.query('SELECT * FROM users WHERE email="' + email + '" AND pwd="' + hash + '" AND etat=1', function(error, ret) {
+        
+        //AND (finActivite = null OR finActivite <= now())
+        db.query('SELECT * FROM users WHERE email=? AND pwd=? AND etat=1 AND (finActivite is null OR date(finActivite) >= date(now()))', [email, hash], function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
                 return fn("Erreur lors de la tentative de login.", false);
@@ -113,12 +115,12 @@ var data = {
     search: function(admin, search, fn) {
         var query, values = [];
         if (search.type == "id") {
-            query = 'SELECT * FROM users WHERE id= ? AND etat=1';
+            query = 'SELECT * FROM users WHERE id= ? AND etat=1 AND (finActivite Is null OR date(finActivite) >= date(current_timestamp))';
             values = [search.search];
             
         }
         else{
-            query = 'SELECT * FROM users WHERE id <> 999999 AND (nom LIKE "%' + db.escape(search.search) + '%" OR prenom LIKE "%' + db.escape(search.search) + '%")';
+            query = 'SELECT * FROM users WHERE id <> 999999 AND (nom LIKE "%' + db.escape(search.search) + '%" OR prenom LIKE "%' + db.escape(search.search) + '%") AND (finActivite Is null OR date(finActivite) >= date(current_timestamp))';
         }
         if (admin > 0) {
                 query += ' AND admin = ?';
@@ -133,7 +135,7 @@ var data = {
         });
     },
     getUser: function(id, fn) {
-        var request = 'SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ANT" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RTT" ) AS rtt FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.etat=1 AND ';
+        var request = 'SELECT u1.*, u2.nom as adminNom, u2.prenom as adminPrenom, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP" ) AS cp, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "CP_ANT" ) AS cp_ant, (SELECT compteur FROM conges_compteurs WHERE user = u1.id AND motif= "RTT" ) AS rtt FROM users as u1 JOIN users as u2 ON u1.admin = u2.id WHERE u1.etat=1 AND (u1.finActivite Is null OR date(u1.finActivite) >= date(current_timestamp)) AND ';
         if (!re.test(id)) {
             request += ' u1.id = ? ';
         }
@@ -243,7 +245,7 @@ var data = {
         // Chiffrage du pass en sha1
         var hash = crypto.createHash('sha256').update(oldPwd).digest("hex");
         // On test l'existance du compte
-        db.query('SELECT * FROM users WHERE id = ? AND pwd = ? AND etat=1', [id, hash], function(error, ret) {
+        db.query('SELECT * FROM users WHERE id = ? AND pwd = ? AND etat=1 AND (finActivite Is null OR date(finActivite) >= date(current_timestamp))', [id, hash], function(error, ret) {
             if (error) {
                 console.log('ERROR: ' + error);
                 return fn("Erreur lors de la tentative de modification du mot de passe.");

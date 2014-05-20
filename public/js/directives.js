@@ -307,4 +307,43 @@ directive('rowgrid', ['$compile', function($compile) {
             }
         }
     };
+}])
+.directive('exportCsv', ['$parse', '$compile', '$timeout', function ($parse, $compile, $timeout) {
+    return {
+        restrict: 'A',
+        scope: false,
+        link: function(scope, element, attrs) {
+            var data = '';
+            var template = $(document.getElementById(attrs.template));
+            var compiler = $compile($.trim(template.html()));
+            var exportZone = $("<div>").appendTo($(document.body)).hide();
+            var csv = {
+                stringify: function(str) {
+                    return str.replace(/^\s\s*/, '').replace(/\s*\s$/, ''); // trim spaces
+                            //.replace(/"/g,'""'); // replace quotes with double quotes
+                },
+                generate: function() {
+                    data = '';
+                    exportZone.empty();
+                    compiler(scope).appendTo(exportZone);
+                    $timeout(function(){
+                        var tds = exportZone.children();
+                        if(!tds.length) tds = exportZone;
+                        angular.forEach(tds, function(td, i) {
+                            data += csv.stringify(angular.element(td).text());
+                            data += "\n";
+                        });
+                        //rowData = rowData.slice(0, rowData.length - 1); //remove last semicolon
+                        //data += rowData + "\n";
+                        //data += exportZone.text();
+                    },0);
+                },
+                link: function() {
+                    // \uFEFF to force Excel open file with UTF-8 encoding
+                    return 'data:text/csv;charset=UTF-8,\uFEFF' + encodeURIComponent(data);
+                }
+            };
+            $parse(attrs.exportCsv).assign(scope.$parent, csv);
+        }
+    };
 }]);

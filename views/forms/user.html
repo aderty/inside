@@ -1,174 +1,201 @@
 ﻿<form id="editUser" name="editUser" class="form-horizontal" novalidate ng-class="{masquer: edition == 0}">
     <!--Saisie matricule-->
-    <div class="control-group" ng-class="{error: editUser.inputMatricule.$dirty && editUser.inputMatricule.$invalid, success:editUser.inputMatricule.$dirty && !editUser.inputMatricule.$invalid}">
-        <label class="control-label" for="inputMatricule">Matricule</label>
-        <div class="controls">
-            <input type="number" min="0" step="1" id="inputMatricule" name="inputMatricule" ng-model="currentUser.id" required placeholder="Matricule">
-            <div class="input-help">
-                <h4>Vous devez renseigner un numéro de matricule.</h4>
+    <div class="well well-small">
+        <div class="control-group" ng-class="{error: editUser.inputMatricule.$dirty && editUser.inputMatricule.$invalid, success:editUser.inputMatricule.$dirty && !editUser.inputMatricule.$invalid}">
+            <label class="control-label" for="inputMatricule">Matricule</label>
+            <div class="controls">
+                <input type="number" min="0" step="1" id="inputMatricule" name="inputMatricule" ng-model="currentUser.id" required placeholder="Matricule">
+                <div class="input-help">
+                    <h4>Vous devez renseigner un numéro de matricule.</h4>
+                </div>
             </div>
         </div>
     </div>
-    <!--Saisie nom-->
-    <div class="control-group" ng-class="{error: editUser.inputNom.$dirty && editUser.inputNom.$invalid, success:editUser.inputNom.$dirty && !editUser.inputNom.$invalid}">
-        <label class="control-label" for="inputNom">Nom</label>
-        <div class="controls">
-            <input type="text" id="inputNom" name="inputNom" ng-model="currentUser.nom" required placeholder="Nom">
-            <div class="input-help">
-                <h4>Vous devez renseigner un nom.</h4>
+    <div class="well well-small">
+        <!--Saisie nom-->
+        <div class="control-group" ng-class="{error: editUser.inputNom.$dirty && editUser.inputNom.$invalid, success:editUser.inputNom.$dirty && !editUser.inputNom.$invalid}">
+            <label class="control-label" for="inputNom">Nom</label>
+            <div class="controls">
+                <input type="text" id="inputNom" name="inputNom" ng-model="currentUser.nom" required placeholder="Nom">
+                <div class="input-help">
+                    <h4>Vous devez renseigner un nom.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie prénom-->
+        <div class="control-group" ng-class="{error: editUser.inputPrenom.$dirty && editUser.inputPrenom.$invalid, success:editUser.inputPrenom.$dirty && !editUser.inputPrenom.$invalid}">
+            <label class="control-label" for="inputPrenom">Prenom</label>
+            <div class="controls">
+                <input type="text" id="inputPrenom" name="inputPrenom" ng-model="currentUser.prenom" required placeholder="Prenom">
+                <div class="input-help">
+                    <h4>Vous devez renseigner un prénom.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie civilité-->
+        <div class="control-group" ng-class="{error: editUser.inputCivilite.$dirty && editUser.inputCivilite.$invalid, success:editUser.inputCivilite.$dirty && !editUser.inputCivilite.$invalid}">
+            <label class="control-label" for="inputCivilite">Civilité</label>
+            <div class="controls">
+                <select id="inputCivilite" name="inputCivilite" required ng-model="currentUser.civilite">
+                    <option selected="selected" value="">Choisissez une civilité</option>
+                    <option selected="selected" value="H">Homme</option>
+                    <option value="F">Femme</option>
+                </select>
+                <div class="input-help">
+                    <h4>Vous devez attribuer une civilité.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie date de naissance-->
+        <div class="control-group" ng-class="{error: editUser.inputDateNaissance.$dirty && editUser.inputDateNaissance.$invalid, success:editUser.inputDateNaissance.$dirty && !editUser.inputDateNaissance.$invalid}">
+            <label class="control-label" for="inputDateNaissance">Date de naissance</label>
+            <div class="controls">
+                <input type="datetime" ng-model="currentUser.dateNaissance" required id="inputDateNaissance" name="inputDateNaissance" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '1950:2012' , maxDate: 0}" placeholder="29/11/1982">
+                <div class="input-help">
+                    <h4>Vous devez renseigner une date de naissance.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie email-->
+        <div class="control-group" ng-class="{error: editUser.inputEmail.$dirty && editUser.inputEmail.$invalid, success:editUser.inputEmail.$dirty && !editUser.inputEmail.$invalid}">
+            <label class="control-label" for="inputEmail">Email</label>
+            <div class="controls">
+                <input type="email" id="inputEmail" name="inputEmail" ng-model="currentUser.email" required placeholder="son@email.fr">
+                <div class="input-help">
+                    <h4>Vous devez renseigner un email.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie password-->
+        <div class="control-group" ng-class="{error: editUser.password.$dirty && editUser.password.$invalid, success:editUser.password.$dirty && !editUser.password.$invalid}">
+            <label class="control-label" for="password">Mot de passe</label>
+            <div class="controls password">
+                <input type="password" id="password" name="password" ng-model="currentUser.pwd" password-validate ng-required='edition == 1' placeholder="Mot de passe">
+                <div class="input-help">
+                    <h4>Le mot de passe doit avoir au minimum :</h4>
+                    <ul>
+                        <li ng-class="pwdHasLetter">Au moins <strong>une lettre</strong></li>
+                        <li ng-class="pwdHasNumber">Au moins <strong>un nombre</strong></li>
+                        <li ng-class="pwdValidLength">Au moins <strong>8 caractères</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--Saisie confirmation du password-->
+        <div class="control-group" ng-class="{error: editUser.confirm_password.$dirty && editUser.confirm_password.$invalid, success:editUser.confirm_password.$dirty && !editUser.confirm_password.$invalid}">
+            <label class="control-label" for="confirm_password">Retapez le mot de passe</label>
+            <div class="controls">
+                <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Mot de passe" ng-required='edition == 1' ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
+                <div class="input-help">
+                    <h4>Vous devez saisir le même mot de passe.</h4>
+                </div>
             </div>
         </div>
     </div>
-    <!--Saisie prénom-->
-    <div class="control-group" ng-class="{error: editUser.inputPrenom.$dirty && editUser.inputPrenom.$invalid, success:editUser.inputPrenom.$dirty && !editUser.inputPrenom.$invalid}">
-        <label class="control-label" for="inputPrenom">Prenom</label>
-        <div class="controls">
-            <input type="text" id="inputPrenom" name="inputPrenom" ng-model="currentUser.prenom" required placeholder="Prenom">
-            <div class="input-help">
-                <h4>Vous devez renseigner un prénom.</h4>
+    <div class="well well-small">
+        <!--Saisie rôle-->
+        <div class="control-group" ng-class="{error: editUser.inputRole.$dirty && editUser.inputRole.$invalid, success:editUser.inputRole.$dirty && !editUser.inputRole.$invalid}">
+            <label class="control-label" for="inputRole">Rôle</label>
+            <div class="controls">
+                <select id="inputRole" name="inputRole" required ng-model="currentUser.role" ng-options="role.id as role.libelle for role in roles"></select>
+                <div class="input-help">
+                    <h4>Vous devez attribuer un rôle.</h4>
+                    <div class="input-help">
+                        <h4>Le nombre de congé doit être inférieur à 50.</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Saisie Admin-->
+        <div class="control-group" ng-class="{error: editUser.inputAdmin.$dirty && editUser.inputAdmin.$invalid, success:editUser.inputAdmin.$dirty && !editUser.inputAdmin.$invalid}">
+            <label class="control-label" for="inputAdmin">Administrateur</label>
+            <div class="controls inline">
+                <input type="text" ng-model="currentUser.admin" required id="inputAdmin" name="inputAdmin" ui-select2="selectUserOptions" placeholder="">
+                <div class="input-help">
+                    <h4>Vous devez renseigner un administrateur.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie date de début-->
+        <div class="control-group" ng-class="{error: editUser.inputDateDebut.$dirty && editUser.inputDateDebut.$invalid, success:editUser.inputDateDebut.$dirty && !editUser.inputDateDebut.$invalid}">
+            <label class="control-label" for="inputDateDebut">Date de début d'activité</label>
+            <div class="controls">
+                <input type="datetime" ng-model="currentUser.debutActivite" required id="inputDateDebut" name="inputDateDebut" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '-5Y:+5Y'}" placeholder="{{placeholderDate}}">
+                <div class="input-help">
+                    <h4>Vous devez renseigner une date de début d'activité valide.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie date de sortie-->
+        <div class="control-group" ng-class="{error: editUser.inputDateFin.$dirty && editUser.inputDateFin.$invalid, success:editUser.inputDateFin.$dirty && !editUser.inputDateFin.$invalid}">
+            <label class="control-label" for="inputDateNaissance">Date de fin d'activité</label>
+            <div class="controls">
+                <input type="datetime" ng-model="currentUser.finActivite" id="inputDateFin" name="inputDateFin" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '-5Y:+5Y'}">
+                <div class="input-help">
+                    <h4>Vous devez renseigner une date de fin d'activité valide.</h4>
+                </div>
             </div>
         </div>
     </div>
-    <!--Saisie civilité-->
-    <div class="control-group" ng-class="{error: editUser.inputCivilite.$dirty && editUser.inputCivilite.$invalid, success:editUser.inputCivilite.$dirty && !editUser.inputCivilite.$invalid}">
-        <label class="control-label" for="inputCivilite">Civilité</label>
-        <div class="controls">
-            <select id="inputCivilite" name="inputCivilite" required ng-model="currentUser.civilite">
-                <option selected="selected" value="">Choisissez une civilité</option>
-                <option selected="selected" value="H">Homme</option>
-                <option value="F">Femme</option>
-            </select>
-            <div class="input-help">
-                <h4>Vous devez attribuer une civilité.</h4>
+    <div class="well well-small" >
+        <!--Saisie User avec RTT-->
+        <div class="control-group">
+            <label class="control-label" for="inputAdmin">Utilisateur avec RTT</label>
+            <div class="controls inline">
+                <label class="checkbox">
+                    <input type="checkbox" ng-model="currentUser.hasRtt" id="inputHasRtt" name="inputHasRtt">
+                </label>
             </div>
         </div>
-    </div>
-    <!--Saisie date de naissance-->
-    <div class="control-group" ng-class="{error: editUser.inputDateNaissance.$dirty && editUser.inputDateNaissance.$invalid, success:editUser.inputDateNaissance.$dirty && !editUser.inputDateNaissance.$invalid}">
-        <label class="control-label" for="inputDateNaissance">Date de naissance</label>
-        <div class="controls">
-            <input type="datetime" ng-model="currentUser.dateNaissance" required id="inputDateNaissance" name="inputDateNaissance" ui-date="{ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true, yearRange: '1950:2012' , maxDate: 0}" placeholder="29/11/1982">
-            <div class="input-help">
-                <h4>Vous devez renseigner une date de naissance.</h4>
-            </div>
-        </div>
-    </div>
-    <!--Saisie email-->
-    <div class="control-group" ng-class="{error: editUser.inputEmail.$dirty && editUser.inputEmail.$invalid, success:editUser.inputEmail.$dirty && !editUser.inputEmail.$invalid}">
-        <label class="control-label" for="inputEmail">Email</label>
-        <div class="controls">
-            <input type="email" id="inputEmail" name="inputEmail" ng-model="currentUser.email" required placeholder="son@email.fr">
-            <div class="input-help">
-                <h4>Vous devez renseigner un email.</h4>
-            </div>
-        </div>
-    </div>
-    <!--Saisie password-->
-    <div class="control-group" ng-class="{error: editUser.password.$dirty && editUser.password.$invalid, success:editUser.password.$dirty && !editUser.password.$invalid}">
-        <label class="control-label" for="password">Mot de passe</label>
-        <div class="controls password">
-            <input type="password" id="password" name="password" ng-model="currentUser.pwd" password-validate ng-required='edition == 1' placeholder="Mot de passe">
-            <div class="input-help">
-                <h4>Le mot de passe doit avoir au minimum :</h4>
-                <ul>
-                    <li ng-class="pwdHasLetter">Au moins <strong>une lettre</strong></li>
-                    <li ng-class="pwdHasNumber">Au moins <strong>un nombre</strong></li>
-                    <li ng-class="pwdValidLength">Au moins <strong>8 caractères</strong></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <!--Saisie confirmation du password-->
-    <div class="control-group" ng-class="{error: editUser.confirm_password.$dirty && editUser.confirm_password.$invalid, success:editUser.confirm_password.$dirty && !editUser.confirm_password.$invalid}">
-        <label class="control-label" for="confirm_password">Retapez le mot de passe</label>
-        <div class="controls">
-            <input type="password" id="confirm_password" name="confirm_password" ng-model="currentUser.pwdtest" placeholder="Mot de passe" ng-required='edition == 1' ui-validate="{test:'$value==currentUser.pwd'}" ui-validate-watch=" 'currentUser.pwd' " />
-            <div class="input-help">
-                <h4>Vous devez saisir le même mot de passe.</h4>
-            </div>
-        </div>
-    </div>
-    <!--Saisie rôle-->
-    <div class="control-group" ng-class="{error: editUser.inputRole.$dirty && editUser.inputRole.$invalid, success:editUser.inputRole.$dirty && !editUser.inputRole.$invalid}">
-        <label class="control-label" for="inputRole">Rôle</label>
-        <div class="controls">
-            <select id="inputRole" name="inputRole" required ng-model="currentUser.role" ng-options="role.id as role.libelle for role in roles">
-            </select>
-            <div class="input-help">
-                <h4>Vous devez attribuer un rôle.</h4>
+        <!--Saisie CP aquis-->
+        <div class="control-group" ng-class="{error: editUser.inputCp.$dirty && editUser.inputCp.$invalid, success:editUser.inputCp.$dirty && !editUser.inputCp.$invalid}">
+            <label class="control-label" for="inputCp">Congés payés acquis</label>
+            <div class="controls">
+                <input type="number" min="-50" max="50" id="inputCp" decimal name="inputCp" ng-model="currentUser.cp" required placeholder="0">
                 <div class="input-help">
                     <h4>Le nombre de congé doit être inférieur à 50.</h4>
                 </div>
             </div>
         </div>
-    </div>
-    <!--Saisie Admin-->
-    <div class="control-group" ng-class="{error: editUser.inputAdmin.$dirty && editUser.inputAdmin.$invalid, success:editUser.inputAdmin.$dirty && !editUser.inputAdmin.$invalid}">
-        <label class="control-label" for="inputAdmin">Administrateur</label>
-        <div class="controls inline">
-            <input type="text" ng-model="currentUser.admin" required id="inputAdmin" name="inputAdmin" ui-select2="selectUserOptions" placeholder="">
-            <div class="input-help">
-                <h4>Vous devez renseigner un administrateur.</h4>
+        <!--Saisie CP en cours-->
+        <div class="control-group" ng-class="{error: editUser.inputCpAnt.$dirty && editUser.inputCpAnt.$invalid, success:editUser.inputCpAnt.$dirty && !editUser.inputCpAnt.$invalid}">
+            <label class="control-label" for="inputCp">Congés payés en cours</label>
+            <div class="controls">
+                <input type="number" min="-50" max="50" id="inputCpAnt" decimal name="inputCpAnt" ng-model="currentUser.cp_ant" required placeholder="0">
+                <div class="input-help">
+                    <h4>Le nombre de congé doit être inférieur à 50.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie RTT-->
+        <div class="control-group" ng-if="currentUser.hasRtt" ng-class="{error: editUser.inputRtt.$dirty && editUser.inputRtt.$invalid, success:editUser.inputRtt.$dirty && !editUser.inputRtt.$invalid}">
+            <label class="control-label" for="inputRtt">RTT</label>
+            <div class="controls">
+                <input type="number" min="-50" max="50" id="inputRtt" decimal name="inputRtt" ng-model="currentUser.rtt" required placeholder="0">
+                <div class="input-help">
+                    <h4>Le nombre de congé doit être inférieur à 50.</h4>
+                </div>
+            </div>
+        </div>
+        <!--Saisie envoi de mail-->
+        <div class="control-group" ng-class="{masquer: edition != 1, masquer: true}">
+            <div class="controls check">
+                <label class="checkbox">
+                    <input type="checkbox" checked="checked">
+                    Envoyer un email
+                </label>
             </div>
         </div>
     </div>
-    <!--Saisie User avec RTT-->
-    <div class="control-group">
-        <label class="control-label" for="inputAdmin">Utilisateur avec RTT</label>
-        <div class="controls inline">
-            <label class="checkbox">
-                <input type="checkbox" ng-model="currentUser.hasRtt" id="inputHasRtt" name="inputHasRtt">
-            </label>
-        </div>
-    </div>
-    <!--Saisie CP aquis-->
-    <div class="control-group" ng-class="{error: editUser.inputCp.$dirty && editUser.inputCp.$invalid, success:editUser.inputCp.$dirty && !editUser.inputCp.$invalid}">
-        <label class="control-label" for="inputCp">Congés payés acquis</label>
-        <div class="controls">
-            <input type="number" min="-50" max="50" id="inputCp" decimal name="inputCp" ng-model="currentUser.cp" required placeholder="0">
-            <div class="input-help">
-                <h4>Le nombre de congé doit être inférieur à 50.</h4>
+        <!--Zone d'action du formulaire-->
+        <div class="form-actions">
+            <div class="control-group">
+                <span ng-class="{masquer: editUser.$valid}" class="label label-important">Tous les champs doivent être valides pour enregistrer.</span>
             </div>
-        </div>
-    </div>
-    <!--Saisie CP en cours-->
-    <div class="control-group" ng-class="{error: editUser.inputCpAnt.$dirty && editUser.inputCpAnt.$invalid, success:editUser.inputCpAnt.$dirty && !editUser.inputCpAnt.$invalid}">
-        <label class="control-label" for="inputCp">Congés payés en cours</label>
-        <div class="controls">
-            <input type="number" min="-50" max="50" id="inputCpAnt" decimal name="inputCpAnt" ng-model="currentUser.cp_ant" required placeholder="0">
-            <div class="input-help">
-                <h4>Le nombre de congé doit être inférieur à 50.</h4>
+            <div class="control-group" ng-class="{masquer: !error}">
+                <span class="label label-important">{{error}}</span>
             </div>
+            <button type="button" ng-disabled="editUser.$invalid  || isUnchanged(currentUser)" ng-click="save(currentUser);" class="btn btn-primary">Enregistrer</button>
+            <button type="button" class="btn" ng-click="cancel();">Annuler</button>
         </div>
-    </div>
-    <!--Saisie RTT-->
-    <div class="control-group" ng-if="currentUser.hasRtt" ng-class="{error: editUser.inputRtt.$dirty && editUser.inputRtt.$invalid, success:editUser.inputRtt.$dirty && !editUser.inputRtt.$invalid}">
-        <label class="control-label" for="inputRtt">RTT</label>
-        <div class="controls">
-            <input type="number" min="-50" max="50" id="inputRtt" decimal name="inputRtt" ng-model="currentUser.rtt" required placeholder="0">
-            <div class="input-help">
-                <h4>Le nombre de congé doit être inférieur à 50.</h4>
-            </div>
-        </div>
-    </div>
-    <!--Saisie envoi de mail-->
-    <div class="control-group" ng-class="{masquer: edition != 1, masquer: true}">
-        <div class="controls check">
-            <label class="checkbox">
-                <input type="checkbox" checked="checked">
-                Envoyer un email
-            </label>
-        </div>
-    </div>
-    <!--Zone d'action du formulaire-->
-    <div class="form-actions">
-        <div class="control-group">
-            <span ng-class="{masquer: editUser.$valid}" class="label label-important">Tous les champs doivent être valides pour enregistrer.</span>
-        </div>
-        <div class="control-group" ng-class="{masquer: !error}">
-            <span class="label label-important">{{error}}</span>
-        </div>
-        <button type="button" ng-disabled="editUser.$invalid  || isUnchanged(currentUser)" ng-click="save(currentUser);" class="btn btn-primary">Enregistrer</button>
-        <button type="button" class="btn" ng-click="cancel();">Annuler</button>
-    </div>
 </form>

@@ -176,6 +176,15 @@ angular.module('inside.services', ['ngResource']).
         if(!current || (options && options.reload)){
             resource.get({ id: 0 }, function(retour) {
             current = retour;
+            current.dateNaissance = new Date(current.dateNaissance);
+            if(current.debutActivite){
+                         current.debutActivite = new Date(current.debutActivite);
+                         current.debutActivite.setHours(0);
+            }
+            if(current.finActivite){
+                         current.finActivite = new Date(current.finActivite);
+                         current.finActivite.setHours(0);
+            }
             defered.resolve(current);
           });
         }
@@ -183,6 +192,44 @@ angular.module('inside.services', ['ngResource']).
             defered.resolve(current);
         }
         return defered.promise;
+      };
+      resource.list = function(){
+          var defered = $q.defer();
+          resource.query(function(users) {
+                    var now = new Date();
+                    now.setHours(0);
+                    now.setMinutes(0);
+                    now.setSeconds(0);
+                    now.setMilliseconds(0);
+                    // GET: /user/123/card
+                    // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                    for (var i = 0, l = users.length; i < l; i++) {
+                        users[i].dateNaissance = new Date(users[i].dateNaissance);
+                        if(users[i].debutActivite){
+                            users[i].debutActivite = new Date(users[i].debutActivite);
+                            users[i].debutActivite.setHours(0);
+                        }
+                        if(users[i].finActivite){
+                            users[i].finActivite = new Date(users[i].finActivite);
+                            users[i].finActivite.setHours(0);
+                        }
+                        users[i].isActif = function(){
+                            return this.etat == 1 && (this.finActivite == undefined || now - this.finActivite <= 0)
+                        }
+                        if (typeof users[i].admin != "undefined") {
+                            users[i].admin = {
+                                id: users[i].admin,
+                                nom: users[i].adminNom,
+                                prenom: users[i].adminPrenom
+                            };
+                            delete users[i].adminNom;
+                            delete users[i].adminPrenom;
+                        }
+                    }
+                    // use build-in angular filter
+                    defered.resolve(users);
+            });
+            return defered.promise;
       };
       resource.search = function(recherche) {
           var defered = $q.defer();
@@ -575,32 +622,41 @@ angular.module('inside.services', ['ngResource']).
                  create: { method: 'POST', params: { create: true} },
                  updateEtat: { method: 'POST', params: { etat: true} }
              });
+     var _activites, _activitesSans, lastOptions;
      return {
          list: function(options) {
              var defered = $q.defer();
-             var activites = resource.list(options, function() {
-                 // GET: /user/123/card
-                 // server returns: [ {id:456, number:'1234', name:'Smith'} ];
-                 for (var i = 0, l = activites.length; i < l; i++) {
-                     if (activites[i].mois) {
-                         activites[i].mois = new Date(activites[i].mois);
-                     }
-                     if (activites[i].user) {
-                         activites[i].user = {
-                             nom: activites[i].nom,
-                             prenom: activites[i].prenom,
-                             id: activites[i].user
+             if(!_activites || !angular.equals(options, lastOptions)){
+                 var activites = resource.list(options, function() {
+                     // GET: /user/123/card
+                     // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+                     for (var i = 0, l = activites.length; i < l; i++) {
+                         if (activites[i].mois) {
+                             activites[i].mois = new Date(activites[i].mois);
                          }
-                         delete activites[i].nom;
-                         delete activites[i].prenom;
+                         if (activites[i].user) {
+                             activites[i].user = {
+                                 nom: activites[i].nom,
+                                 prenom: activites[i].prenom,
+                                 id: activites[i].user
+                             }
+                             delete activites[i].nom;
+                             delete activites[i].prenom;
+                         }
                      }
-                 }
-                 defered.resolve(activites);
-             });
+                     lastOptions = options;
+                     _activites = activites
+                     defered.resolve(_activites);
+                 });
+             }
+             else{
+                 defered.resolve(_activites);
+             }
              return defered.promise;
          },
          listSans: function(options) {
              var defered = $q.defer();
+             if(!_activitesSans || !angular.equals(options, lastOptions)){
              var usersSansActivite = resource.listSans(options, function() {
                  // GET: /user/123/card
                  // server returns: [ {id:456, number:'1234', name:'Smith'} ];
@@ -613,9 +669,24 @@ angular.module('inside.services', ['ngResource']).
                      if (usersSansActivite[i].mois) {
                          usersSansActivite[i].mois = new Date(usersSansActivite[i].mois);
                      }
+                     if(usersSansActivite[i].debutActivite){
+                         usersSansActivite[i].debutActivite = new Date(usersSansActivite[i].debutActivite);
+                         usersSansActivite[i].debutActivite.setHours(0);
+                     }
+                     if(usersSansActivite[i].finActivite){
+                         usersSansActivite[i].finActivite = new Date(usersSansActivite[i].finActivite);
+                         usersSansActivite[i].finActivite.setHours(0);
+                     }
+                     
                  }
-                 defered.resolve(usersSansActivite);
+                 lastOptions = options;
+                 _activitesSans = usersSansActivite;
+                 defered.resolve(_activitesSans);
              });
+             }
+             else{
+                 defered.resolve(_activitesSans);
+             }
              return defered.promise;
          },
          get: function(options) {

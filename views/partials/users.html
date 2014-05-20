@@ -4,10 +4,21 @@
     <div class="row-fluid">
         <div class="span7" ng-controller="UsersGrid">
             <!--Sidebar content-->
+            <div class="control-group">
+                <div class="controls inline">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="showInactif" id="inputshowInactif" name="inputshowInactif">
+                        Afficher les utilisateurs inactifs
+                    </label>
+                </div>
+            </div>
             <!--Grilles des utilisateurs-->
             <div loading-container="loading"> 
                 <table ng-table="tableParamsUser" show-filter="false" class="table table-bordered table-hover"> 
                     <tr ng-repeat="user in $data"> 
+                        <td data-title="'Actif'" sortable="isActif()">
+                            <span class="etatConges" ng-class="{'accConges':user.isActif(), 'refConges': !user.isActif()}" title="{{user.isActif() ? 'Actif' : 'Désativé'}}">&nbsp;</span>
+                        </td> 
                         <td data-title="'Matricule'" sortable="id"> 
                         {{user.id}} 
                         </td> 
@@ -84,6 +95,7 @@
                         </td>
                     </tr>
                 </table> 
+                <a class="btn btn-primary" export-csv="csv" template="cvsTmpl" ng-mousedown="csv.generate()" ng-href="{{ csv.link() }}" download="utilisateurs.csv">Exporter en CSV</a>
             </div>
 
             <!--<grid id="usersGrid" ng-options="gridOptions"></grid>-->
@@ -123,3 +135,9 @@
     <!--<div class="row-fluid">-->
 </div>
 <!--<div class="container-fluid">-->
+<script type="text/x-handlebars-template" id="cvsTmpl">
+    <div>"Matricule";"Nom";"Prénom";"Rôle";"CP";"CP en cours";"RTT";"Enfant malade"</div>
+    <div ng-repeat="user in users_">
+        "{{user.id}}";"{{user.nom}}";"{{user.prenom}}";"{{user.role}}";"{{user.cp | toCSVFixed:1}}";"{{user.cp_ant | toCSVFixed:1}}";"{{user.rtt | toCSVFixed:1}}";"{{user.enf | toCSVFixed:1}}"
+    </div>
+</script>
