@@ -26,7 +26,7 @@
                     <!--Grilles des congés-->
                     <tabset>
                         <tab heading="Liste des activités">
-                            <div loading-container="loading"> 
+                            <div id="activiteGrid" loading-container="loading"> 
                                 <table id="activiteAdminGrid" ng-table="tableParamsActivite" show-filter="false" class="table table-bordered table-hover">
                                     <tr ng-repeat="activite in activites">
                                         <td sortable="etat">
@@ -151,30 +151,30 @@
                           <tab-heading>
                             Utilisateurs sans activité <span class="badge badge-important" ng-if="nbSansActivite && nbSansActivite > 0">{{nbSansActivite}}</span>
                           </tab-heading>
-                            <div loading-container="loading"> 
-                                    <table id="sansSctiviteAdminGrid" ng-table="tableParamsSansActivite" show-filter="false" class="table table-bordered table-hover"> 
-                                        <tr ng-repeat="activite in sansActivites"> 
-                                            <td sortable="etat"> 
-                                                <span class="etatConges refConges">&nbsp;</span>
-                                            </td> 
-                                            <td data-title="'Mois'" sortable="mois"> 
-                                                <div class="moisCell">{{activite.mois | moment:'MMMM YYYY'}}</div>
-                                            </td> 
-                                            <td data-title="'Matricule'" sortable="id"> 
-                                                {{activite.id}}
-                                            </td>
-                                            <td data-title="'Nom'" sortable="nom"> 
-                                                {{activite.nom}}
-                                            </td>
-                                            <td data-title="'Prenom'" sortable="prenom"> 
-                                                {{activite.prenom}}
-                                            </td>
-                                            <td style="width:15px;"> 
-                                                <a href="" title="Créer le CRA" ng-click="create(activite)"><i class="icon-pencil"></i></a>
-                                            </td>
-                                        </tr> 
-                                    </table> 
-                                </div>
+                            <div id="sansActiviteGrid" loading-container="loading">
+                                <table id="sansSctiviteAdminGrid" ng-table="tableParamsSansActivite" show-filter="false" class="table table-bordered table-hover">
+                                    <tr ng-repeat="activite in sansActivites">
+                                        <td sortable="etat">
+                                            <span class="etatConges refConges">&nbsp;</span>
+                                        </td>
+                                        <td data-title="'Mois'" sortable="mois">
+                                            <div class="moisCell">{{activite.mois | moment:'MMMM YYYY'}}</div>
+                                        </td>
+                                        <td data-title="'Matricule'" sortable="id">
+                                            {{activite.id}}
+                                        </td>
+                                        <td data-title="'Nom'" sortable="nom">
+                                            {{activite.nom}}
+                                        </td>
+                                        <td data-title="'Prenom'" sortable="prenom">
+                                            {{activite.prenom}}
+                                        </td>
+                                        <td style="width:15px;">
+                                            <a href="" title="Créer le CRA" ng-click="create(activite)"><i class="icon-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                               <!--<grid id="sansSctiviteAdminGrid" ng-options="gridOptionsSans"></grid>-->
                         </tab>
                     </tabset>
@@ -322,8 +322,8 @@
         </div>
 </script>
 <script type="text/x-handlebars-template" id="cvsTmpl">
-    <div>"Nom";"Prénom";"JT1";"JT2";"JT3";"INT";"FOR";"CP";"CS";"RTT";"MA";"Autre";"Sup";"Nuit";"Actreinte";"Intervention"</div>
+    <div>"Matricule";"Nom";"Prénom";"JT1";"JT2";"JT3";"INT";"FOR";"CP";"CS";"RTT";"MA";"Autre";"Heures supplémentaires";"Heures de nuit";"Heures d'astreinte";"Heures d'intervention"</div>
     <div ng-repeat="activite in activites_">
-        "{{activite.user.nom}}";"{{activite.user.prenom}}";"{{activite.JT1 | toCSVFixed:1}}";"{{activite.JT2 | toCSVFixed:1}}";" {{activite.JT3 | toCSVFixed:1}}";"{{activite.INT | toCSVFixed:1}}";"{{activite.FOR | toCSVFixed:1}}";"{{activite.CP + activite.CP_ANT | toCSVFixed:1}}";"{{activite.CS | toCSVFixed:1}}";" {{activite.RTT | toCSVFixed:1}}";"{{activite.MA | toCSVFixed:1}}";"{{activite.AU + activite.DC + activite.DEM + activite.ENF + activite.MAR + activite.MAT + activite.NAI + activite.PAT + activite.REC | toCSVFixed:1}}";"{{activite.heuresSup.total | toCSVFixed:1}}";"{{activite.heuresNuit.total | toCSVFixed:1}}";"{{activite.heuresAstreinte.total | toCSVFixed:1}}";"{{activite.heuresInt.total | toCSVFixed:1}}"
+        "{{activite.user.id}}";"{{activite.user.nom}}";"{{activite.user.prenom}}";"{{activite.JT1 | toCSVFixed:1}}";"{{activite.JT2 | toCSVFixed:1}}";" {{activite.JT3 | toCSVFixed:1}}";"{{activite.INT | toCSVFixed:1}}";"{{activite.FOR | toCSVFixed:1}}";"{{activite.CP + activite.CP_ANT | toCSVFixed:1}}";"{{activite.CS | toCSVFixed:1}}";" {{activite.RTT | toCSVFixed:1}}";"{{activite.MA | toCSVFixed:1}}";"{{activite.AU + activite.DC + activite.DEM + activite.ENF + activite.MAR + activite.MAT + activite.NAI + activite.PAT + activite.REC | toCSVFixed:1}}";"{{activite.heuresSup.total | toCSVFixed:1}}";"{{activite.heuresNuit.total | toCSVFixed:1}}";"{{activite.heuresAstreinte.total | toCSVFixed:1}}";"{{activite.heuresInt.total | toCSVFixed:1}}"
     </div>
 </script>
