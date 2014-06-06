@@ -360,13 +360,20 @@
     }
 
     function CongesAdminHisto($scope, $rootScope, $timeout, $filter, ngTableParams, ngTableFilter, CongesAdminService, ConfigService) {
+        var current = moment();
         $scope.optionsHisto = {
-            quantity: "3",
+            annee: current.year(),
         }
+         $scope.years = [
+             current.year(),
+             current.year() - 1,
+             current.year() -2,
+             "Toutes"
+         ]
 
         $scope.getHisto = function(options){
             $scope.optionsHisto = options;
-            CongesAdminService.list({ user: options.user.id, quantity: options.quantity }).then(function(conges) {
+            CongesAdminService.list({ user: options.user.id, annee: options.annee == "Toutes" ? -1 : options.annee }).then(function(conges) {
                 $rootScope.congesHisto = conges;
             });
         }

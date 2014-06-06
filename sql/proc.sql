@@ -380,7 +380,7 @@ DELIMITER $$
 
 CREATE PROCEDURE `AddConges` (user INT, typeConges VARCHAR(5), motif VARCHAR(10) CHARACTER SET utf8,  d1 DATETIME, d2 DATETIME, justification VARCHAR(1000), OUT rowid INT, OUT duree FLOAT, OUT retour VARCHAR(1000) CHARACTER SET utf8)
 ThisSP:BEGIN
-DECLARE nbconflis, etat, min_motif INT;
+DECLARE nbconflis, existActivite, etat, min_motif INT;
 DECLARE nbdispo FLOAT;
 SET duree = -1;
 SET min_motif = 0;
@@ -401,6 +401,14 @@ SELECT BizDaysInclusive(d1, d2) INTO duree;
 IF duree <= 0 THEN
 	SET duree = -1;
 	SET retour = "ZERO_JOUR_TRAVAIL";
+	LEAVE ThisSP;
+END IF;
+
+SELECT count(*) INTO existActivite FROM activite WHERE activite.user = user AND 
+((YEAR(activite.mois) = YEAR(d1) AND MONTH(activite.mois) = MONTH(d1)) OR (YEAR(activite.mois) = YEAR(d2) AND MONTH(activite.mois) = MONTH(d2)));
+IF existActivite > 0 THEN
+	SET duree = -1;
+	SET retour = "ACTIVITE_SAUVER";
 	LEAVE ThisSP;
 END IF;
 
@@ -512,7 +520,7 @@ ThisSP:BEGIN
 DECLARE iduser, etat INT;
 DECLARE duree_old FLOAT;
 DECLARE motif_old VARCHAR(10) CHARACTER SET utf8;
-DECLARE nbconflis INT;
+DECLARE nbconflis, existActivite INT;
 DECLARE nbdispo FLOAT;
 SET duree = 0;
 SET nbdispo = 1000;
@@ -538,6 +546,14 @@ IF (nbconflis > 0) THEN
  SET duree = -1;
  SET retour = "CONGES_PRESENT";
  LEAVE ThisSP;
+END IF;
+
+SELECT count(*) INTO existActivite FROM activite WHERE activite.user = iduser AND 
+((YEAR(activite.mois) = YEAR(d1) AND MONTH(activite.mois) = MONTH(d1)) OR (YEAR(activite.mois) = YEAR(d2) AND MONTH(activite.mois) = MONTH(d2)));
+IF existActivite > 0 THEN
+	SET duree = -1;
+	SET retour = "ACTIVITE_SAUVER";
+	LEAVE ThisSP;
 END IF;
 
 IF (SELECT count(*) FROM conges_compteurs WHERE conges_compteurs.user = iduser AND conges_compteurs.motif = motif) THEN

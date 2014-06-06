@@ -1,5 +1,5 @@
 01 09 * * 1-5 /usr/local/bin/node /home/inside/apps/prod/task/validationConges.js >> /home/inside/apps/cron/matin.log 2>&1
-01 09 26-31 * 1-5 /usr/local/bin/node /home/inside/apps/prod/task/relanceActivite.js >> /home/inside/apps/cron/matin.log 2>&1
+01 09 20-31 * 1-5 /usr/local/bin/node /home/inside/apps/prod/task/relanceActivite.js >> /home/inside/apps/cron/matin.log 2>&1
 01 00 1 * * /usr/local/bin/node /home/inside/apps/prod/task/calculCongesAcquis.js >> /home/inside/apps/cron/mois.log 2>&1
 01 00 1 1 * /usr/local/bin/node /home/inside/apps/prod/task/razCompteurs.js >> /home/inside/apps/cron/1_janvier.log 2>&1
 10 00 1 1 * /usr/local/bin/node /home/inside/apps/prod/task/transfertCP.js >> /home/inside/apps/cron/1_janvier.log 2>&1

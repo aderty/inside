@@ -1,6 +1,6 @@
 ﻿<div class="background light"></div>
 <div class="container-fluid" id="adminActivite" ng-controller="ActiviteAdmin">
-    <div class="row-fluid">
+    <div class="row-fluid main">
         <div class="span12">
             <div class="row-fluid">
                 <div class="well">
@@ -91,11 +91,9 @@
                                         </td>
                                     </tr>
                                     <tr class="info total">
-                                        <td>
+                                        <td colspan="3">
                                             Totaux
                                         </td>
-                                        <td></td>
-                                        <td></td>
                                         <td>
                                             {{activites_ | total:'JT1' | toFixed:1}}
                                         </td>
@@ -138,9 +136,7 @@
                                         <td>
                                             {{activites_ | total:'heuresInt.total' | toFixed:1}}
                                         </td>
-                                        <td style="width:15px;"></td>
-                                        <td style="width:15px;"></td>
-                                        <td style="width:15px;"></td>
+                                        <td colspan="3"></td>
                                     </tr>
                                 </table> 
                                 </div>
@@ -197,7 +193,10 @@
                         </div>
                         <div class="modal-footer">
                             <div class="alert alert-block alert-error" ng-class="{masquer: !error}"><span>{{error}}</span></div>
-                            <button class="btn btn-success" type="button" ng-if="currentActivite.etat <= 1" ng-disabled="saving" ng-click="save(eventSources[0])"><i class="icon-share icon-white"></i> Enregistrer l'activité</button>
+                            <p ng-if="hasCongesNonValide" class="alert alert-warning">
+                                Une absence n'a pas encore été validée.
+                            </p>
+                            <button class="btn btn-success" type="button" ng-if="!hasCongesNonValide && currentActivite.etat <= 1" ng-disabled="saving" ng-click="save(eventSources[0])"><i class="icon-share icon-white"></i> Enregistrer l'activité</button>
                             <button ng-click="close()" class="btn" >Annuler</button>
                         </div>
                     </script>

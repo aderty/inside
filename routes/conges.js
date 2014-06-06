@@ -100,7 +100,7 @@ var routesAdmin = {
         }
         else {
             if (req.query.user) {
-                options.quantity = req.query.quantity;
+                options.annee = req.query.annee;
                 data.conges.listHistoConges(superAdmin ? -1 : req.session.username, req.query.user, options, dataCallback(res));
                 return;
             }

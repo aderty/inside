@@ -1,6 +1,6 @@
--- DROP DATABASE IF EXISTS inside;
--- CREATE DATABASE inside;
--- USE inside;
+DROP DATABASE IF EXISTS inside;
+CREATE DATABASE inside;
+USE inside;
 
 CREATE TABLE IF NOT EXISTS `roles` (
   `id`  INT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   -- `rtt` FLOAT NOT NULL DEFAULT 0,
   `role` INT NOT NULL DEFAULT 1,
   `etat` INT NOT NULL DEFAULT 1,
-  `admin` MEDIUMINT NOT NULL DEFAULT 1,
+  `admin` MEDIUMINT NOT NULL DEFAULT 0,
   `creation` timestamp NOT NULL DEFAULT current_timestamp,
   `last_connection` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `debutActivite` DATE NULL,
@@ -65,7 +65,7 @@ INSERT INTO `conges_motifs` (`id`, `libelle`, `shortlibelle`, `min`, `ordre`) VA
 ('CS', 'Sans solde', null, 0, 5),
 ('MA', 'Maladie', null, 0, 6),
 ('ENF', 'Enfant malade (3 jours par an)', 'Enfant malade', 0, 7),
-('DEL', 'Délégation DP, CE', 0, 8),
+('DEL', 'Délégation DP', 'CE', 0, 8),
 ('MAR', 'Mariage', null, 0, 9),
 ('NAI', 'Naissance (3 jours)', 'Naissance', 0, 10),
 ('PAT', 'Paternité (9 jours ouvrés)', 'Paternité', 0, 11),
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `conges` (
   `type` varchar(5) CHARACTER SET utf8 NOT NULL DEFAULT 'N',
   `refus` varchar(2000) CHARACTER SET utf8,
   `creation` timestamp NOT NULL DEFAULT current_timestamp,
-  `last_modif` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_modif` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT FOREIGN KEY (`etat`) REFERENCES `conges_etat` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -132,9 +132,9 @@ CREATE TABLE IF NOT EXISTS `JoursFeries` (
   PRIMARY KEY (`jour`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `users` (`id`,`nom`, `prenom`, `email`, `dateNaissance`, `pwd`, `role`) VALUES
-(0,'Admin', 'Admin', 'admin@inside-groupe.com', '1982-11-29','d11ca905f1135973759e4545df3b041d18b9c46b',4),
-(999999,'Tous', '', 'all@inside-groupe.com', '1982-11-29','d11ca905f1135973759e4545df3b041d18b9c46b',2);
+INSERT INTO `users` (`id`,`nom`, `prenom`, `email`, `dateNaissance`, `pwd`, `role`, `debutActivite`) VALUES
+(0,'Admin', 'Admin', 'admin@inside-groupe.com', '1982-11-29','e03095caa29e4519cb4731f92b50d69d0151907c90b62cd3ffa77ae8eaa7b67c',4, STR_TO_DATE('29/10/2013', '%d/%m/%Y')),
+(999999,'Tous', '', 'all@inside-groupe.com', '1982-11-29','e03095caa29e4519cb4731f92b50d69d0151907c90b62cd3ffa77ae8eaa7b67c',2, STR_TO_DATE('29/10/2013', '%d/%m/%Y'));
 
 INSERT INTO `conges_etat` (`id`, `libelle`) VALUES
 (1, 'Attente de validation'),

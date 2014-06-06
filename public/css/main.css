@@ -80,6 +80,10 @@ html.start .background > span{
      white-space: normal;
 }
 
+.row-fluid.main{
+    overflow: hidden;
+}
+
 .tab-pane 
 {
 	overflow:auto;
@@ -123,6 +127,10 @@ table td.cell > div {
 
 table tr.total{
     font-weight: bold;
+}
+
+table tr.total td:first-child{
+    text-align: right;
 }
 /* Colonne nom */
 #usersGrid .cell:nth-child(2) > *{
@@ -629,6 +637,16 @@ input.ng-pristine + .input-help {
     background: -webkit-gradient( linear, left top, left bottom, from(rgb(26, 141, 196)), to(rgb(33, 100, 145)));
 	height: auto;
 }
+.jour.JT2 {
+    background-color: rgb(155, 212, 240);
+	background: -moz-linear-gradient( top, rgb(103, 175, 209) 0%, rgb(127, 189, 231));
+	background: -webkit-gradient( linear, left top, left bottom, from(rgb(103, 175, 209)), to(rgb(127, 189, 231)));
+}
+.jour.JT3 {
+    background-color: rgb(23, 70, 170);
+    background: -moz-linear-gradient( top, rgb(23, 70, 170) 0%, rgb(118, 149, 228));
+    background: -webkit-gradient( linear, left top, left bottom, from(rgb(23, 70, 170)), to(rgb(118, 149, 228)));
+}
 
 .jour.WK,
 .jour.JF {
@@ -638,9 +656,9 @@ input.ng-pristine + .input-help {
 }
 
 .jour.INT {
-    background-color: rgb(155, 212, 240);
-	background: -moz-linear-gradient( top, rgb(103, 175, 209) 0%, rgb(127, 189, 231));
-	background: -webkit-gradient( linear, left top, left bottom, from(rgb(103, 175, 209)), to(rgb(127, 189, 231)));
+    background-color: rgb(196, 103, 209);
+    background: -moz-linear-gradient( top, rgb(196, 103, 209) 0%, rgb(243, 179, 255));
+    background: -webkit-gradient( linear, left top, left bottom, from(rgb(196, 103, 209)), to(rgb(243, 179, 255)));
 }
 
 .jour.FOR {

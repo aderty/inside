@@ -3,7 +3,8 @@
     , fs = require('fs')
     , path = require('path')
     , moment = require('moment')
-    ,_ = require('underscore');
+    , _ = require('underscore')
+    , config = require('../config.json');
 
 /// Routes
 function dataCallback(res) {
@@ -122,11 +123,11 @@ var routesAdmin = {
            res.attachment("export-cheques-"+ dateMois.format("MMMM-YYYY")  +".txt");
            var data = {
                 cheques: result,
-                code_client: "15166",
-                code_sucursale: "001",
-                code_interne: "INSIDE TOULOUSE",
-                valeur: "0960",
-                participation: "0480"
+                code_client: config.chequesDejeuner.code_client,
+                code_sucursale: config.chequesDejeuner.code_sucursale,
+                code_interne: config.chequesDejeuner.code_interne,
+                valeur: config.chequesDejeuner.valeur,
+                participation: config.chequesDejeuner.participation
            }
            //res.set({"Content-Disposition":"attachment; filename=\"export-cheques-"+ req.query.annee + "-" + req.query.mois  +".txt\""});
            //res.setHeader('Content-type', 'application/download');

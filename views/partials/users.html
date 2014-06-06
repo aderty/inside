@@ -57,20 +57,8 @@
                         </td>
                     </tr>
                     <tr class="info total">
-                        <td>
+                        <td colspan="6">
                             Totaux
-                        </td>
-                        <td>
-                            
-                        </td>
-                        <td>
-                            
-                        </td>
-                        <td>
-                            
-                        </td>
-                        <td>
-                            
                         </td>
                         <td>
                             {{users_ | total:'cp' | toFixed:2}}
@@ -84,18 +72,10 @@
                         <td>
                             {{users_ | total:'enf' | toFixed:2}}
                         </td>
-                        <td>
-    
-                        </td>
-                        <td>
-
-                        </td>
-                        <td>
-
-                        </td>
+                        <td colspan="3"></td>
                     </tr>
                 </table> 
-                <a class="btn btn-primary" export-csv="csv" template="cvsTmpl" ng-mousedown="csv.generate()" ng-href="{{ csv.link() }}" download="utilisateurs.csv">Exporter en CSV</a>
+                <a class="btn btn-primary" export-csv="csv" template="cvsTmpl" ng-mousedown="csv.generate()" ng-href="{{ csv.link() }}" download="utilisateurs.csv" >Exporter en CSV</a>
             </div>
 
             <!--<grid id="usersGrid" ng-options="gridOptions"></grid>-->
@@ -136,8 +116,8 @@
 </div>
 <!--<div class="container-fluid">-->
 <script type="text/x-handlebars-template" id="cvsTmpl">
-    <div>"Matricule";"Nom";"Prénom";"Rôle";"CP";"CP en cours";"RTT";"Enfant malade"</div>
+    <div>"Nom";"Prénom";"CP";"CP en cours";"RTT";"Enfant malade";"Admin"</div>
     <div ng-repeat="user in users_">
-        "{{user.id}}";"{{user.nom}}";"{{user.prenom}}";"{{user.role}}";"{{user.cp | toCSVFixed:1}}";"{{user.cp_ant | toCSVFixed:1}}";"{{user.rtt | toCSVFixed:1}}";"{{user.enf | toCSVFixed:1}}"
+        "{{user.nom}}";"{{user.prenom}}";"{{user.cp | toCSVFixed:1}}";"{{user.cp_ant | toCSVFixed:1}}";"{{user.rtt | toCSVFixed:1}}";"{{user.enf | toCSVFixed:1}}";"{{user.admin.nom}} {{user.admin.prenom}}"
     </div>
 </script>

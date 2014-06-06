@@ -34,6 +34,7 @@
         });
 
         $scope.isDirty = false;
+        $scope.hasCongesNonValide = false;
         $scope.eventSelectionne = null;
         $scope.events = [];
         $scope.successOperation = "";
@@ -115,6 +116,7 @@
             $scope.indexEvents = [];
                 $scope.events = [];
                 $scope.successOperation = "";
+                $scope.hasCongesNonValide = false;
 
                 function startEventConges(current, skip) {
                     inConges = true;
@@ -140,7 +142,7 @@
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
                             date = new Date(current.toDate());
-                            date.setHours(12);
+                            date.setHours(14);
                             $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
@@ -152,7 +154,7 @@
                             date.setHours(8);
                             $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             date = new Date(current.toDate());
-                            date.setHours(12);
+                            date.setHours(14);
                             if ($scope.conges.length > 0 && $scope.conges[0].debut.date.getMonth() == current.month() && $scope.conges[0].debut.date.getDate() <= current.date()) {
                                 // Un autre congès est commence l'après-midi même.
                                 var dataAp = angular.copy($scope.conges[0]);
@@ -178,7 +180,7 @@
                                 $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 1, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                             }
                             date = new Date(current.toDate());
-                            date.setHours(12);
+                            date.setHours(14);
                             $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0 });
                             $scope.indexEvents[current.date()] = $scope.events.length - 1;
                             toDo = false;
@@ -230,7 +232,7 @@
                         $scope.events.push({ title: $filter('motifCongesShort')(data.type), allDay: false, start: date, data: data });
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         date = new Date(current.toDate());
-                        date.setHours(12);
+                        date.setHours(14);
                         if (!cong || cong.fin.date.getMonth() != current.month() || cong.fin.date.getDate() < current.date()) {
                             // Fin d'un congès dont le congès en cours est déjà fini
                             $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
@@ -276,6 +278,14 @@
                 else {
                     $scope.isSaved = false;
                     $scope.conges = $scope.activite.activite;
+                    // Parcours des congés
+                    angular.forEach($scope.conges, function(conge){
+                        // Congés non valider -> Pas de sauvegarde possible
+                        if(conge.etat == 1){
+                             $scope.hasCongesNonValide = true;
+                        }
+                    });
+
                     var cong = $scope.conges.shift();
                     var lastCong;
                     var first = true;
@@ -419,7 +429,7 @@
                 if (this.data.duree == lastDuree) return;
                 if (this.data.duree == 1) {
                     var date = new Date(this.start);
-                    date.setHours(16);
+                    date.setHours(14);
                     this.start.setHours(8);
                     this.allDay = false;
                     $scope.isUpdating = true;
@@ -430,7 +440,7 @@
                 else if (this.data.duree == 2) {
                     var date = new Date(this.start);
                     date.setHours(8);
-                    this.start.setHours(16);
+                    this.start.setHours(14);
                     this.allDay = false;
                     $scope.isUpdating = true;
                     var index = indexOfEvent(this.start);

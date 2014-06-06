@@ -31,12 +31,9 @@
                             </div>
                             <!--Saisie password-->
                             <div class="control-group" ng-class="{error: histo.inputMotif.$dirty && histo.inputMotif.$invalid, success:histo.inputMotif.$dirty && !histo.inputMotif.$invalid}">
-                                <label class="control-label" for="inputRole">Période de recherche</label>
+                                <label class="control-label" for="inputRole">Année(s) de recherche</label>
                                 <div class="controls inline">
-                                    <select id="inputMotifHisto" name="inputMotifHisto" required ng-model="optionsHisto.quantity">
-                                        <option selected="selected" value="6">6 derniers mois</option>
-                                        <option value="12">12 derniers mois</option>
-                                        <option value="-1">Tous</option>
+                                    <select id="inputMotifHisto" name="inputMotifHisto" required ng-model="optionsHisto.annee" ng-options="year for year in years">
                                     </select>
                                 </div>
                             </div>
@@ -87,6 +84,15 @@
                                     <td style="width:15px;">
                                         <a href="" title="Supprimer" authenticate="4" ng-show="isEditable(conge)" ng-click="delete(conge)"><i class="icon-trash"></i></a>
                                     </td>
+                                </tr>
+                                <tr class="info total">
+                                    <td colspan="4">
+                                        Totaux
+                                    </td>
+                                    <td>
+                                        {{congesHisto | total:'duree' | toFixed:2}}
+                                    </td>
+                                    <td colspan="7"></td>
                                 </tr>
                             </table>
                         </div>

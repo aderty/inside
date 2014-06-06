@@ -33,6 +33,7 @@ db.events.once('connected', function (result) {
 var errors = {
     CONGES_PRESENT: "Vous avez dejà posé un congés chevauchant votre demande.",
     ZERO_JOUR_TRAVAIL: "Pas de jour travaillé durant la période demandé.",
+    ACTIVITE_SAUVER: "Vous avez déjà enregistré une activité pendant les dates de votre demande.",
     PAS_ASSEZ: "Vous n'avez pas assez de congés.",
     EN_VALIDATION: "La demande est déjà en cours de validation.",
     DEJA_REFUSE: "La demande de congés a été refusée, impossible de modifier son état."
@@ -62,9 +63,9 @@ var data = {
     },
     listHistoConges: function (admin, matricule, options, fn) {
         var query, values = [];
-        if(options.quantity > -1){
-            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE (conges.user = 999999 OR conges.user = ?) AND period_diff(date_format(current_timestamp, "%Y%m"), date_format(conges.debut, "%Y%m")) < ? ORDER BY debut DESC;'
-            values = [matricule, options.quantity];
+        if(options.annee > -1){
+            query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE (conges.user = 999999 OR conges.user = ?) AND (YEAR(conges.debut) = ? OR YEAR(conges.fin) = ?) ORDER BY debut DESC;'
+            values = [matricule, options.annee, options.annee];
         }
         else{
             query = 'SELECT conges.id,conges.user,users.nom, users.prenom, conges.etat, conges.duree, conges.debut, conges.fin, conges.motif, conges.justification, conges.type, admin.id as admin_id, admin.nom as admin_nom, admin.prenom as admin_prenom, cp.compteur as CP, ant.compteur as CP_ANT, rtt.compteur as RTT FROM conges JOIN users on conges.user = users.id JOIN users AS admin on users.admin = admin.id JOIN conges_compteurs as cp on cp.motif = "CP" and cp.user = users.id JOIN conges_compteurs as ant on ant.motif = "CP_ANT" and ant.user = users.id JOIN conges_compteurs as rtt on rtt.motif = "RTT" and rtt.user = users.id WHERE (conges.user = 999999 OR conges.user = ?) ORDER BY debut DESC;';

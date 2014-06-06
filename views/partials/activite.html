@@ -71,7 +71,7 @@
                     <!--Sidebar content-->
                     <span class="titre">Actions</span>
                     <hr />
-                    <p ng-if="activite.etat <= 1 && !future">
+                    <p ng-if="!hasCongesNonValide && activite.etat <= 1 && !future">
                         <button ng-if="!isSaved" class="btn btn-large btn-success" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Enregistrer mon activité</button>
                         <button ng-if="isSaved" class="btn btn-large btn-info" ng-disabled="saving" type="button" ng-click="save(events)"><i class="icon-share icon-white"></i> Modifier mon activité déjà enregistrée</button>
                     </p>
@@ -80,6 +80,10 @@
                     </p>
                     <p ng-if="activite.etat > 1" class="alert alert-warning">
                         Votre activité a été validée, vous ne pouvez plus modifier ce mois.
+                    </p>
+                    <p ng-if="hasCongesNonValide" class="alert alert-warning">
+                        Une absence n'a pas encore été validée.<br />
+                        L'ensemble des absences du mois doivent être validées pour pouvoir enregistrer votre activité.
                     </p>
                 </div>
             </div>
