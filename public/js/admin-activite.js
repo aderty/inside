@@ -346,7 +346,8 @@
                     // Parcours des congés
                     angular.forEach($scope.conges, function(conge){
                         // Congés non valider -> Pas de sauvegarde possible
-                        if(conge.etat == 1){
+                        if(conge.etat == 1 && 
+                            ($rootScope.currentActivite.mois.getMonth() == conge.debut.date.getMonth() || $rootScope.currentActivite.mois.getMonth() == conge.fin.date.getMonth())){
                              $rootScope.hasCongesNonValide = true;
                         }
                     });

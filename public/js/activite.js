@@ -284,6 +284,10 @@
                         if(conge.etat == 1){
                              $scope.hasCongesNonValide = true;
                         }
+                        if(conge.etat == 1 && 
+                            ($scope.activite.mois.getMonth() == conge.debut.date.getMonth() || $scope.activite.mois.getMonth() == conge.fin.date.getMonth())){
+                             $scope.hasCongesNonValide = true;
+                        }
                     });
 
                     var cong = $scope.conges.shift();
