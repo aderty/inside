@@ -233,7 +233,7 @@
                         $scope.indexEvents[current.date()] = $scope.events.length - 1;
                         date = new Date(current.toDate());
                         date.setHours(14);
-                        if (!cong || cong.fin.date.getMonth() != current.month() || cong.fin.date.getDate() < current.date()) {
+                        if (!cong || cong.fin.date.getMonth() < current.month() || (cong.fin.date.getMonth() == current.month() && cong.fin.date.getDate() < current.date())) {
                             // Fin d'un congès dont le congès en cours est déjà fini
                             $scope.events.push({ title: "Journée travaillée", allDay: false, start: date, data: { type: 'JT1', duree: 2, heuresSup: 0, heuresAstreinte: 0, heuresNuit: 0, heuresInt: 0} });
                         }
