@@ -92,7 +92,7 @@ var routesAdmin = {
         var options = {
             past: false
         };
-        if (req.query.past == 'true') {
+        if (req.query.past == 'true' || req.query.etat == "1") {
             options.past = true;
         }
         if (req.query.etat) {

@@ -313,14 +313,14 @@
                                 }*/
                                 /*jgo 31/01/2014*/
                             
-                                if (cong && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
+                                if (cong && cong.fin.date.getFullYear() <= current.year() && cong.fin.date.getMonth() <= current.month() && cong.fin.date.getDate() <= current.date()) {
                                     cong = $scope.conges.shift();
                                 }
                                 /*fin jgo 31/01/2014*/
-                                if (cong && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
+                                if (cong && cong.debut.date.getFullYear() <= current.year() && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
                                     startEventConges(current, true);
                                 }
-                                if (inConges && lastCong && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
+                                if (inConges && lastCong && lastCong.fin.date.getFullYear() <= current.year() && lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date()) {
                                     endEventConges(current);
                                 }
                                 current = current.add('days', 1);
@@ -342,11 +342,11 @@
                                 // Dans une période de congés.
                                 inEventConges(current);
                             }
-                            if (cong && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
+                            if (cong && cong.debut.date.getFullYear() <= current.year() && (cong.debut.date.getMonth() < current.month() || (cong.debut.date.getMonth() == current.month() && cong.debut.date.getDate() <= current.date()))) {
                                 // Au début d'une période de congés.
                                 startEventConges(current);
                             }
-                            if (inConges && lastCong && lastCong.fin.date.getMonth() <= current.month() && lastCong.fin.date.getDate() <= current.date()) {
+                            if (inConges && lastCong && lastCong.fin.date.getFullYear() <= current.year() && lastCong.fin.date.getMonth() <= current.month() && lastCong.fin.date.getDate() <= current.date()) {
                                 // A la fin d'une période de congés.
                                 endEventConges(current);
                             }
