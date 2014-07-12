@@ -168,4 +168,6 @@ gulp.task('default', ['clean'], function(){
                       'font', 
                       'watch');
 });
+
+module.exports = gulp;
                       

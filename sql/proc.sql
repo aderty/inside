@@ -946,7 +946,7 @@ act1.type = 'INT'
 )
 and DATE(act1.jour) IN (
 SELECT DATE(act2.jour) FROM activite_jour as act2 JOIN users on act2.user = users.id 
-WHERE act2.user = act1.user and HOUR(act2.jour) = 16 AND YEAR(act2.jour) = annee AND MONTH(act2.jour) = mois 
+WHERE act2.user = act1.user and HOUR(act2.jour) = 14 AND YEAR(act2.jour) = annee AND MONTH(act2.jour) = mois 
 and (
 act2.type = 'JT1' or 
 act2.type = 'JT2' or 
