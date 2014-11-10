@@ -41,6 +41,10 @@
             ActiviteAdminService.list(options).then(function(result) {
                 $scope.activites_ = result;
                 $scope.activites = ngTableFilter(result, params);
+
+                // Génération du CSV pour les données
+                $scope.csv.generate();
+
                 $defer.resolve($scope.activites);
             });
         }
