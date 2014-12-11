@@ -205,7 +205,7 @@
                     }
                     // Si la date de fin du congès précédant n'est pas encore fini (cas d'un jour férie dans une période d'autre congés)
                     // -> On ne modifie pas le congé précédant.
-                    if (!lastCong || lastCong.fin.date.getMonth() < current.month() || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date())) {
+                    if (!lastCong || lastCong.fin.date.getFullYear() < current.year() || lastCong.fin.date.getMonth() < current.month() || (lastCong.fin.date.getMonth() == current.month() && lastCong.fin.date.getDate() <= current.date())) {
                         lastCong = angular.copy(cong);
                     }
                     cong = $scope.conges.shift();
